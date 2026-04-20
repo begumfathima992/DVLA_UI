@@ -1,34 +1,41 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import axios from "axios";
+import Home from "./page/home";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Vehicle from "./page/vehicle";
 
 function App() {
-  const [vrm, setVrm] = useState('');
+  const [vrm, setVrm] = useState("");
   const [vehicle, setVehicle] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const lookupVehicle = async () => {
     if (!vrm) return;
     setLoading(true);
-    setError('');
+    setError("");
     setVehicle(null);
 
     try {
       // We clean the input: Remove spaces and force uppercase
-      const cleanVrm = vrm.replace(/\s+/g, '').toUpperCase();
-      const response = await axios.post('http://localhost:5000/api/vehicle', { 
-        registrationNumber: cleanVrm 
+      const cleanVrm = vrm.replace(/\s+/g, "").toUpperCase();
+      const response = await axios.post("http://localhost:5000/api/vehicle", {
+        registrationNumber: cleanVrm,
       });
       setVehicle(response.data);
     } catch (err) {
-      setError(err.response?.data?.error || 'Vehicle not found. Try a real registration.');
+      setError(
+        err.response?.data?.error ||
+          "Vehicle not found. Try a real registration.",
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ maxWidth: '600px', margin: '50px auto', fontFamily: 'sans-serif' }}>
+    <>
+      {/* <div style={{ maxWidth: '600px', margin: '50px auto', fontFamily: 'sans-serif' }}>
       <h2 style={{ color: '#005ea5' }}>DVLA Vehicle Enquiry</h2>
       
       <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
@@ -62,7 +69,14 @@ function App() {
           </table>
         </div>
       )}
-    </div>
+    </div> */}
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/find-vehicle" element={<Vehicle />} />
+        </Routes>
+      </BrowserRouter>
+    </>
   );
 }
 
