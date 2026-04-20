@@ -3,6 +3,8 @@ import axios from "axios";
 import Home from "./page/home";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Vehicle from "./page/vehicle";
+import Contact from "./page/contactUs";
+import Service from "./page/service";
 
 function App() {
   const [vrm, setVrm] = useState("");
@@ -74,6 +76,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/find-vehicle" element={<Vehicle />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/services" element={<Service />} />
         </Routes>
       </BrowserRouter>
     </>

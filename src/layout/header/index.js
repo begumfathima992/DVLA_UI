@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react"; // Install: npm install lucide-react
-
+import {
+  motion,
+  useInView,
+  useAnimation,
+  AnimatePresence,
+} from "framer-motion";
 function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -59,7 +64,7 @@ function Header() {
               </svg>
             </div>
             <span
-              className="font-black text-4xl tracking-tighter text-white"
+              className="font-black text-2xl  text-white"
               style={{ fontFamily: "'Bebas Neue', cursive" }}
             >
               AUTO<span className="text-red-500">FORGE</span>
@@ -98,7 +103,7 @@ function Header() {
           <div className="hidden md:block">
             <button
               onClick={() => navigate("/book-service")}
-              className="bg-red-600 hover:bg-red-500 text-white px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 flex items-center gap-2"
+              className=" text-red-500 border border-red-600 px-6 py-2.5 rounded-xl !font-bold text-sm transition-all duration-200 flex items-center gap-2"
             >
               📅 Book Service
             </button>
