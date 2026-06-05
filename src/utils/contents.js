@@ -31,3 +31,19 @@ export function Counter({ target, suffix = "" }) {
     </span>
   );
 }
+
+export const fmt = (n) => `£${Number(n).toFixed(2)}`;
+
+// ─── CALCULATE LINE ITEMS SUBTOTAL ──────────────────────────────────────────
+export const calcLineTotal = (items = []) =>
+  items.reduce(
+    (sum, it) => sum + parseFloat(it.qty || 1) * parseFloat(it.rate || 0),
+    0,
+  );
+
+// ─── TODAY'S DATE AS ISO STRING ──────────────────────────────────────────────
+export const today = () => new Date().toISOString().slice(0, 10);
+
+// ─── PAD ID ──────────────────────────────────────────────────────────────────
+export const padId = (prefix, count) =>
+  `${prefix}-${String(count + 1).padStart(3, "0")}`;

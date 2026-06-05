@@ -6,6 +6,8 @@ import Vehicle from "./page/vehicle";
 import Contact from "./page/contactUs";
 import Service from "./page/service";
 import Dashboard from "./page/admin/dashboard/Dashboard";
+import { routes } from "./routes/Routes";
+import Layout from "./layout/adminLayout/index";
 
 function App() {
   const [vrm, setVrm] = useState("");
@@ -79,7 +81,22 @@ function App() {
           <Route path="/find-vehicle" element={<Vehicle />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/services" element={<Service />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          {/* <Route path="/dashboard" element={<Dashboard />} /> */}
+          {routes.map((route) => {
+            return (
+              <Route
+                key={route.id}
+                path={route.path}
+                element={
+                  <Layout
+                    // activePage={activePage}
+                    children={route.component}
+                    // onNavigate={setActivePage}
+                  />
+                }
+              />
+            );
+          })}
         </Routes>
       </BrowserRouter>
     </>
