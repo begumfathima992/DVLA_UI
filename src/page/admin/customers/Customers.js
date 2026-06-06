@@ -1,10 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   PageHeader,
   BtnBlue,
   BtnGhost,
-  Modal,
   Input,
   Table,
   EmptyState,
@@ -17,35 +16,122 @@ import {
   RiMailLine,
 } from "react-icons/ri";
 import { customers } from "../../../utils/data";
+import { Modal } from "../../../components/ui/Modal";
+import {
+  createCustomers,
+  deleteCustomers,
+  fetchCustomers,
+  updateCustomers,
+} from "../../../services/apiServices/customers";
+import moment from "moment/moment";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import toast from "react-hot-toast";
+import { CustomInput } from "../../../components/ui/CustomInput";
+import { Formik, Form } from "formik";
 
-const blank = () => ({ id: "", name: "", phone: "", email: "", address: "" });
+const customerSchema = Yup.object().shape({
+  name: Yup.string()
+    .min(2, "Name must be at least 2 characters")
+    .max(100, "Name is too long")
+    .required("Full name is required"),
 
+  phone: Yup.string()
+    .matches(/^[\d\s\-\+\(\)]+$/, "Please enter a valid phone number")
+    .min(10, "Phone number is too short"),
+
+  email: Yup.string().email("Please enter a valid email address"),
+
+  address: Yup.string().max(200, "Address is too long"),
+});
 export default function Customers() {
   const [showModal, setShowModal] = useState(false);
-  const [form, setForm] = useState(blank());
+  const [formEdit, setFormEdit] = useState({});
   const [editing, setEditing] = useState(false);
   const [search, setSearch] = useState("");
-  const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+  const [customerData, setCustomerData] = useState([]);
   const open = (c = null) => {
-    setForm(c ? { ...c } : blank());
-    setEditing(!!c);
+    if (c != null) {
+      setFormEdit(c);
+      setEditing(true);
+    }
+
     setShowModal(true);
   };
-  const save = () => {
-    if (!form.name) return;
-    setShowModal(false);
+
+  const customerList = async () => {
+    try {
+      const response = await fetchCustomers();
+      if (response.success) {
+        setCustomerData(response?.data || []);
+      } else {
+        setCustomerData([]);
+      }
+    } catch {
+      setCustomerData([]);
+    }
   };
-  const list = customers.filter(
-    (c) =>
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.email.toLowerCase().includes(search.toLowerCase()) ||
-      c.phone.includes(search),
-  );
+  useEffect(() => {
+    customerList();
+  }, []);
+
+  const formik = useFormik({
+    initialValues: {
+      name: formEdit?.name || "",
+      phone: formEdit?.phone || "",
+      email: formEdit?.email || "",
+      address: formEdit?.address || "",
+    },
+
+    validationSchema: customerSchema,
+    enableReinitialize: true,
+    onSubmit: async (values, { setSubmitting, resetForm }) => {
+      try {
+        let response = {};
+        if (editing) {
+          response = await updateCustomers(values, formEdit?.id);
+        } else {
+          response = await createCustomers(values);
+        }
+
+        if (response.success) {
+          toast.success(response.message || "Successfully customer create ");
+          resetForm();
+          setShowModal(false);
+          customerList();
+        }
+      } catch (error) {
+        toast.error(error.message);
+      } finally {
+        setSubmitting(false);
+      }
+    },
+
+    // enableReinitialize: true,
+  });
+
+  const modalClose = () => {
+    setFormEdit({});
+    setShowModal(false);
+    setEditing(false);
+  };
+
+  const deleteCustomer = async (id) => {
+    try {
+      const response = await deleteCustomers(id);
+      if (response.success) {
+        toast.success(response.message);
+        customerList();
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
   return (
     <div className="fade-up space-y-5">
       <PageHeader
         title="Customers"
-        sub={`${customers.length} total customers`}
+        sub={`${customerData.length} total customers`}
         action={
           <BtnBlue onClick={() => open()}>
             <RiAddLine /> Add Customer
@@ -62,10 +148,18 @@ export default function Customers() {
           />
         </div>
         <Table
-          headers={["ID", "Name", "Phone", "Email", "Address", "Actions"]}
-          empty={!list.length ? "No customers found" : null}
+          headers={[
+            "ID",
+            "Name",
+            "Phone",
+            "Email",
+            "Address",
+            "Join Date",
+            "Actions",
+          ]}
+          empty={!customerData.length ? "No customers found" : null}
         >
-          {list.map((c) => (
+          {customerData.map((c) => (
             <tr
               key={c.id}
               className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
@@ -91,6 +185,9 @@ export default function Customers() {
               <td className="px-4 py-3 text-sm text-slate-500 max-w-[200px] truncate">
                 {c.address}
               </td>
+              <td className="px-4 py-3 text-sm text-slate-500 max-w-[200px] truncate">
+                {moment(c.createdAt).format("YYYY-MM-DD")}
+              </td>
               <td className="px-4 py-3">
                 <div className="flex gap-2">
                   <button
@@ -100,7 +197,7 @@ export default function Customers() {
                     <RiEditLine />
                   </button>
                   <button
-                    // onClick={() => del(c.id)}
+                    onClick={() => deleteCustomer(c.id)}
                     className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-red-50 hover:text-red-500 flex items-center justify-center text-slate-500 transition-colors"
                   >
                     <RiDeleteBinLine />
@@ -111,48 +208,52 @@ export default function Customers() {
           ))}
         </Table>
       </Card>
-      {showModal && (
-        <Modal
-          title={editing ? "Edit Customer" : "Add New Customer"}
-          onClose={() => setShowModal(false)}
-          footer={
-            <>
-              <BtnGhost onClick={() => setShowModal(false)}>Cancel</BtnGhost>
-              <BtnBlue onClick={save}>
-                {editing ? "Save Changes" : "Add Customer"}
-              </BtnBlue>
-            </>
-          }
-        >
-          <div className="space-y-4">
-            <Input
-              label="Full Name *"
-              value={form.name}
-              onChange={(e) => set("name", e.target.value)}
-              placeholder="John Smith"
-            />
-            <Input
-              label="Phone"
-              value={form.phone}
-              onChange={(e) => set("phone", e.target.value)}
-              placeholder="07700 900123"
-            />
-            <Input
-              label="Email"
-              value={form.email}
-              onChange={(e) => set("email", e.target.value)}
-              placeholder="john@email.com"
-              type="email"
-            />
-            <Input
-              label="Address"
-              value={form.address}
-              onChange={(e) => set("address", e.target.value)}
-              placeholder="123 High Street, London"
-            />
-          </div>
-        </Modal>
-      )}
+
+      <Modal
+        title={editing ? "Edit Customer" : "Add New Customer"}
+        onClose={() => modalClose()}
+        footer={
+          <>
+            <BtnGhost onClick={() => modalClose()}>Cancel</BtnGhost>
+            <BtnBlue type="button" onClick={formik.handleSubmit}>
+              {editing ? "Save Changes" : "Add Customer"}
+            </BtnBlue>
+          </>
+        }
+        open={showModal}
+      >
+        <form onSubmit={formik.handleSubmit} className="space-y-4">
+          <CustomInput
+            formik={formik}
+            label="Full Name *"
+            name="name"
+            placeholder="Eg. John Smith"
+          />
+          <CustomInput
+            formik={formik}
+            label="Phone"
+            name="phone"
+            placeholder="Eg. 07700 900123"
+          />
+          <CustomInput
+            formik={formik}
+            label="Email"
+            name="email"
+            type="email"
+            placeholder="Eg. john@email.com"
+          />
+          <CustomInput
+            formik={formik}
+            label="Address"
+            name="address"
+            placeholder="Eg. 123 High Street, London"
+          />
+
+          {formik.isSubmitting && (
+            <p className="text-sm text-slate-500">Saving...</p>
+          )}
+        </form>
+      </Modal>
     </div>
   );
 }

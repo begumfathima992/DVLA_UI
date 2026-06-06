@@ -66,7 +66,7 @@ export const BtnGreen = ({ children, className = "", ...p }) => (
 export const BtnGhost = ({ children, className = "", ...p }) => (
   <button
     {...p}
-    className={`${base} bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-4 py-2 text-sm ${className}`}
+    className={`${base} bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 px-4 py-2 text-sm ${className}`}
   >
     {children}
   </button>
@@ -151,7 +151,7 @@ export const Modal = ({
   size = "max-w-2xl",
 }) => (
   <div
-    className="fixed inset-0  backdrop-blur-sm z-50 flex items-center justify-center p-4 fade-up"
+    className="fixed inset-0  backdrop-blur-sm !z-50 flex items-center justify-center p-4 fade-up"
     onClick={onClose}
   >
     <div

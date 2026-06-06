@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import { useEffect, useRef, useState } from "react";
 
 export function Counter({ target, suffix = "" }) {
@@ -47,3 +48,14 @@ export const today = () => new Date().toISOString().slice(0, 10);
 // ─── PAD ID ──────────────────────────────────────────────────────────────────
 export const padId = (prefix, count) =>
   `${prefix}-${String(count + 1).padStart(3, "0")}`;
+
+export const getErrorMessage = (error) => {
+  if (error instanceof AxiosError) {
+    if (error.response?.data?.errors?.length > 0) {
+      return error.response?.data?.errors?.[0]?.message ?? "Request failed";
+    } else {
+      return error.response?.data?.message ?? "Request failed";
+    }
+  }
+  return "Unexpected error";
+};

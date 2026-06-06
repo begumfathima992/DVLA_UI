@@ -1,6 +1,7 @@
 import Customers from "../page/admin/customers/Customers";
 import Dashboard from "../page/admin/dashboard/Dashboard";
 import Estimates from "../page/admin/estimates/Estimates";
+import Invoice from "../page/admin/invoice/Invoice";
 import JobSheets from "../page/admin/jobSheets/JobSheets";
 import Vehicles from "../page/admin/vehicles/Vehicles";
 
@@ -38,6 +39,13 @@ export const routes = [
     path: "/jobSheets",
     component: <JobSheets />,
     navItem: "JobSheets",
+    isHeader: false,
+  },
+  {
+    id: 0,
+    path: "/invoices",
+    component: <Invoice />,
+    navItem: "Invoice",
     isHeader: false,
   },
 ];
