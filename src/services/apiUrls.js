@@ -13,4 +13,12 @@ export const API_URLs = {
   createCustomer: "/customer",
   updateCustomer: "/customer",
   // customer api end
+  // customer api start
+  getVehicleList: "/vehicle",
+  createVehicle: "/vehicle",
+  updateVehicle: "/vehicle",
+  // customer api end
+  estimateList: "/estimate",
+  createEstimate: "/estimate",
+  estimateDelete: "/estimate",
 };

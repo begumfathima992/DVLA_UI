@@ -23,12 +23,12 @@ const NAV = [
   { to: "/vehicles", icon: RiCarLine, label: "Vehicles" },
   { to: "/estimates", icon: RiFileListLine, label: "Estimates" },
   { to: "/jobsheets", icon: FaDotCircle, label: "Job Sheets" },
-  { to: "/invoices", icon: RiFileTextLine, label: "Invoices" },
-  { to: "/payments", icon: RiMoneyDollarCircleLine, label: "Payments" },
-  { to: "/mechanics", icon: RiUserStarLine, label: "Mechanics" },
-  { to: "/reports", icon: RiBarChartLine, label: "Reports" },
-  { to: "/inventory", icon: RiStackLine, label: "Inventory" },
-  { to: "/settings", icon: RiSettings3Line, label: "Settings" },
+  // { to: "/invoices", icon: RiFileTextLine, label: "Invoices" },
+  // { to: "/payments", icon: RiMoneyDollarCircleLine, label: "Payments" },
+  // { to: "/mechanics", icon: RiUserStarLine, label: "Mechanics" },
+  // { to: "/reports", icon: RiBarChartLine, label: "Reports" },
+  // { to: "/inventory", icon: RiStackLine, label: "Inventory" },
+  // { to: "/settings", icon: RiSettings3Line, label: "Settings" },
 ];
 
 const Sidebar = ({ collapsed, setCollapsed }) => (

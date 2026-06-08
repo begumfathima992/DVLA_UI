@@ -38,11 +38,24 @@ const customerSchema = Yup.object().shape({
 
   phone: Yup.string()
     .matches(/^[\d\s\-\+\(\)]+$/, "Please enter a valid phone number")
-    .min(10, "Phone number is too short"),
+    .min(10, "Phone number is too short")
+    .required("Phone is required"),
 
-  email: Yup.string().email("Please enter a valid email address"),
+  email: Yup.string()
+    .email("Please enter a valid email address")
+    .required("Email is required"),
 
-  address: Yup.string().max(200, "Address is too long"),
+  address: Yup.string()
+    .max(200, "Address is too long")
+    .required("Address is required"),
+  alternativeAddress: Yup.string().max(200, "Alternative Address is too long"),
+
+  telephone: Yup.string()
+    .matches(/^[\d\s\-\+\(\)]+$/, "Please enter a valid telephone number")
+    .min(10, "telephone number is too short"),
+  creditTerms: Yup.string().max(200, "creditTerms is too long"),
+  gdprConsent: Yup.string().max(200, "GDPR Consent is too long"),
+  customerCode: Yup.string().max(200, "GDPR Consent is too long"),
 });
 export default function Customers() {
   const [showModal, setShowModal] = useState(false);
@@ -81,11 +94,15 @@ export default function Customers() {
       phone: formEdit?.phone || "",
       email: formEdit?.email || "",
       address: formEdit?.address || "",
+      telephone: formEdit?.telephone || "",
+      alternativeAddress: formEdit?.alternativeAddress || "",
+      creditTerms: formEdit?.creditTerms || "",
+      gdprConsent: formEdit?.gdprConsent || "",
+      customerCode: formEdit?.customerCode || "",
     },
-
     validationSchema: customerSchema,
     enableReinitialize: true,
-    onSubmit: async (values, { setSubmitting, resetForm }) => {
+    onSubmit: async (values, { resetForm }) => {
       try {
         let response = {};
         if (editing) {
@@ -102,8 +119,6 @@ export default function Customers() {
         }
       } catch (error) {
         toast.error(error.message);
-      } finally {
-        setSubmitting(false);
       }
     },
 
@@ -127,6 +142,9 @@ export default function Customers() {
       toast.error(error.message);
     }
   };
+
+  console.log(formik.errors, formik.values, "sdfl;ksjdfl;");
+
   return (
     <div className="fade-up space-y-5">
       <PageHeader
@@ -212,46 +230,84 @@ export default function Customers() {
       <Modal
         title={editing ? "Edit Customer" : "Add New Customer"}
         onClose={() => modalClose()}
-        footer={
-          <>
-            <BtnGhost onClick={() => modalClose()}>Cancel</BtnGhost>
-            <BtnBlue type="button" onClick={formik.handleSubmit}>
-              {editing ? "Save Changes" : "Add Customer"}
-            </BtnBlue>
-          </>
-        }
+        // footer={
+        //   <>
+        //     <BtnGhost onClick={() => modalClose()}>Cancel</BtnGhost>
+        //     <BtnBlue type="button" onClick={formik.handleSubmit}>
+        //       {editing ? "Save Changes" : "Add Customer"}
+        //     </BtnBlue>
+        //   </>
+        // }
         open={showModal}
       >
-        <form onSubmit={formik.handleSubmit} className="space-y-4">
-          <CustomInput
-            formik={formik}
-            label="Full Name *"
-            name="name"
-            placeholder="Eg. John Smith"
-          />
-          <CustomInput
-            formik={formik}
-            label="Phone"
-            name="phone"
-            placeholder="Eg. 07700 900123"
-          />
-          <CustomInput
-            formik={formik}
-            label="Email"
-            name="email"
-            type="email"
-            placeholder="Eg. john@email.com"
-          />
-          <CustomInput
-            formik={formik}
-            label="Address"
-            name="address"
-            placeholder="Eg. 123 High Street, London"
-          />
-
+        <form onSubmit={formik.handleSubmit}>
+          <div className=" gap-3 grid grid-cols-2">
+            <CustomInput
+              formik={formik}
+              label="Full Name *"
+              name="name"
+              placeholder="Eg. John Smith"
+            />
+            <CustomInput
+              formik={formik}
+              label="Phone *"
+              name="phone"
+              placeholder="Eg. 07700 900123"
+            />
+            <CustomInput
+              formik={formik}
+              label="Email"
+              name="email"
+              type="email"
+              placeholder="Eg. john@email.com"
+            />
+            <CustomInput
+              formik={formik}
+              label="telephone"
+              name="telephone"
+              placeholder="Eg. 07700 900123"
+            />
+            <CustomInput
+              formik={formik}
+              label="Address"
+              name="address"
+              placeholder="Eg. 123 High Street, London"
+            />
+            <CustomInput
+              formik={formik}
+              label="Alternative Address"
+              name="alternativeAddress"
+              placeholder="Eg. 123 High Street, London"
+            />
+            <CustomInput
+              formik={formik}
+              label="GDPR Consent"
+              name="gdprConsent"
+              placeholder="Eg. 123 High Street, London"
+            />
+            <CustomInput
+              formik={formik}
+              label="customer Ref"
+              name="customerCode"
+              placeholder="Eg. 123 High Street, London"
+            />
+            <CustomInput
+              formik={formik}
+              label="Credit Terms"
+              name="creditTerms"
+              placeholder="Eg. 123 High Street, London"
+            />
+          </div>
           {formik.isSubmitting && (
             <p className="text-sm text-slate-500">Saving...</p>
           )}
+
+          <div className="flex items-center justify-end gap-2 ">
+            <BtnGhost onClick={() => modalClose()}>Cancel</BtnGhost>
+            <BtnBlue type="submit">
+              {editing ? "Save Changes" : "Add Customer"}
+            </BtnBlue>
+          </div>
         </form>
       </Modal>
     </div>

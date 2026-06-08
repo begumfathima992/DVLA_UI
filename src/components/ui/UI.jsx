@@ -418,30 +418,30 @@ export const TotalsBox = ({
   <div className="ml-auto w-64 bg-slate-50 rounded-xl border border-slate-200 p-4 mt-4 space-y-2 text-sm">
     <div className="flex justify-between">
       <span className="text-slate-500">Subtotal (GBP)</span>
-      <span className="font-mono">{subtotal.toFixed(2)}</span>
+      <span className="font-mono">{subtotal}</span>
     </div>
     <div className="flex justify-between">
       <span className="text-slate-500">VAT (20%)</span>
-      <span className="font-mono">{vat.toFixed(2)}</span>
+      <span className="font-mono">{vat}</span>
     </div>
     <div className="flex justify-between">
       <span className="text-slate-500">Discount (GBP)</span>
-      <span className="font-mono">{discount.toFixed(2)}</span>
+      <span className="font-mono">{discount}</span>
     </div>
     <div className="flex justify-between font-bold text-base border-t border-slate-200 pt-2">
       <span>Total (GBP)</span>
-      <span className="font-mono">£{total.toFixed(2)}</span>
+      <span className="font-mono">£{total}</span>
     </div>
     {paidAmount !== null && (
       <div className="flex justify-between text-green-600 font-semibold">
         <span>Paid Amount (GBP)</span>
-        <span className="font-mono">£{paidAmount.toFixed(2)}</span>
+        <span className="font-mono">£{paidAmount}</span>
       </div>
     )}
     {balance !== null && (
       <div className="flex justify-between font-bold border-t border-slate-200 pt-2">
         <span>Balance (GBP)</span>
-        <span className="font-mono">£{balance.toFixed(2)}</span>
+        <span className="font-mono">£{balance}</span>
       </div>
     )}
   </div>

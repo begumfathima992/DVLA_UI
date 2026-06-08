@@ -8,6 +8,8 @@ export const CustomInput = ({
 
   const fieldName = props.name;
 
+  console.log(fieldName, "fieldName----");
+
   return (
     <div className="flex flex-col gap-1">
       {label && (
