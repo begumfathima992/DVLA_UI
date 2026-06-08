@@ -1,3 +1,10 @@
+// 
+
+
+
+
+
+
 import { useEffect, useState } from "react";
 import {
   Card,
@@ -8,21 +15,19 @@ import {
   RegPlate,
   Select,
 } from "../../../components/ui/UI";
-import { RiAddLine, RiEditLine, RiDeleteBinLine } from "react-icons/ri";
+import { RiAddLine, RiEditLine, RiDeleteBinLine, RiSearchLine } from "react-icons/ri";
 import { Modal } from "../../../components/ui/Modal";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
 import { CustomInput } from "../../../components/ui/CustomInput";
+import axios from "axios"; // Added for DVLA API lookup
 
 import {
   createVehicles,
   deleteVehicles,
   fetchVehicles,
   updateVehicles,
-  // createVehicles,
-  // updateVehicles,
-  // deleteVehicles,
 } from "../../../services/apiServices/vehicleService";
 
 import { fetchCustomers } from "../../../services/apiServices/customers";
@@ -31,27 +36,21 @@ const vehicleSchema = Yup.object().shape({
   registrationNumber: Yup.string()
     .required("Registration is required")
     .min(5, "Registration number is too short"),
-
   make: Yup.string().required("Make is required"),
   model: Yup.string().required("Model is required"),
-
   year: Yup.number()
     .min(1900, "Year must be after 1900")
     .max(new Date().getFullYear() + 1, "Invalid year"),
-
   vinNumber: Yup.string().min(10, "VIN number is too short"),
   mileage: Yup.number().min(0, "Mileage cannot be negative"),
-
   engineNumber: Yup.string(),
   fuelType: Yup.string(),
   colour: Yup.string(),
   cc: Yup.number().min(0),
   grossWeight: Yup.number().min(0),
-
   taxDueDate: Yup.date(),
   motDueDate: Yup.date(),
   nextServiceDate: Yup.date(),
-
   customerId: Yup.string().required("Please select an owner"),
 });
 
@@ -80,6 +79,7 @@ export default function Vehicles() {
   const [search, setSearch] = useState("");
   const [vehicleData, setVehicleData] = useState([]);
   const [customerData, setCustomerData] = useState([]);
+  const [isSearchingDVLA, setIsSearchingDVLA] = useState(false); // Loading state for lookup
 
   const vehiclesList = async () => {
     try {
@@ -104,6 +104,47 @@ export default function Vehicles() {
     vehiclesList();
     customerList();
   }, []);
+
+  // ====== NEW: DVLA LOOKUP FUNCTION FUNCTION ======
+  const handleDVLALookup = async () => {
+    const reg = formik.values.registrationNumber;
+    if (!reg || reg.trim().length < 4) {
+      return toast.error("Please enter a valid registration number first");
+    }
+
+    try {
+      setIsSearchingDVLA(true);
+      toast.loading("Fetching DVLA vehicle data...", { id: "dvla" });
+
+      // Call your backend endpoint running on port 5001
+      const response = await axios.post("http://localhost:5001/api/dvla/search", {
+        registrationNumber: reg
+      });
+
+      if (response.data) {
+        const data = response.data;
+        
+        // Auto-fill Formik values using matching data shapes
+        formik.setFieldValue("make", data.make || "");
+        formik.setFieldValue("model", data.model || "Unknown Model"); // DVLA doesn't always provide specific sub-models
+        formik.setFieldValue("year", data.yearOfManufacture || "");
+        formik.setFieldValue("fuelType", data.fuelType || "");
+        formik.setFieldValue("colour", data.colour || "");
+        formik.setFieldValue("cc", data.engineCapacity || "");
+        formik.setFieldValue("taxDueDate", data.taxDueDate || "");
+        formik.setFieldValue("motDueDate", data.motExpiryDate || "");
+
+        toast.success("DVLA specs imported successfully!", { id: "dvla" });
+      } else {
+        toast.error("No data found for this registration", { id: "dvla" });
+      }
+    } catch (error) {
+      console.error("DVLA Search error:", error);
+      toast.error(error.response?.data?.error || "Vehicle lookup failed", { id: "dvla" });
+    } finally {
+      setIsSearchingDVLA(false);
+    }
+  };
 
   const formik = useFormik({
     initialValues: blankVehicle(),
@@ -282,13 +323,29 @@ export default function Vehicles() {
         open={showModal}
       >
         <form onSubmit={formik.handleSubmit} className="grid grid-cols-2 gap-4">
-          <CustomInput
-            formik={formik}
-            label="Registration *"
-            name="registrationNumber"
-            placeholder="AB12 CDE"
-            className="uppercase"
-          />
+          
+          {/* REGISTRATION INPUT WITH LOOKUP BUTTON ATTACHED */}
+          <div className="col-span-2 grid grid-cols-3 gap-2 items-end">
+            <div className="col-span-2">
+              <CustomInput
+                formik={formik}
+                label="Registration *"
+                name="registrationNumber"
+                placeholder="AB12 CDE"
+                className="uppercase"
+              />
+            </div>
+            {!editing && (
+              <button
+                type="button"
+                onClick={handleDVLALookup}
+                disabled={isSearchingDVLA}
+                className="h-[42px] px-4 rounded-xl bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-50 text-sm shadow-sm"
+              >
+                <RiSearchLine /> {isSearchingDVLA ? "Searching..." : "Lookup DVLA"}
+              </button>
+            )}
+          </div>
 
           <CustomInput
             formik={formik}
