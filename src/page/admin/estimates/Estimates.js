@@ -34,40 +34,105 @@ import {
 } from "react-icons/ri";
 import { customers, vehicles } from "../../../utils/data";
 import { sampleEstimates } from "../../../utils/SampleData";
-import { fetchEstimates } from "../../../services/apiServices/estimateService";
+import {
+  approvedEstimates,
+  createEstimates,
+  fetchEstimates,
+  updateEstimate,
+} from "../../../services/apiServices/estimateService";
 import moment from "moment";
 import { Modal } from "../../../components/ui/Modal";
 import ViewItemDetailsModal from "./ViewItemDetailsModal";
+import { fetchCustomers } from "../../../services/apiServices/customers";
+import * as Yup from "yup";
+import { useFormik } from "formik";
+import { fetchByIdCustomerBasedVehicle } from "../../../services/apiServices/vehicleService";
+import { CustomInput } from "../../../components/ui/CustomInput";
+import toast from "react-hot-toast";
+import useDebounce from "../../../components/useDebounce";
 
-const blank = () => ({
-  id: "",
-  customerId: "",
-  vehicleId: "",
-  date: today(),
-  validUntil: "",
-  status: "Draft",
-  notes: "",
-  items: [
-    { id: 1, desc: "", type: "Parts", qty: 1, rate: 0, vat: 20, total: 0 },
-  ],
+const estimateSchema = Yup.object().shape({
+  customerId: Yup.number().required("Customer is required"),
+
+  vehicleId: Yup.number().required("Vehicle is required"),
+
+  estimateDate: Yup.date().required("Estimate date is required"),
+
+  estimateNumber: Yup.string().required("Estimate number is required"),
+
+  documentType: Yup.string()
+    .oneOf(["Estimate", "Quotation"], "Invalid document type")
+    .required("Document type is required"),
+
+  labourRate: Yup.number().nullable().min(0, "Labour rate cannot be negative"),
+
+  creditTerms: Yup.number()
+    .nullable()
+    .min(0, "Credit terms cannot be negative"),
+
+  defaultDiscount: Yup.number()
+    .nullable()
+    .min(0)
+    .max(100, "Discount cannot exceed 100%"),
+
+  jobNumber: Yup.string().nullable().max(100),
+
+  customerOrderNumber: Yup.string().nullable().max(100),
+
+  vehicleMileage: Yup.number().nullable().min(0),
+
+  serviceAdvisor: Yup.string().nullable().max(100),
+
+  validUntil: Yup.date().nullable(),
+
+  notes: Yup.string().nullable().max(5000),
+
+  subtotal: Yup.number().required("Subtotal is required").min(0),
+
+  vatPercentage: Yup.number().required("VAT % is required").min(0).max(100),
+
+  vatAmount: Yup.number().required("VAT amount is required").min(0),
+
+  discount: Yup.number().nullable().min(0),
+
+  total: Yup.number().required("Total is required").min(0),
+
+  status: Yup.string()
+    .oneOf(
+      ["Draft", "Sent", "Approved", "Rejected", "Converted"],
+      "Invalid status",
+    )
+    .default("Draft"),
+
+  items: Yup.array()
+    .of(
+      Yup.object().shape({
+        itemType: Yup.string()
+          .oneOf(["Part", "Labour", "Service"], "Invalid item type")
+          .required("Item type is required"),
+
+        description: Yup.string().required("Description is required"),
+
+        quantity: Yup.number().required("Quantity is required").min(1),
+
+        unitPrice: Yup.number().required("Unit price is required").min(0),
+
+        totalPrice: Yup.number().required("Total price is required").min(0),
+      }),
+    )
+    .min(1, "At least one estimate item is required"),
 });
 
 export default function Estimates() {
   const [showNew, setShowNew] = useState(false);
   const [viewing, setViewing] = useState(null);
-  const [form, setForm] = useState(blank());
   const [search, setSearch] = useState("");
-  const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
   const [estimateData, setEstimateData] = useState([]);
-  const custVehicles = (cId) => vehicles.filter((v) => v.customerId === cId);
-
-  const save = () => {
-    if (!form.customerId) return;
-
-    setShowNew(false);
-    setForm(blank());
-  };
-
+  const [customerData, setCustomerData] = useState([]);
+  const [vehicleData, setVehicleData] = useState([]);
+  const [formEdit, setFormEdit] = useState(null);
+  const [editing, setEditing] = useState(false);
+  const searchQuery = useDebounce(search);
   const estimateList = async () => {
     try {
       const response = await fetchEstimates();
@@ -83,46 +148,150 @@ export default function Estimates() {
   useEffect(() => {
     estimateList();
   }, []);
-
-  console.log(estimateData, "estimateData");
-
-  const convertToJob = (est) => {
-    const job = {
-      id: pad("JOB", 10020 + 23),
-      estId: est.id,
-      customerId: est.customerId,
-      vehicleId: est.vehicleId,
-      date: today(),
-      status: "In Progress",
-      mechanic: "",
-      startDate: today() + " 09:00 AM",
-      endDate: "",
-      progress: 0,
-      workDesc: [],
-      checklist: {
-        vehicleReceived: true,
-        workStarted: false,
-        partsOrdered: false,
-        repairCompleted: false,
-        qualityCheck: false,
-        readyForCollection: false,
+  const initialValuess = {
+    customerId: "",
+    vehicleId: "",
+    estimateDate: new Date(),
+    estimateNumber: "",
+    documentType: "Estimate",
+    labourRate: 0,
+    creditTerms: 30,
+    defaultDiscount: 0,
+    jobNumber: "",
+    customerOrderNumber: "",
+    vehicleMileage: "",
+    serviceAdvisor: "",
+    validUntil: "",
+    notes: "",
+    subtotal: 0,
+    vatPercentage: 20,
+    vatAmount: 0,
+    discount: 0,
+    total: 0,
+    status: "Draft",
+    items: [
+      {
+        description: "",
+        itemType: "Part",
+        quantity: 1,
+        unitPrice: 0,
+        vat: 20,
+        totalPrice: 0,
       },
-      progressLog: [
-        { label: "Work Started", date: null, done: false },
-        { label: "Parts Ordered", date: null, done: false },
-        { label: "Repair in Progress", date: null, done: false },
-        { label: "Job Completed", date: null, done: false },
-      ],
-      notes: "",
-      items: est.items,
-    };
-
-    setViewing(null);
+    ],
   };
+  const formik = useFormik({
+    initialValues: initialValuess,
+    validationSchema: estimateSchema,
+    onSubmit: async (values, { resetForm, setSubmitting }) => {
+      const subtotal = values.items.reduce(
+        (sum, item) =>
+          sum + Number(item.quantity || 0) * Number(item.unitPrice || 0),
+        0,
+      );
 
-  const sub = (est) => calcSubtotal(est.items);
-  const tot = (est) => calcTotal(est.items);
+      const vatAmount = values.items.reduce(
+        (sum, item) =>
+          sum +
+          Number(item.quantity || 0) *
+            Number(item.unitPrice || 0) *
+            (Number(item.vat || 0) / 100),
+        0,
+      );
 
+      const total = subtotal + vatAmount;
+
+      const payload = {
+        ...values,
+
+        subtotal,
+        vatAmount,
+        total,
+
+        items: values.items.map((item) => ({
+          ...item,
+          totalPrice: Number(item.quantity || 0) * Number(item.unitPrice || 0),
+        })),
+      };
+      // createEstimates
+
+      console.log(payload, "payload");
+      try {
+        setSubmitting(true);
+        let response;
+
+        if (editing && formEdit?.id) {
+          response = await updateEstimate(values, formEdit.id);
+          toast.success("Estimate updated successfully");
+        } else {
+          response = await createEstimates(values);
+          toast.success("Estimate created successfully");
+        }
+
+        if (response.success) {
+          resetForm();
+          setShowNew(false);
+          setEditing(false);
+          estimateList();
+        }
+      } catch (error) {
+        toast.error(error.message || "Failed to save vehicle");
+      } finally {
+        setSubmitting(false);
+      }
+    },
+  });
+
+  const customerList = async () => {
+    try {
+      const response = await fetchCustomers();
+      if (response.success) {
+        setCustomerData(response?.data || []);
+      } else {
+        setCustomerData([]);
+      }
+    } catch {
+      setCustomerData([]);
+    }
+  };
+  useEffect(() => {
+    customerList();
+  }, []);
+
+  const vehicleList = async () => {
+    try {
+      const response = await fetchByIdCustomerBasedVehicle(
+        formik.values.customerId,
+      );
+      if (response.success) {
+        setVehicleData(response?.data || []);
+      } else {
+        setVehicleData([]);
+      }
+    } catch {
+      setVehicleData([]);
+    }
+  };
+  useEffect(() => {
+    vehicleList();
+  }, [formik.values.customerId]);
+
+  const approvedEstimatesFun = async (id) => {
+    try {
+      const response = await approvedEstimates(id);
+      if (response.success) {
+        toast.success(response.message);
+        estimateList();
+      } else {
+        toast.error(response.success);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+  // approvedEstimates
+
+  console.log(formik.errors, "searchQuery");
   return (
     <div className="fade-up space-y-5">
       <PageHeader
@@ -131,7 +300,6 @@ export default function Estimates() {
         action={
           <BtnBlue
             onClick={() => {
-              setForm(blank());
               setShowNew(true);
             }}
           >
@@ -140,7 +308,7 @@ export default function Estimates() {
         }
       />
 
-      <div className="grid grid-cols-4 gap-4">
+      {/* <div className="grid grid-cols-4 gap-4">
         {[
           {
             label: "Total",
@@ -171,7 +339,7 @@ export default function Estimates() {
             <div className={`text-2xl font-bold ${s.color}`}>{s.value}</div>
           </Card>
         ))}
-      </div>
+      </div> */}
       <Card>
         <div className="p-4 border-b border-slate-100">
           <input
@@ -215,7 +383,9 @@ export default function Estimates() {
                 </td>
                 <td className="px-4 py-3 text-sm text-slate-500">
                   {/* {est.validUntil || "—"} */}
-                  {moment(est.validUntil).format("lll")}
+                  {est.validUntil != "0000-00-00"
+                    ? moment(est.validUntil).format("lll")
+                    : "--"}
                 </td>
                 <td className="px-4 py-3 font-mono font-semibold text-slate-800">
                   £{est?.total}
@@ -231,13 +401,20 @@ export default function Estimates() {
                     >
                       <RiEyeLine />
                     </button>
-                    {est.status === "Approved" && (
-                      <button
-                        onClick={() => convertToJob(est)}
-                        className="text-xs bg-blue-600 text-white px-2 py-1 rounded-lg font-semibold hover:bg-blue-700"
+
+                    {(est.status != "Rejected" || est.status != "Approved") && (
+                      <Select
+                        value={est.status || ""}
+                        onChange={(e) =>
+                          est.status != "Approved" &&
+                          approvedEstimatesFun(est?.id)
+                        }
                       >
-                        → Job
-                      </button>
+                        {est.status != "Sent" && <option>Draft</option>}
+                        <option>Sent</option>
+                        <option>Approved</option>
+                        <option>Rejected</option>
+                      </Select>
                     )}
                   </div>
                 </td>
@@ -256,90 +433,179 @@ export default function Estimates() {
         footer={
           <>
             <BtnGhost onClick={() => setShowNew(false)}>Cancel</BtnGhost>
-            <BtnAmber onClick={save}>💾 Save Draft</BtnAmber>
-            <BtnBlue onClick={save}>📋 Create Estimate</BtnBlue>
+
+            <BtnBlue onClick={formik.handleSubmit}>📋 Create Estimate</BtnBlue>
           </>
         }
       >
-        <div className="space-y-5">
-          <div>
-            <SectionTitle>👤 Customer & Vehicle</SectionTitle>
-            <div className="grid grid-cols-3 gap-4">
-              <Select
-                label="Customer *"
-                value={form.customerId}
-                onChange={(e) => {
-                  set("customerId", e.target.value);
-                  set("vehicleId", "");
-                }}
-              >
-                <option value="">Select customer...</option>
-                {customers.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </Select>
-              <Select
-                label="Vehicle"
-                value={form.vehicleId}
-                onChange={(e) => set("vehicleId", e.target.value)}
-              >
-                <option value="">Select vehicle...</option>
-                {custVehicles(form.customerId).map((v) => (
-                  <option key={v.id} value={v.id}>
-                    {v.reg} — {v.make} {v.model}
-                  </option>
-                ))}
-              </Select>
-              <Input
-                label="Date"
-                type="date"
-                value={form.date}
-                onChange={(e) => set("date", e.target.value)}
+        <form onSubmit={formik.handleSubmit}>
+          <div className="space-y-5">
+            <div>
+              <SectionTitle>👤 Customer & Vehicle</SectionTitle>
+              <div className="grid grid-cols-3 gap-4">
+                <CustomInput
+                  formik={formik}
+                  label="Estimate Number"
+                  name="estimateNumber"
+                  type="text"
+                  placeholder="EG. EST-293847265"
+                />
+                <Select
+                  label="Customer *"
+                  value={formik.values?.customerId || ""}
+                  onChange={(e) =>
+                    formik.setFieldValue("customerId", e.target.value)
+                  }
+                  touched={formik.touched}
+                  errors={formik.errors.customerId}
+                >
+                  <option value="">Select customer...</option>
+                  {customerData.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name} gg
+                    </option>
+                  ))}
+                </Select>
+                <Select
+                  label="Vehicle"
+                  value={formik.values?.vehicleId || ""}
+                  onChange={(e) =>
+                    formik.setFieldValue("vehicleId", e.target.value)
+                  }
+                  touched={formik.touched}
+                  errors={formik.errors.vehicleId}
+                >
+                  <option value="">Select vehicle...</option>
+                  {vehicleData.map((v) => (
+                    <option key={v.id} value={v.id}>
+                      {v.registrationNumber} — {v.make} {v.model}
+                    </option>
+                  ))}
+                </Select>
+
+                <CustomInput
+                  formik={formik}
+                  label="VAT Percentage"
+                  name="vatPercentage"
+                  type="number"
+                  placeholder="EG. 10%"
+                />
+
+                <CustomInput
+                  formik={formik}
+                  label="Discount"
+                  name="discount"
+                  type="number"
+                  placeholder="EG. 23"
+                />
+                <CustomInput
+                  formik={formik}
+                  label="Valid Until"
+                  name="validUntil"
+                  type="date"
+                />
+                <div className="col-span-3 font-medium text-blue-600">
+                  Other Details
+                </div>
+
+                <CustomInput
+                  formik={formik}
+                  label="Estimate Date"
+                  name="estimateDate"
+                  type="date"
+                  placeholder="Enter"
+                />
+                <CustomInput
+                  formik={formik}
+                  label="Document Type"
+                  name="documentType"
+                  type="text"
+                  readOnly
+                />
+                <CustomInput
+                  formik={formik}
+                  label="Labour Rate"
+                  name="labourRate"
+                  type="number"
+                  placeholder="Eg. 1200"
+                />
+                <CustomInput
+                  formik={formik}
+                  label="Job Number"
+                  name="jobNumber"
+                  type="text"
+                  placeholder="JOB-1002"
+                />
+                <CustomInput
+                  formik={formik}
+                  label="Customer Order Number"
+                  name="customerOrderNumber"
+                  type="text"
+                  placeholder="Eg. CO-1002"
+                />
+                <CustomInput
+                  formik={formik}
+                  label="Service Advisor"
+                  name="serviceAdvisor"
+                  type="text"
+                  placeholder="Eg. john"
+                />
+                <CustomInput
+                  formik={formik}
+                  label="Default Discount"
+                  name="defaultDiscount"
+                  type="number"
+                  placeholder="Eg. 20"
+                />
+                <CustomInput
+                  formik={formik}
+                  label="Vehicle Mileage"
+                  name="vehicleMileage"
+                  type="number"
+                  placeholder="Eg. 230"
+                />
+
+                <Select
+                  label="Status"
+                  value={formik.values?.status || ""}
+                  onChange={(e) =>
+                    formik.setFieldValue("status", e.target.value)
+                  }
+                >
+                  <option>Draft</option>
+                  <option>Sent</option>
+                  <option>Approved</option>
+                  <option>Rejected</option>
+                </Select>
+              </div>
+            </div>
+            <div>
+              <SectionTitle>🔧 Repair Items</SectionTitle>
+              <LineItemsTable
+                items={formik.values.items}
+                setFieldValue={formik.setFieldValue}
+                fieldName="items"
+                formik={formik}
               />
-              <Input
-                label="Valid Until"
-                type="date"
-                value={form.validUntil}
-                onChange={(e) => set("validUntil", e.target.value)}
+              <div className="flex justify-end">
+                <TotalsBox
+                  subtotal={calcSubtotal(formik.values.items)}
+                  vat={calcVat(formik.values.items)}
+                  discount={formik.values.discount || 0}
+                  total={calcTotal(formik.values.items, formik.values.discount)}
+                />
+              </div>
+            </div>
+            <div>
+              <SectionTitle>📝 Notes</SectionTitle>
+              <Textarea
+                value={formik.values.notes}
+                onChange={(e) => formik.setFieldValue("notes", e.target.value)}
+                placeholder="Notes for the customer..."
               />
-              <Select
-                label="Status"
-                value={form.status}
-                onChange={(e) => set("status", e.target.value)}
-              >
-                <option>Draft</option>
-                <option>Sent</option>
-                <option>Approved</option>
-                <option>Rejected</option>
-              </Select>
             </div>
           </div>
-          <div>
-            <SectionTitle>🔧 Repair Items</SectionTitle>
-            <LineItemsTable
-              items={form.items}
-              setItems={(v) => set("items", v)}
-            />
-            <div className="flex justify-end">
-              <TotalsBox
-                subtotal={calcSubtotal(form.items)}
-                vat={calcVat(form.items)}
-                discount={0}
-                total={calcTotal(form.items)}
-              />
-            </div>
-          </div>
-          <div>
-            <SectionTitle>📝 Notes</SectionTitle>
-            <Textarea
-              value={form.notes}
-              onChange={(e) => set("notes", e.target.value)}
-              placeholder="Notes for the customer..."
-            />
-          </div>
-        </div>
+        </form>
       </Modal>
 
       {viewing && (

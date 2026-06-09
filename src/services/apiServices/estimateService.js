@@ -54,3 +54,17 @@ export const deleteEstimates = async (id) => {
     };
   }
 };
+
+export const approvedEstimates = async (id) => {
+  try {
+    const response = await apiInstance.patch(
+      `${API_URLs.approvedEstimate}/${id}`,
+    );
+    return response?.data;
+  } catch (error) {
+    return {
+      success: false,
+      message: getErrorMessage(error),
+    };
+  }
+};

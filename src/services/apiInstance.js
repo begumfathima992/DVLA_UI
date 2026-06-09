@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 //
 // export const basedURLs = "http://192.168.29.218:3000";
 // export const basedURLs = "http://localhost:2000";
-export const basedURLs = "http://localhost:5001/api";
+export const basedURLs = "http://localhost:5000/api";
 // export const basedURLs = "https://api.opinionkings.com";
 export const developmentBaseURL = `${basedURLs}`;
 

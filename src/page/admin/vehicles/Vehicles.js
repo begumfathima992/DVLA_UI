@@ -1,9 +1,4 @@
-// 
-
-
-
-
-
+//
 
 import { useEffect, useState } from "react";
 import {
@@ -15,7 +10,12 @@ import {
   RegPlate,
   Select,
 } from "../../../components/ui/UI";
-import { RiAddLine, RiEditLine, RiDeleteBinLine, RiSearchLine } from "react-icons/ri";
+import {
+  RiAddLine,
+  RiEditLine,
+  RiDeleteBinLine,
+  RiSearchLine,
+} from "react-icons/ri";
 import { Modal } from "../../../components/ui/Modal";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -117,13 +117,16 @@ export default function Vehicles() {
       toast.loading("Fetching DVLA vehicle data...", { id: "dvla" });
 
       // Call your backend endpoint running on port 5001
-      const response = await axios.post("http://localhost:5001/api/dvla/search", {
-        registrationNumber: reg
-      });
+      const response = await axios.post(
+        "http://localhost:5001/api/dvla/search",
+        {
+          registrationNumber: reg,
+        },
+      );
 
       if (response.data) {
         const data = response.data;
-        
+
         // Auto-fill Formik values using matching data shapes
         formik.setFieldValue("make", data.make || "");
         formik.setFieldValue("model", data.model || "Unknown Model"); // DVLA doesn't always provide specific sub-models
@@ -140,7 +143,9 @@ export default function Vehicles() {
       }
     } catch (error) {
       console.error("DVLA Search error:", error);
-      toast.error(error.response?.data?.error || "Vehicle lookup failed", { id: "dvla" });
+      toast.error(error.response?.data?.error || "Vehicle lookup failed", {
+        id: "dvla",
+      });
     } finally {
       setIsSearchingDVLA(false);
     }
@@ -323,7 +328,6 @@ export default function Vehicles() {
         open={showModal}
       >
         <form onSubmit={formik.handleSubmit} className="grid grid-cols-2 gap-4">
-          
           {/* REGISTRATION INPUT WITH LOOKUP BUTTON ATTACHED */}
           <div className="col-span-2 grid grid-cols-3 gap-2 items-end">
             <div className="col-span-2">
@@ -342,7 +346,8 @@ export default function Vehicles() {
                 disabled={isSearchingDVLA}
                 className="h-[42px] px-4 rounded-xl bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-50 text-sm shadow-sm"
               >
-                <RiSearchLine /> {isSearchingDVLA ? "Searching..." : "Lookup DVLA"}
+                <RiSearchLine />{" "}
+                {isSearchingDVLA ? "Searching..." : "Lookup DVLA"}
               </button>
             )}
           </div>

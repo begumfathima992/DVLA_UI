@@ -183,7 +183,7 @@ export default function ViewItemDetailsModal({ setViewing, viewing }) {
                       "Type",
                       "Qty",
                       "Rate (GBP)",
-                      "VAT %",
+                      // "VAT %",
                       "Total (GBP)",
                     ].map((h) => (
                       <th
@@ -218,9 +218,9 @@ export default function ViewItemDetailsModal({ setViewing, viewing }) {
                       </td>
                       <td className="px-4 py-2.5">{it.quantity}</td>
                       <td className="px-4 py-2.5 font-mono">
-                        £{parseFloat(it?.rate || 0).toFixed(2)}
+                        £{parseFloat(it?.totalPrice || 0).toFixed(2)}
                       </td>
-                      <td className="px-4 py-2.5 text-slate-400">{it.vat}%</td>
+                      {/* <td className="px-4 py-2.5 text-slate-400">{it.vat}%</td> */}
                       <td className="px-4 py-2.5 font-mono font-semibold">
                         £{parseFloat(it.totalPrice || 0).toFixed(2)}
                       </td>

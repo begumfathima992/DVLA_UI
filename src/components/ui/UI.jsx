@@ -109,7 +109,14 @@ export const Input = ({ label, className = "", ...p }) => (
   </div>
 );
 
-export const Select = ({ label, children, className = "", ...p }) => (
+export const Select = ({
+  label,
+  children,
+  className = "",
+  touched = false,
+  errors,
+  ...p
+}) => (
   <div className="flex flex-col gap-1">
     {label && (
       <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
@@ -123,6 +130,9 @@ export const Select = ({ label, children, className = "", ...p }) => (
     >
       {children}
     </select>
+    {touched && errors && (
+      <p className="text-xs text-red-500 mt-0.5">{errors}</p>
+    )}
   </div>
 );
 
@@ -285,31 +295,53 @@ export const SectionTitle = ({ children }) => (
 );
 
 // ─── LINE ITEMS TABLE (editable) ─────────────────────────────────────────────
-export const LineItemsTable = ({ items, setItems }) => {
-  const set = (i, k, v) => {
-    const a = [...items];
-    a[i] = {
-      ...a[i],
-      [k]: v,
-      total:
-        k === "qty" ? v * a[i].rate : a[i].qty * (k === "rate" ? v : a[i].rate),
+export const LineItemsTable = ({
+  items,
+  setFieldValue,
+  fieldName = "items",
+  formik,
+}) => {
+  const handleChange = (index, key, value) => {
+    const updatedItems = [...items];
+
+    updatedItems[index] = {
+      ...updatedItems[index],
+      [key]: value,
     };
-    setItems(a);
+    console.log(updatedItems[index].quantity, key, "updatedItems");
+    const qty = Number(
+      key === "quantity" ? value : updatedItems[index].quantity,
+    );
+
+    const rate = Number(
+      key === "unitPrice" ? value : updatedItems[index].unitPrice,
+    );
+
+    updatedItems[index].totalPrice = qty * rate;
+
+    setFieldValue(fieldName, updatedItems);
   };
-  const add = () =>
-    setItems([
+
+  const addItem = () => {
+    setFieldValue(fieldName, [
       ...items,
       {
-        id: Date.now(),
-        desc: "",
-        type: "Parts",
-        qty: 1,
-        rate: 0,
+        description: "",
+        itemType: "Part",
+        quantity: 1,
+        unitPrice: 0,
         vat: 20,
-        total: 0,
+        totalPrice: 0,
       },
     ]);
-  const remove = (i) => setItems(items.filter((_, idx) => idx !== i));
+  };
+
+  const removeItem = (index) => {
+    const updatedItems = items.filter((_, i) => i !== index);
+
+    setFieldValue(fieldName, updatedItems);
+  };
+
   return (
     <div>
       <div className="overflow-x-auto rounded-xl border border-slate-200">
@@ -322,7 +354,7 @@ export const LineItemsTable = ({ items, setItems }) => {
                 "Type",
                 "Qty",
                 "Rate (£)",
-                "VAT %",
+                // "VAT %",
                 "Total (£)",
                 "",
               ].map((h) => (
@@ -335,57 +367,78 @@ export const LineItemsTable = ({ items, setItems }) => {
               ))}
             </tr>
           </thead>
+
           <tbody>
-            {items.map((it, i) => (
-              <tr
-                key={it.id || i}
-                className="border-b border-slate-100 last:border-0"
-              >
-                <td className="px-3 py-2 text-slate-400 text-xs">{i + 1}</td>
-                <td className="px-2 py-1.5">
+            {items?.map((item, index) => (
+              <tr key={index} className="border-b border-slate-100">
+                <td className="px-3 py-2">{index + 1}</td>
+
+                <td className="px-2 py-1">
                   <input
-                    value={it.desc}
-                    onChange={(e) => set(i, "desc", e.target.value)}
-                    className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm outline-none focus:border-blue-400"
-                    placeholder="Description..."
+                    value={item.description}
+                    onChange={(e) =>
+                      handleChange(index, "description", e.target.value)
+                    }
+                    className="w-full border rounded-lg px-2 py-1"
                   />
+                  {formik.touched.items?.[index]?.description &&
+                    formik.errors.items?.[index]?.description && (
+                      <span className="text-red-500 text-xs">
+                        {formik.errors.items[index].description}
+                      </span>
+                    )}
                 </td>
-                <td className="px-2 py-1.5">
+
+                <td className="px-2 py-1">
                   <select
-                    value={it.type}
-                    onChange={(e) => set(i, "type", e.target.value)}
-                    className="border border-slate-200 rounded-lg px-2 py-1.5 text-sm outline-none focus:border-blue-400 bg-white"
+                    value={item.itemType}
+                    onChange={(e) =>
+                      handleChange(index, "itemType", e.target.value)
+                    }
+                    className="border rounded-lg px-2 py-1"
                   >
-                    <option>Parts</option>
-                    <option>Labour</option>
-                    <option>Other</option>
+                    <option value="Part">Part</option>
+
+                    <option value="Labour">Labour</option>
+
+                    <option value="Service">Service</option>
                   </select>
                 </td>
-                <td className="px-2 py-1.5">
+
+                <td className="px-2 py-1">
                   <input
                     type="number"
-                    value={it.qty}
-                    onChange={(e) => set(i, "qty", +e.target.value)}
-                    className="w-16 border border-slate-200 rounded-lg px-2 py-1.5 text-sm outline-none focus:border-blue-400"
+                    value={item.quantity}
+                    onChange={(e) =>
+                      handleChange(index, "quantity", Number(e.target.value))
+                    }
+                    className="w-16 border rounded-lg px-2 py-1"
                   />
                 </td>
-                <td className="px-2 py-1.5">
+
+                <td className="px-2 py-1">
                   <input
                     type="number"
-                    value={it.rate}
-                    onChange={(e) => set(i, "rate", +e.target.value)}
-                    className="w-20 border border-slate-200 rounded-lg px-2 py-1.5 text-sm outline-none focus:border-blue-400"
+                    value={item.unitPrice}
+                    onChange={(e) =>
+                      handleChange(index, "unitPrice", Number(e.target.value))
+                    }
+                    className="w-20 border rounded-lg px-2 py-1"
                   />
                 </td>
-                <td className="px-3 py-2 text-slate-400 text-xs">{it.vat}%</td>
-                <td className="px-3 py-2 font-mono font-semibold text-slate-700">
-                  £{(it.total || 0).toFixed(2)}
+
+                {/* <td className="px-2 py-1">{item.vat}%</td> */}
+
+                <td className="px-2 py-1 font-semibold">
+                  £{(item.totalPrice || 0).toFixed(2)}
                 </td>
-                <td className="px-2 py-1.5">
+
+                <td className="px-2 py-1">
                   {items.length > 1 && (
                     <button
-                      onClick={() => remove(i)}
-                      className="text-red-400 hover:text-red-600 text-lg"
+                      type="button"
+                      onClick={() => removeItem(index)}
+                      className="text-red-500"
                     >
                       ×
                     </button>
@@ -396,16 +449,13 @@ export const LineItemsTable = ({ items, setItems }) => {
           </tbody>
         </table>
       </div>
-      <button
-        onClick={add}
-        className="mt-2 text-xs text-blue-600 font-semibold hover:text-blue-700 flex items-center gap-1"
-      >
+
+      <button type="button" onClick={addItem} className="mt-2 text-blue-600">
         + Add Item
       </button>
     </div>
   );
 };
-
 // ─── TOTALS BOX ──────────────────────────────────────────────────────────────
 export const TotalsBox = ({
   subtotal,

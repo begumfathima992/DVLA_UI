@@ -483,9 +483,9 @@ export const jobStatusData = [
 export const fmt = (n) => `£${Number(n || 0).toFixed(2)}`;
 export const fmtInt = (n) => `£${Number(n || 0).toLocaleString()}`;
 export const calcSubtotal = (items) =>
-  items.reduce((s, i) => s + (i.total || 0), 0);
+  items.reduce((s, i) => s + (i.totalPrice || 0), 0);
 export const calcVat = (items) =>
-  items.reduce((s, i) => s + ((i.total || 0) * (i.vat || 20)) / 100, 0);
+  items.reduce((s, i) => s + ((i.totalPrice || 0) * (i.vat || 20)) / 100, 0);
 export const calcTotal = (items, discount = 0) => {
   const sub = calcSubtotal(items);
   const vat = calcVat(items);
