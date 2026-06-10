@@ -308,7 +308,6 @@ export const LineItemsTable = ({
       ...updatedItems[index],
       [key]: value,
     };
-    console.log(updatedItems[index].quantity, key, "updatedItems");
     const qty = Number(
       key === "quantity" ? value : updatedItems[index].quantity,
     );

@@ -53,7 +53,6 @@ export default function ViewItemDetailsModal({ setViewing, viewing }) {
           originalText || "Download PDF";
       }
     } catch (error) {
-      console.error("PDF generation failed:", error);
       alert("Failed to generate PDF. Please try again.");
     }
   };

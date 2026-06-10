@@ -31,6 +31,7 @@ import {
   RiSendPlane2Line,
   RiArrowRightLine,
   RiEyeLine,
+  RiEditLine,
 } from "react-icons/ri";
 import { customers, vehicles } from "../../../utils/data";
 import { sampleEstimates } from "../../../utils/SampleData";
@@ -74,8 +75,6 @@ const estimateSchema = Yup.object().shape({
     .nullable()
     .min(0)
     .max(100, "Discount cannot exceed 100%"),
-
-  jobNumber: Yup.string().nullable().max(100),
 
   customerOrderNumber: Yup.string().nullable().max(100),
 
@@ -157,7 +156,6 @@ export default function Estimates() {
     labourRate: 0,
     creditTerms: 30,
     defaultDiscount: 0,
-    jobNumber: "",
     customerOrderNumber: "",
     vehicleMileage: "",
     serviceAdvisor: "",
@@ -183,6 +181,7 @@ export default function Estimates() {
   const formik = useFormik({
     initialValues: initialValuess,
     validationSchema: estimateSchema,
+    // enableReinitialize: true,
     onSubmit: async (values, { resetForm, setSubmitting }) => {
       const subtotal = values.items.reduce(
         (sum, item) =>
@@ -203,25 +202,24 @@ export default function Estimates() {
 
       const payload = {
         ...values,
-
         subtotal,
         vatAmount,
         total,
-
         items: values.items.map((item) => ({
           ...item,
           totalPrice: Number(item.quantity || 0) * Number(item.unitPrice || 0),
         })),
       };
-      // createEstimates
 
-      console.log(payload, "payload");
       try {
         setSubmitting(true);
         let response;
 
-        if (editing && formEdit?.id) {
-          response = await updateEstimate(values, formEdit.id);
+        console.log(editing, formEdit, "sdlkjflkj");
+
+        // return;
+        if (editing && formEdit) {
+          response = await updateEstimate(values, formEdit);
           toast.success("Estimate updated successfully");
         } else {
           response = await createEstimates(values);
@@ -276,22 +274,73 @@ export default function Estimates() {
     vehicleList();
   }, [formik.values.customerId]);
 
-  const approvedEstimatesFun = async (id) => {
+  const updateStatusEstimatesFun = async (id, status) => {
     try {
-      const response = await approvedEstimates(id);
+      const response = await approvedEstimates(id, { status: status });
       if (response.success) {
         toast.success(response.message);
         estimateList();
       } else {
-        toast.error(response.success);
+        toast.error(response.message);
       }
     } catch (error) {
       toast.error(error.message);
     }
   };
-  // approvedEstimates
 
-  console.log(formik.errors, "searchQuery");
+  const handleEditFun = (row) => {
+    const estimate = row;
+    console.log(estimate, "estimate");
+
+    setFormEdit(row?.id || null);
+    formik.setValues({
+      customerId: estimate.customerId,
+      vehicleId: estimate.vehicleId,
+      estimateDate: estimate.estimateDate
+        ? estimate.estimateDate.split("T")[0]
+        : "",
+      estimateNumber: estimate.estimateNumber || "",
+      documentType: estimate.documentType || "Estimate",
+      labourRate: Number(estimate.labourRate) || 0,
+      creditTerms: estimate.customer?.creditTerms || 30,
+      defaultDiscount: Number(estimate.defaultDiscount) || 0,
+      customerOrderNumber: estimate.customerOrderNumber || "",
+      vehicleMileage: estimate.vehicleMileage || "",
+      serviceAdvisor: estimate.serviceAdvisor || "",
+      validUntil: estimate.validUntil || "",
+      notes: estimate.notes || "",
+      subtotal: Number(estimate.subtotal) || 0,
+      vatPercentage: Number(estimate.vatPercentage) || 0,
+      vatAmount: Number(estimate.vatAmount) || 0,
+      discount: Number(estimate.discount) || 0,
+      total: Number(estimate.total) || 0,
+      status: estimate.status || "Draft",
+
+      items:
+        estimate.items?.map((item) => ({
+          id: item.id,
+          itemType: item.itemType,
+          description: item.description,
+          quantity: Number(item.quantity),
+          unitPrice: Number(item.unitPrice),
+          totalPrice: Number(item.totalPrice),
+        })) || [],
+    });
+    setEditing(true);
+    setShowNew(true);
+  };
+  const handleCloseModal = () => {
+    setEditing(false);
+    setFormEdit(null);
+    formik.resetForm();
+    setShowNew(false);
+  };
+
+  const generateEstimateNumber = () => {
+    // return `EST-${Date.now()}`;
+    const newEstNum = `EST-${Date.now()}`;
+    formik.setFieldValue("estimateNumber", newEstNum);
+  };
   return (
     <div className="fade-up space-y-5">
       <PageHeader
@@ -352,6 +401,7 @@ export default function Estimates() {
         <Table
           headers={[
             "Estimate #",
+            "Job No. #",
             "Customer",
             "Vehicle",
             "Date",
@@ -370,7 +420,10 @@ export default function Estimates() {
                 onClick={() => setViewing(est)}
               >
                 <td className="px-4 py-3 font-mono text-blue-600 font-semibold text-sm">
-                  {index + 1}
+                  {est?.estimateNumber}
+                </td>
+                <td className="px-4 py-3 font-mono text-blue-600 font-semibold text-sm">
+                  {est?.jobNumber}
                 </td>
                 <td className="px-4 py-3 font-medium text-slate-800">
                   {est?.customer?.name || "—"}
@@ -401,13 +454,18 @@ export default function Estimates() {
                     >
                       <RiEyeLine />
                     </button>
+                    <button
+                      onClick={() => handleEditFun(est)}
+                      className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-blue-50 hover:text-blue-600 flex items-center justify-center text-slate-500 transition-colors"
+                    >
+                      <RiEditLine />
+                    </button>
 
-                    {(est.status != "Rejected" || est.status != "Approved") && (
+                    {est.status != "Rejected" && est.status != "Approved" && (
                       <Select
                         value={est.status || ""}
                         onChange={(e) =>
-                          est.status != "Approved" &&
-                          approvedEstimatesFun(est?.id)
+                          updateStatusEstimatesFun(est?.id, e.target.value)
                         }
                       >
                         {est.status != "Sent" && <option>Draft</option>}
@@ -425,14 +483,14 @@ export default function Estimates() {
       </Card>
 
       <Modal
-        title="New Estimate"
+        title={editing ? "Edit Estimate" : "New Estimate"}
         sub="Create a quotation for the customer"
         // size="max-w-4xl"
-        onClose={() => setShowNew(false)}
+        onClose={() => handleCloseModal()}
         open={showNew}
         footer={
           <>
-            <BtnGhost onClick={() => setShowNew(false)}>Cancel</BtnGhost>
+            <BtnGhost onClick={() => handleCloseModal()}>Cancel</BtnGhost>
 
             <BtnBlue onClick={formik.handleSubmit}>📋 Create Estimate</BtnBlue>
           </>
@@ -443,13 +501,24 @@ export default function Estimates() {
             <div>
               <SectionTitle>👤 Customer & Vehicle</SectionTitle>
               <div className="grid grid-cols-3 gap-4">
-                <CustomInput
-                  formik={formik}
-                  label="Estimate Number"
-                  name="estimateNumber"
-                  type="text"
-                  placeholder="EG. EST-293847265"
-                />
+                <div>
+                  <CustomInput
+                    formik={formik}
+                    label="Estimate Number"
+                    name="estimateNumber"
+                    type="text"
+                    placeholder="EG. EST-293847265"
+                    readOnly={editing}
+                  />
+                  {!editing && (
+                    <div
+                      className="text-xs cursor-pointer text-blue-500 text-end "
+                      onClick={() => generateEstimateNumber()}
+                    >
+                      Generate Now
+                    </div>
+                  )}
+                </div>
                 <Select
                   label="Customer *"
                   value={formik.values?.customerId || ""}
@@ -529,13 +598,7 @@ export default function Estimates() {
                   type="number"
                   placeholder="Eg. 1200"
                 />
-                <CustomInput
-                  formik={formik}
-                  label="Job Number"
-                  name="jobNumber"
-                  type="text"
-                  placeholder="JOB-1002"
-                />
+
                 <CustomInput
                   formik={formik}
                   label="Customer Order Number"

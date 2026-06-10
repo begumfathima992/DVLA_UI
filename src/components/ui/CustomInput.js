@@ -5,11 +5,7 @@ export const CustomInput = ({
   ...props
 }) => {
   const { values, handleChange, handleBlur, touched, errors } = formik;
-
   const fieldName = props.name;
-
-  console.log(fieldName, "fieldName----");
-
   return (
     <div className="flex flex-col gap-1">
       {label && (

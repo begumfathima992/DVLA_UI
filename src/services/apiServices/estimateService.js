@@ -55,10 +55,11 @@ export const deleteEstimates = async (id) => {
   }
 };
 
-export const approvedEstimates = async (id) => {
+export const approvedEstimates = async (id, reqBody) => {
   try {
-    const response = await apiInstance.patch(
+    const response = await apiInstance.post(
       `${API_URLs.approvedEstimate}/${id}`,
+      reqBody,
     );
     return response?.data;
   } catch (error) {

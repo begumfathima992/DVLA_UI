@@ -17,7 +17,7 @@ export const Modal = ({
   onClose,
   children,
   footer,
-  size = "md", // 'xs' | 'sm' | 'md' | 'lg' | 'xl' | false
+  size = "md",
 }) => {
   return (
     <Dialog
@@ -38,7 +38,6 @@ export const Modal = ({
         },
       }}
     >
-      {/* Header */}
       <DialogTitle className="border-b border-slate-100 px-6 py-4">
         <Box className="flex items-start justify-between">
           <Box>

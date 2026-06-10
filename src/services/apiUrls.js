@@ -22,5 +22,8 @@ export const API_URLs = {
   estimateList: "/estimate",
   createEstimate: "/estimate",
   estimateDelete: "/estimate",
-  approvedEstimate: "/estimate/approve",
+  approvedEstimate: "/estimate/status",
+
+  // job sheets api
+  getJobSheets: "/jobSheets",
 };
