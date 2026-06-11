@@ -26,4 +26,7 @@ export const API_URLs = {
 
   // job sheets api
   getJobSheets: "/jobSheets",
+  updateJobSheets: "/jobSheets",
+  updatePriorityJobSheets: "/jobSheets/priority",
+  updateStatusJobSheets: "/jobSheets/status",
 };

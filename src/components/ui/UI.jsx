@@ -12,6 +12,13 @@ const statusMap = {
   Partial: "bg-violet-50 text-violet-600 border-violet-200",
   Confirmed: "bg-green-50 text-green-600 border-green-200",
   Open: "bg-blue-50  text-blue-600  border-blue-200",
+  Low: "bg-green-50 text-green-700 border-green-200",
+
+  Medium: "bg-yellow-50 text-yellow-700 border-yellow-200",
+
+  High: "bg-orange-50 text-orange-700 border-orange-200",
+
+  Urgent: "bg-red-50 text-red-700 border-red-200",
 };
 const dotMap = {
   Draft: "bg-slate-400",
@@ -26,14 +33,22 @@ const dotMap = {
   Partial: "bg-violet-500",
   Confirmed: "bg-green-500",
   Open: "bg-blue-500",
+  Low: "bg-green-500",
+
+  Medium: "bg-yellow-500",
+
+  High: "bg-orange-500",
+
+  Urgent: "bg-red-600",
 };
 
-export const Badge = ({ status, size = "sm" }) => {
+export const Badge = ({ status, size = "sm", ...props }) => {
   const cls =
     statusMap[status] || "bg-slate-100 text-slate-500 border-slate-200";
   const dot = dotMap[status] || "bg-slate-400";
   return (
     <span
+      {...props}
       className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full
       border font-semibold ${size === "sm" ? "text-xs" : "text-sm"} ${cls}`}
     >
@@ -126,7 +141,9 @@ export const Select = ({
     <select
       {...p}
       className={`border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none
-      focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all bg-white ${className}`}
+  focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all
+  bg-white disabled:bg-slate-100 disabled:text-slate-500 disabled:border-gray-300 disabled:cursor-not-allowed
+  ${className}`}
     >
       {children}
     </select>
@@ -145,7 +162,7 @@ export const Textarea = ({ label, className = "", ...p }) => (
     )}
     <textarea
       {...p}
-      className={`border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none
+      className={`border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none
       focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all bg-white resize-y min-h-[80px] ${className}`}
     />
   </div>

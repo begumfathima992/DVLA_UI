@@ -3,12 +3,8 @@ import { useEffect, useState } from "react";
 import {
   Card,
   PageHeader,
-  Badge,
   BtnBlue,
   BtnGhost,
-  BtnGreen,
-  BtnRed,
-  BtnAmber,
   Select,
   Textarea,
   Table,
@@ -16,29 +12,12 @@ import {
   SectionTitle,
   LineItemsTable,
   TotalsBox,
-  Input,
 } from "../../../components/ui/UI";
-import {
-  calcSubtotal,
-  calcVat,
-  calcTotal,
-  today,
-  pad,
-} from "../../../utils/data";
-import {
-  RiAddLine,
-  RiDownloadLine,
-  RiSendPlane2Line,
-  RiArrowRightLine,
-  RiEyeLine,
-  RiEditLine,
-} from "react-icons/ri";
-import { customers, vehicles } from "../../../utils/data";
-import { sampleEstimates } from "../../../utils/SampleData";
+import { calcSubtotal, calcVat, calcTotal } from "../../../utils/data";
+import { RiEyeLine, RiEditLine } from "react-icons/ri";
 import {
   approvedEstimates,
   createEstimates,
-  fetchEstimates,
   updateEstimate,
 } from "../../../services/apiServices/estimateService";
 import moment from "moment";
@@ -51,39 +30,24 @@ import { CustomInput } from "../../../components/ui/CustomInput";
 import toast from "react-hot-toast";
 import useDebounce from "../../../components/useDebounce";
 import JobSheetsDetailModal from "./JobSheetsDetailModal";
-import { fetchJobSheets } from "../../../services/apiServices/jobSheetService";
+import {
+  fetchJobSheets,
+  updateJobSheets,
+} from "../../../services/apiServices/jobSheetService";
+import PriorityStatusUpdate from "./component/PriorityStatusUpdate";
+import StatusUpdate from "./component/StatusUpdate";
 
 const estimateSchema = Yup.object().shape({
   customerId: Yup.number().required("Customer is required"),
-
   vehicleId: Yup.number().required("Vehicle is required"),
-
-  estimateDate: Yup.date().required("Estimate date is required"),
-
-  estimateNumber: Yup.string().required("Estimate number is required"),
-
+  technicianName: Yup.string().required("Technician Name is required"),
   documentType: Yup.string()
     .oneOf(["Estimate", "Quotation"], "Invalid document type")
     .required("Document type is required"),
-
   labourRate: Yup.number().nullable().min(0, "Labour rate cannot be negative"),
-
-  creditTerms: Yup.number()
-    .nullable()
-    .min(0, "Credit terms cannot be negative"),
-
-  defaultDiscount: Yup.number()
-    .nullable()
-    .min(0)
-    .max(100, "Discount cannot exceed 100%"),
-
-  customerOrderNumber: Yup.string().nullable().max(100),
-
   vehicleMileage: Yup.number().nullable().min(0),
-
   serviceAdvisor: Yup.string().nullable().max(100),
-
-  validUntil: Yup.date().nullable(),
+  startDate: Yup.date().required("Start Date is required"),
 
   notes: Yup.string().nullable().max(5000),
 
@@ -98,11 +62,11 @@ const estimateSchema = Yup.object().shape({
   total: Yup.number().required("Total is required").min(0),
 
   status: Yup.string()
-    .oneOf(
-      ["Draft", "Sent", "Approved", "Rejected", "Converted"],
-      "Invalid status",
-    )
-    .default("Draft"),
+    .oneOf(["Open", "In Progress", "Completed", "Cancelled"], "Invalid status")
+    .default("Open"),
+  priority: Yup.string()
+    .oneOf(["Low", "Medium", "High", "Urgent"], "Invalid priority status")
+    .default("Low"),
 
   items: Yup.array()
     .of(
@@ -149,6 +113,7 @@ export default function JobSheets() {
     jobSheetsList();
   }, []);
   const initialValuess = {
+    technicianName: "",
     customerId: "",
     vehicleId: "",
     estimateDate: new Date(),
@@ -157,17 +122,17 @@ export default function JobSheets() {
     labourRate: 0,
     creditTerms: 30,
     defaultDiscount: 0,
-    customerOrderNumber: "",
     vehicleMileage: "",
     serviceAdvisor: "",
-    validUntil: "",
+    startDate: "",
     notes: "",
     subtotal: 0,
     vatPercentage: 20,
     vatAmount: 0,
     discount: 0,
     total: 0,
-    status: "Draft",
+    status: "Open",
+    priority: "Low",
     items: [
       {
         description: "",
@@ -182,7 +147,7 @@ export default function JobSheets() {
   const formik = useFormik({
     initialValues: initialValuess,
     validationSchema: estimateSchema,
-    // enableReinitialize: true,
+    enableReinitialize: false,
     onSubmit: async (values, { resetForm, setSubmitting }) => {
       const subtotal = values.items.reduce(
         (sum, item) =>
@@ -202,33 +167,30 @@ export default function JobSheets() {
       const total = subtotal + vatAmount;
 
       const payload = {
-        ...values,
+        vatPercentage: values.vatPercentage,
         subtotal,
         vatAmount,
         total,
+        technicianName: values.technicianName,
+        vehicleMileage: values.vehicleMileage,
+        serviceAdvisor: values.serviceAdvisor,
+        priority: values.priority,
+        status: values.status,
+        startDate: values.startDate,
+        labourRate: values.labourRate,
+        notes: values.notes,
         items: values.items.map((item) => ({
           ...item,
           totalPrice: Number(item.quantity || 0) * Number(item.unitPrice || 0),
         })),
       };
-
       try {
         setSubmitting(true);
-        let response;
-
-        console.log(editing, formEdit, "sdlkjflkj");
-
-        // return;
-        if (editing && formEdit) {
-          response = await updateEstimate(values, formEdit);
-          toast.success("Estimate updated successfully");
-        } else {
-          response = await createEstimates(values);
-          toast.success("Estimate created successfully");
-        }
+        let response = await updateJobSheets(values, formEdit?.id);
 
         if (response.success) {
           resetForm();
+          toast.success("Estimate updated successfully");
           setShowNew(false);
           setEditing(false);
           jobSheetsList();
@@ -241,6 +203,7 @@ export default function JobSheets() {
     },
   });
 
+  console.log(formik.errors, "payload");
   const customerList = async () => {
     try {
       const response = await fetchCustomers();
@@ -293,7 +256,7 @@ export default function JobSheets() {
     const estimate = row;
     console.log(estimate, "estimate");
 
-    setFormEdit(row?.id || null);
+    setFormEdit(row || null);
     formik.setValues({
       customerId: estimate.customerId,
       vehicleId: estimate.vehicleId,
@@ -304,8 +267,6 @@ export default function JobSheets() {
       documentType: estimate.documentType || "Estimate",
       labourRate: Number(estimate.labourRate) || 0,
       creditTerms: estimate.customer?.creditTerms || 30,
-      defaultDiscount: Number(estimate.defaultDiscount) || 0,
-      customerOrderNumber: estimate.customerOrderNumber || "",
       vehicleMileage: estimate.vehicleMileage || "",
       serviceAdvisor: estimate.serviceAdvisor || "",
       validUntil: estimate.validUntil || "",
@@ -316,6 +277,8 @@ export default function JobSheets() {
       discount: Number(estimate.discount) || 0,
       total: Number(estimate.total) || 0,
       status: estimate.status || "Draft",
+      priority: estimate.priority || "Draft",
+      technicianName: estimate.technicianName || "",
 
       items:
         estimate.items?.map((item) => ({
@@ -337,25 +300,13 @@ export default function JobSheets() {
     setShowNew(false);
   };
 
-  const generateEstimateNumber = () => {
-    // return `EST-${Date.now()}`;
-    const newEstNum = `EST-${Date.now()}`;
-    formik.setFieldValue("estimateNumber", newEstNum);
-  };
+  console.log(formEdit, "formEdit");
+
   return (
     <div className="fade-up space-y-5">
       <PageHeader
         title="Job Sheets"
         sub="Create and send quotations to customers"
-        // action={
-        //   <BtnBlue
-        //     onClick={() => {
-        //       setShowNew(true);
-        //     }}
-        //   >
-        //     <RiAddLine /> Job Sheets
-        //   </BtnBlue>
-        // }
       />
 
       <Card>
@@ -375,6 +326,7 @@ export default function JobSheets() {
             "Date",
             "Valid Until",
             "Total",
+            "Priority",
             "Status",
             "Actions",
           ]}
@@ -385,7 +337,7 @@ export default function JobSheets() {
               <tr
                 key={est.id}
                 className="border-b border-slate-50 hover:bg-slate-50 transition-colors cursor-pointer"
-                onClick={() => setViewing(est)}
+                // onClick={() => setViewing(est)}
               >
                 <td className="px-4 py-3 font-mono text-blue-600 font-semibold text-sm">
                   {est?.jobNumber}
@@ -409,7 +361,19 @@ export default function JobSheets() {
                   £{est?.total}
                 </td>
                 <td className="px-4 py-3">
-                  <Badge status={est.status} />
+                  <PriorityStatusUpdate
+                    title={est.priority}
+                    id={est?.id}
+                    jobSheetsList={jobSheetsList}
+                  />
+                </td>
+                <td className="px-4 py-3">
+                  {/* <Badge status={est.status} /> */}
+                  <StatusUpdate
+                    title={est.status}
+                    id={est?.id}
+                    jobSheetsList={jobSheetsList}
+                  />
                 </td>
                 <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                   <div className="flex gap-1.5">
@@ -425,20 +389,6 @@ export default function JobSheets() {
                     >
                       <RiEditLine />
                     </button>
-
-                    {est.status != "Rejected" && est.status != "Approved" && (
-                      <Select
-                        value={est.status || ""}
-                        onChange={(e) =>
-                          updateStatusEstimatesFun(est?.id, e.target.value)
-                        }
-                      >
-                        {est.status != "Sent" && <option>Draft</option>}
-                        <option>Sent</option>
-                        <option>Approved</option>
-                        <option>Rejected</option>
-                      </Select>
-                    )}
                   </div>
                 </td>
               </tr>
@@ -448,7 +398,7 @@ export default function JobSheets() {
       </Card>
 
       <Modal
-        title={editing ? "Edit Estimate" : "New Estimate"}
+        title={`Edit Job Sheets - ${formEdit?.jobNumber}`}
         sub="Create a quotation for the customer"
         // size="max-w-4xl"
         onClose={() => handleCloseModal()}
@@ -457,7 +407,9 @@ export default function JobSheets() {
           <>
             <BtnGhost onClick={() => handleCloseModal()}>Cancel</BtnGhost>
 
-            <BtnBlue onClick={formik.handleSubmit}>📋 Create Estimate</BtnBlue>
+            <BtnBlue onClick={formik.handleSubmit}>
+              📋 Update Job Sheets
+            </BtnBlue>
           </>
         }
       >
@@ -466,21 +418,6 @@ export default function JobSheets() {
             <div>
               <SectionTitle>👤 Customer & Vehicle</SectionTitle>
               <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <CustomInput
-                    formik={formik}
-                    label="Estimate Number"
-                    name="estimateNumber"
-                    type="text"
-                    placeholder="EG. EST-293847265"
-                  />
-                  <div
-                    className="text-xs cursor-pointer text-blue-500 text-end "
-                    onClick={() => generateEstimateNumber()}
-                  >
-                    Generate Now
-                  </div>
-                </div>
                 <Select
                   label="Customer *"
                   value={formik.values?.customerId || ""}
@@ -489,6 +426,7 @@ export default function JobSheets() {
                   }
                   touched={formik.touched}
                   errors={formik.errors.customerId}
+                  disabled
                 >
                   <option value="">Select customer...</option>
                   {customerData.map((c) => (
@@ -505,6 +443,7 @@ export default function JobSheets() {
                   }
                   touched={formik.touched}
                   errors={formik.errors.vehicleId}
+                  disabled
                 >
                   <option value="">Select vehicle...</option>
                   {vehicleData.map((v) => (
@@ -516,7 +455,7 @@ export default function JobSheets() {
 
                 <CustomInput
                   formik={formik}
-                  label="VAT Percentage"
+                  label="VAT Percentage (%)"
                   name="vatPercentage"
                   type="number"
                   placeholder="EG. 10%"
@@ -531,27 +470,9 @@ export default function JobSheets() {
                 />
                 <CustomInput
                   formik={formik}
-                  label="Valid Until"
-                  name="validUntil"
+                  label="Start Date"
+                  name="startDate"
                   type="date"
-                />
-                <div className="col-span-3 font-medium text-blue-600">
-                  Other Details
-                </div>
-
-                <CustomInput
-                  formik={formik}
-                  label="Estimate Date"
-                  name="estimateDate"
-                  type="date"
-                  placeholder="Enter"
-                />
-                <CustomInput
-                  formik={formik}
-                  label="Document Type"
-                  name="documentType"
-                  type="text"
-                  readOnly
                 />
                 <CustomInput
                   formik={formik}
@@ -560,14 +481,9 @@ export default function JobSheets() {
                   type="number"
                   placeholder="Eg. 1200"
                 />
-
-                <CustomInput
-                  formik={formik}
-                  label="Customer Order Number"
-                  name="customerOrderNumber"
-                  type="text"
-                  placeholder="Eg. CO-1002"
-                />
+                <div className="col-span-3 font-medium text-blue-600">
+                  Other Details
+                </div>
                 <CustomInput
                   formik={formik}
                   label="Service Advisor"
@@ -577,10 +493,10 @@ export default function JobSheets() {
                 />
                 <CustomInput
                   formik={formik}
-                  label="Default Discount"
-                  name="defaultDiscount"
-                  type="number"
-                  placeholder="Eg. 20"
+                  label="Technician Name"
+                  name="technicianName"
+                  type="text"
+                  placeholder="Eg. john"
                 />
                 <CustomInput
                   formik={formik}
@@ -597,10 +513,22 @@ export default function JobSheets() {
                     formik.setFieldValue("status", e.target.value)
                   }
                 >
-                  <option>Draft</option>
-                  <option>Sent</option>
-                  <option>Approved</option>
-                  <option>Rejected</option>
+                  <option>Open</option>
+                  <option>In Progress</option>
+                  <option>Completed</option>
+                  <option>Cancelled</option>
+                </Select>
+                <Select
+                  label="Priority Status"
+                  value={formik.values?.priority || ""}
+                  onChange={(e) =>
+                    formik.setFieldValue("status", e.target.value)
+                  }
+                >
+                  <option>Low</option>
+                  <option>Medium</option>
+                  <option>High</option>
+                  <option>Urgent</option>
                 </Select>
               </div>
             </div>
