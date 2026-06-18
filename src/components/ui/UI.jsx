@@ -261,8 +261,10 @@ export const PageHeader = ({ title, sub, action }) => (
 );
 
 // ─── TABLE WRAPPER ────────────────────────────────────────────────────────────
-export const Table = ({ headers, children, empty }) => (
-  <div className="overflow-x-auto">
+export const Table = ({ headers, children, empty, className }) => (
+  <div
+    className={`overflow-x-auto  border-t border-slate-200 bg-white shadow-sm ${className}`}
+  >
     <table className="w-full text-sm">
       <thead>
         <tr className="border-b border-slate-100">

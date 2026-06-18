@@ -119,7 +119,7 @@ export default function JobSheetsDetailModal({ setViewing, viewing }) {
     <Modal
       title={
         <span className="flex items-center gap-2 text-sm font-semibold text-slate-700">
-          {viewing.jobNumber}
+          Invoice - {viewing.jobNumber}
           <StatusBadge status={viewing.status} />
           <PriorityBadge priority={viewing.priority} />
         </span>
@@ -139,7 +139,6 @@ export default function JobSheetsDetailModal({ setViewing, viewing }) {
     >
       {/* ── Printable region ── */}
       <div id="job-sheet-printable" className="space-y-5 p-6 bg-white">
-        {/* Header meta */}
         <div className="flex items-center justify-between">
           <p className="text-xs text-slate-400">
             Created:{" "}
@@ -174,7 +173,9 @@ export default function JobSheetsDetailModal({ setViewing, viewing }) {
           {/* Vehicle */}
           <InfoCard title="Vehicle">
             <div className="flex flex-col gap-0.5">
-              <span className="text-[10px] text-slate-400">Reg</span>
+              <span className="text-[10px] text-slate-400">
+                Registration No.{" "}
+              </span>
               <RegPlate reg={vehicle?.registrationNumber || "—"} />
             </div>
             <InfoRow

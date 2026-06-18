@@ -323,8 +323,9 @@ export default function JobSheets() {
             "Job Sheet #",
             "Customer",
             "Vehicle",
-            "Date",
-            "Valid Until",
+            "Start Date",
+            "Advisor Name",
+            "Technician",
             "Total",
             "Priority",
             "Status",
@@ -349,14 +350,17 @@ export default function JobSheets() {
                   <RegPlate reg={est.vehicle?.model} />
                 </td>
                 <td className="px-4 py-3 text-sm text-slate-500">
-                  {moment(est.estimateDate).format("lll")}
+                  {est.startDate ? moment(est.startDate).format("lll") : "--"}
                 </td>
                 <td className="px-4 py-3 text-sm text-slate-500">
                   {/* {est.validUntil || "—"} */}
-                  {est.validUntil != "0000-00-00"
-                    ? moment(est.validUntil).format("lll")
-                    : "--"}
+                  {est.serviceAdvisor ? est.serviceAdvisor : "--"}
                 </td>
+                <td className="px-4 py-3 text-sm text-slate-500">
+                  {/* {est.validUntil || "—"} */}
+                  {est.technicianName ? est.technicianName : "--"}
+                </td>
+
                 <td className="px-4 py-3 font-mono font-semibold text-slate-800">
                   £{est?.total}
                 </td>
