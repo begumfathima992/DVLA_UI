@@ -1,0 +1,66 @@
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap");
+* {
+  box-sizing: border-box;
+}
+html {
+  /* cursor: none; */
+}
+button,
+a {
+  /* cursor: none; */
+}
+
+/* Subtle grid lines */
+.hero-grid {
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.06) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+/* Stat cell hover underline */
+.stat-cell {
+  position: relative;
+  overflow: hidden;
+}
+.stat-cell::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: #dc2626;
+  transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.stat-cell:hover::after {
+  width: 56%;
+}
+
+/* Input focus ring */
+.af-input:focus {
+  outline: none;
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+.af-select:focus {
+  outline: none;
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+/* Why card hover */
+.why-card:hover {
+  border-color: #fca5a5;
+  box-shadow: 0 12px 40px rgba(220, 38, 38, 0.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

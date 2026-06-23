@@ -486,10 +486,10 @@ export const calcSubtotal = (items) =>
   items.reduce((s, i) => s + (i.totalPrice || 0), 0);
 export const calcVat = (items) =>
   items.reduce((s, i) => s + ((i.totalPrice || 0) * (i.vat || 20)) / 100, 0);
-export const calcTotal = (items, discount = 0) => {
+export const calcTotal = (items, discount = 0, labourCharge) => {
   const sub = calcSubtotal(items);
   const vat = calcVat(items);
-  return sub + vat - discount;
+  return sub + vat + labourCharge - discount;
 };
 export const today = () => new Date().toLocaleDateString("en-GB");
 export const pad = (prefix, n) => `${prefix}-${String(n).padStart(5, "0")}`;

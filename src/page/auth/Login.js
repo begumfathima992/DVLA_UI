@@ -40,8 +40,6 @@ export default function Login({ open, setOpen }) {
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       try {
         const response = await loginAPI(values);
-        console.log("Login successful:", response);
-
         if (response?.success) {
           resetForm();
           setOpen(false);
@@ -84,7 +82,7 @@ export default function Login({ open, setOpen }) {
         <div className="bg-white relative">
           <div className="h-1.5 bg-gradient-to-r from-red-600 via-red-500 to-orange-400 w-full" />
 
-          <div className="px-8 pt-8 pb-6 border-b border-gray-100 flex items-start justify-between">
+          <div className="px-8 pt-8 pb-1 border-b border-gray-100 flex items-start justify-between">
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center shadow-sm">
@@ -112,7 +110,7 @@ export default function Login({ open, setOpen }) {
           {/* Body */}
           <form onSubmit={formik.handleSubmit} className="px-8 py-7 space-y-4">
             {/* Social buttons */}
-            <div className="grid grid-cols-2 gap-3">
+            {/* <div className="grid grid-cols-2 gap-3">
               {[
                 { icon: <FaGoogle />, label: "Google" },
                 { icon: <FaApple />, label: "Apple" },
@@ -126,16 +124,16 @@ export default function Login({ open, setOpen }) {
                   {label}
                 </button>
               ))}
-            </div>
+            </div> */}
 
             {/* Divider */}
-            <div className="flex items-center gap-3">
+            {/* <div className="flex items-center gap-3">
               <div className="flex-1 h-px bg-gray-100" />
               <span className="text-xs text-gray-300 font-medium">
                 or continue with email
               </span>
               <div className="flex-1 h-px bg-gray-100" />
-            </div>
+            </div> */}
 
             {/* Email */}
             <div>

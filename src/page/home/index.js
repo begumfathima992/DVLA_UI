@@ -7,6 +7,7 @@ import {
   AnimatePresence,
 } from "framer-motion";
 import Header from "../../layout/header";
+import "./homeStyle.css";
 
 /* ─── ANIMATED COUNTER ─────────────────────────────────────────────────── */
 function Counter({ target, suffix = "" }) {
@@ -115,63 +116,6 @@ function MagneticBtn({ children, className = "", onClick, style }) {
     >
       {children}
     </motion.button>
-  );
-}
-
-/* ─── SCROLL PROGRESS BAR ──────────────────────────────────────────────── */
-function ScrollProgressBar() {
-  const { scrollYProgress } = useScroll();
-  const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1]);
-  return (
-    <motion.div
-      style={{ scaleX, transformOrigin: "left" }}
-      className="fixed top-0 left-0 right-0 h-[2px] bg-red-600 z-[9999] origin-left"
-    />
-  );
-}
-
-/* ─── CURSOR GLOW ──────────────────────────────────────────────────────── */
-function CursorGlow() {
-  const [pos, setPos] = useState({ x: -200, y: -200 });
-  const [hovered, setHovered] = useState(false);
-  const [clicked, setClicked] = useState(false);
-  useEffect(() => {
-    const onMove = (e) => setPos({ x: e.clientX, y: e.clientY });
-    const onOver = (e) =>
-      setHovered(!!e.target.closest("button,a,[data-hover]"));
-    const onDown = () => {
-      setClicked(true);
-      setTimeout(() => setClicked(false), 180);
-    };
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseover", onOver);
-    window.addEventListener("mousedown", onDown);
-    return () => {
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("mouseover", onOver);
-      window.removeEventListener("mousedown", onDown);
-    };
-  }, []);
-  return (
-    <>
-      {/* dot */}
-      <motion.div
-        className="fixed top-0 left-0 w-2 h-2 rounded-full bg-red-600 pointer-events-none z-[9998]"
-        animate={{ x: pos.x - 4, y: pos.y - 4, scale: clicked ? 0.4 : 1 }}
-        transition={{ type: "spring", stiffness: 900, damping: 38, mass: 0.25 }}
-      />
-      {/* ring */}
-      <motion.div
-        className="fixed top-0 left-0 w-10 h-10 rounded-full border border-red-500 pointer-events-none z-[9997]"
-        animate={{
-          x: pos.x - 20,
-          y: pos.y - 20,
-          scale: hovered ? 1.9 : clicked ? 0.6 : 1,
-          opacity: hovered ? 0.55 : 0.28,
-        }}
-        transition={{ type: "spring", stiffness: 160, damping: 22, mass: 0.6 }}
-      />
-    </>
   );
 }
 
@@ -332,55 +276,7 @@ export default function HomePage({ setPage }) {
   ];
 
   return (
-    <div
-      className="min-h-screen bg-slate-50 text-slate-900 overflow-x-hidden"
-      style={{ cursor: "none" }}
-    >
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
-        * { box-sizing: border-box; }
-        html { cursor: none; }
-        button, a { cursor: none; }
-
-        /* Subtle grid lines */
-        .hero-grid {
-          background-image:
-            linear-gradient(rgba(0,0,0,0.06) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0,0,0,0.06) 1px, transparent 1px);
-          background-size: 56px 56px;
-        }
-
-        /* Stat cell hover underline */
-        .stat-cell { position: relative; overflow: hidden; }
-        .stat-cell::after {
-          content: ''; position: absolute; bottom: 0; left: 50%;
-          transform: translateX(-50%);
-          width: 0; height: 2px; background: #dc2626;
-          transition: width 0.35s cubic-bezier(0.22,1,0.36,1);
-        }
-        .stat-cell:hover::after { width: 56%; }
-
-        /* Input focus ring */
-        .af-input:focus { outline: none; border-color: #dc2626; box-shadow: 0 0 0 3px rgba(220,38,38,0.1); }
-        .af-select:focus { outline: none; border-color: #dc2626; box-shadow: 0 0 0 3px rgba(220,38,38,0.1); }
-
-        /* Why card hover */
-        .why-card:hover { border-color: #fca5a5; box-shadow: 0 12px 40px rgba(220,38,38,0.08); }
-
-        @media (prefers-reduced-motion: reduce) {
-          *, *::before, *::after {
-            animation-duration: 0.01ms !important;
-            transition-duration: 0.01ms !important;
-          }
-        }
-      `}</style>
-
-      {/* Custom cursor */}
-      <CursorGlow />
-      {/* Scroll progress */}
-      <ScrollProgressBar />
-
-      {/* ── NAVBAR ── */}
+    <div className="min-h-screen bg-slate-50 text-slate-900 overflow-x-hidden">
       <motion.nav
         initial={{ y: -64, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}

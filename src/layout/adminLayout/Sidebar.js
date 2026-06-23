@@ -28,7 +28,7 @@ const NAV = [
   // { to: "/mechanics", icon: RiUserStarLine, label: "Mechanics" },
   // { to: "/reports", icon: RiBarChartLine, label: "Reports" },
   // { to: "/inventory", icon: RiStackLine, label: "Inventory" },
-  // { to: "/settings", icon: RiSettings3Line, label: "Settings" },
+  { to: "/settings", icon: RiSettings3Line, label: "Settings" },
 ];
 
 const Sidebar = ({ collapsed, setCollapsed }) => (

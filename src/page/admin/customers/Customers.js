@@ -7,6 +7,7 @@ import {
   Input,
   Table,
   EmptyState,
+  Select,
 } from "../../../components/ui/UI";
 import {
   RiAddLine,
@@ -29,6 +30,8 @@ import * as Yup from "yup";
 import toast from "react-hot-toast";
 import { CustomInput } from "../../../components/ui/CustomInput";
 import { Formik, Form } from "formik";
+import ConfirmDialog from "../../../components/ConfirmDialog";
+import useDebounce from "../../../components/useDebounce";
 
 const customerSchema = Yup.object().shape({
   name: Yup.string()
@@ -54,7 +57,7 @@ const customerSchema = Yup.object().shape({
     .matches(/^[\d\s\-\+\(\)]+$/, "Please enter a valid telephone number")
     .min(10, "telephone number is too short"),
   creditTerms: Yup.string().max(200, "creditTerms is too long"),
-  gdprConsent: Yup.string().max(200, "GDPR Consent is too long"),
+  gdprConsent: Yup.boolean(),
   customerCode: Yup.string().max(200, "GDPR Consent is too long"),
 });
 export default function Customers() {
@@ -63,7 +66,10 @@ export default function Customers() {
   const [editing, setEditing] = useState(false);
   const [search, setSearch] = useState("");
   const [customerData, setCustomerData] = useState([]);
-  const open = (c = null) => {
+  const [open, setOpen] = useState(false);
+  const [customerId, setCustomerId] = useState(null);
+  const searchQuery = useDebounce(search);
+  const openEditFun = (c = null) => {
     if (c != null) {
       setFormEdit(c);
       setEditing(true);
@@ -74,7 +80,7 @@ export default function Customers() {
 
   const customerList = async () => {
     try {
-      const response = await fetchCustomers();
+      const response = await fetchCustomers(searchQuery);
       if (response.success) {
         setCustomerData(response?.data || []);
       } else {
@@ -86,7 +92,7 @@ export default function Customers() {
   };
   useEffect(() => {
     customerList();
-  }, []);
+  }, [searchQuery]);
 
   const formik = useFormik({
     initialValues: {
@@ -97,7 +103,7 @@ export default function Customers() {
       telephone: formEdit?.telephone || "",
       alternativeAddress: formEdit?.alternativeAddress || "",
       creditTerms: formEdit?.creditTerms || "",
-      gdprConsent: formEdit?.gdprConsent || "",
+      gdprConsent: formEdit?.gdprConsent || false,
       customerCode: formEdit?.customerCode || "",
     },
     validationSchema: customerSchema,
@@ -116,6 +122,9 @@ export default function Customers() {
           resetForm();
           setShowModal(false);
           customerList();
+        } else {
+          toast.error(response?.message);
+          console.log(response, "response");
         }
       } catch (error) {
         toast.error(error.message);
@@ -131,12 +140,15 @@ export default function Customers() {
     setEditing(false);
   };
 
-  const deleteCustomer = async (id) => {
+  const deleteCustomer = async () => {
     try {
-      const response = await deleteCustomers(id);
+      const response = await deleteCustomers(customerId);
       if (response.success) {
         toast.success(response.message);
         customerList();
+        setOpen(false);
+      } else {
+        toast.error(response.message);
       }
     } catch (error) {
       toast.error(error.message);
@@ -151,7 +163,7 @@ export default function Customers() {
         title="Customers"
         sub={`${customerData.length} total customers`}
         action={
-          <BtnBlue onClick={() => open()}>
+          <BtnBlue onClick={() => openEditFun()}>
             <RiAddLine /> Add Customer
           </BtnBlue>
         }
@@ -209,13 +221,17 @@ export default function Customers() {
               <td className="px-4 py-3">
                 <div className="flex gap-2">
                   <button
-                    onClick={() => open(c)}
+                    onClick={() => openEditFun(c)}
                     className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-blue-50 hover:text-blue-600 flex items-center justify-center text-slate-500 transition-colors"
                   >
                     <RiEditLine />
                   </button>
                   <button
-                    onClick={() => deleteCustomer(c.id)}
+                    // onClick={() => deleteCustomer(c.id)}
+                    onClick={() => {
+                      setOpen(true);
+                      setCustomerId(c.id);
+                    }}
                     className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-red-50 hover:text-red-500 flex items-center justify-center text-slate-500 transition-colors"
                   >
                     <RiDeleteBinLine />
@@ -226,6 +242,18 @@ export default function Customers() {
           ))}
         </Table>
       </Card>
+      <ConfirmDialog
+        open={open}
+        title="Delete Customer"
+        message="Are you sure you want to delete this customer? This action cannot be undone."
+        confirmText="Yes, Delete"
+        cancelText="Cancel"
+        onConfirm={deleteCustomer}
+        onClose={() => {
+          setOpen(false);
+          setCustomerId(null);
+        }}
+      />
 
       <Modal
         title={editing ? "Edit Customer" : "Add New Customer"}
@@ -279,12 +307,23 @@ export default function Customers() {
               name="alternativeAddress"
               placeholder="Eg. 123 High Street, London"
             />
-            <CustomInput
-              formik={formik}
+
+            <Select
               label="GDPR Consent"
-              name="gdprConsent"
-              placeholder="Eg. 123 High Street, London"
-            />
+              value={formik.values?.gdprConsent || false}
+              onChange={(e) =>
+                formik.setFieldValue("gdprConsent", e.target.value)
+              }
+              touched={formik.touched}
+              errors={formik.errors.gdprConsent}
+            >
+              <option value="">Select customer...</option>
+              {[false, true].map((c, index) => (
+                <option key={index} value={c}>
+                  {c ? "True" : "False"}
+                </option>
+              ))}
+            </Select>
             <CustomInput
               formik={formik}
               label="customer Ref"

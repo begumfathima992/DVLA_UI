@@ -319,6 +319,7 @@ export const LineItemsTable = ({
   setFieldValue,
   fieldName = "items",
   formik,
+  vatPercentage = 0,
 }) => {
   const handleChange = (index, key, value) => {
     const updatedItems = [...items];
@@ -348,7 +349,7 @@ export const LineItemsTable = ({
         itemType: "Part",
         quantity: 1,
         unitPrice: 0,
-        vat: 20,
+        vat: vatPercentage,
         totalPrice: 0,
       },
     ]);
@@ -482,6 +483,8 @@ export const TotalsBox = ({
   total,
   paidAmount = null,
   balance = null,
+  LabourCharge = 0,
+  vatPercentage = 0,
 }) => (
   <div className="ml-auto w-64 bg-slate-50 rounded-xl border border-slate-200 p-4 mt-4 space-y-2 text-sm">
     <div className="flex justify-between">
@@ -489,13 +492,18 @@ export const TotalsBox = ({
       <span className="font-mono">{subtotal}</span>
     </div>
     <div className="flex justify-between">
-      <span className="text-slate-500">VAT (20%)</span>
+      <span className="text-slate-500">VAT ({vatPercentage}%)</span>
       <span className="font-mono">{vat}</span>
     </div>
     <div className="flex justify-between">
       <span className="text-slate-500">Discount (GBP)</span>
-      <span className="font-mono">{discount}</span>
+      <span className="font-mono">- {discount}</span>
     </div>
+    <div className="flex justify-between">
+      <span className="text-slate-500">Labour Charge</span>
+      <span className="font-mono">{LabourCharge}</span>
+    </div>
+
     <div className="flex justify-between font-bold text-base border-t border-slate-200 pt-2">
       <span>Total (GBP)</span>
       <span className="font-mono">£{total}</span>

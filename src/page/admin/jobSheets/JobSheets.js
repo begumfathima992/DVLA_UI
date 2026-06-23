@@ -435,7 +435,7 @@ export default function JobSheets() {
                   <option value="">Select customer...</option>
                   {customerData.map((c) => (
                     <option key={c.id} value={c.id}>
-                      {c.name} gg
+                      {c.name}
                     </option>
                   ))}
                 </Select>

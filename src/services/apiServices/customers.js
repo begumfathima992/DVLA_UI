@@ -2,9 +2,11 @@ import { getErrorMessage } from "../../utils/contents";
 import apiInstance from "../apiInstance";
 import { API_URLs } from "../apiUrls";
 
-export const fetchCustomers = async () => {
+export const fetchCustomers = async (search = "") => {
   try {
-    const response = await apiInstance.get(API_URLs.getCustomerList);
+    const response = await apiInstance.get(
+      `${API_URLs.getCustomerList}/?search=${search}`,
+    );
     return response?.data;
   } catch (error) {
     return {

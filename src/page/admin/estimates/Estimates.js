@@ -51,6 +51,7 @@ import { fetchByIdCustomerBasedVehicle } from "../../../services/apiServices/veh
 import { CustomInput } from "../../../components/ui/CustomInput";
 import toast from "react-hot-toast";
 import useDebounce from "../../../components/useDebounce";
+import { fetchSetting } from "../../../services/apiServices/settingService";
 
 const estimateSchema = Yup.object().shape({
   customerId: Yup.number().required("Customer is required"),
@@ -131,6 +132,7 @@ export default function Estimates() {
   const [vehicleData, setVehicleData] = useState([]);
   const [formEdit, setFormEdit] = useState(null);
   const [editing, setEditing] = useState(false);
+  const [settingData, setSettingData] = useState({});
   const searchQuery = useDebounce(search);
   const estimateList = async () => {
     try {
@@ -147,49 +149,52 @@ export default function Estimates() {
   useEffect(() => {
     estimateList();
   }, []);
-  const initialValuess = {
+
+  console.log(settingData, "settingData");
+
+  const getInitialValues = () => ({
     customerId: "",
     vehicleId: "",
-    estimateDate: new Date(),
+    estimateDate: moment().format("YYYY-MM-DD"),
     estimateNumber: "",
     documentType: "Estimate",
-    labourRate: 0,
+    labourRate: settingData.labourCharge || 0,
     creditTerms: 30,
-    defaultDiscount: 0,
+    defaultDiscount: settingData.defaultDiscount || 0,
     customerOrderNumber: "",
     vehicleMileage: "",
     serviceAdvisor: "",
     validUntil: "",
     notes: "",
     subtotal: 0,
-    vatPercentage: 20,
+    vatPercentage: settingData.vatPercentage || 20,
     vatAmount: 0,
     discount: 0,
     total: 0,
     status: "Draft",
     items: [
       {
-        description: "",
         itemType: "Part",
+        description: "",
         quantity: 1,
         unitPrice: 0,
-        vat: 20,
+        vat: settingData.vatPercentage || 0,
         totalPrice: 0,
       },
     ],
-  };
+  });
   const formik = useFormik({
-    initialValues: initialValuess,
+    initialValues: getInitialValues(),
     validationSchema: estimateSchema,
-    // enableReinitialize: true,
+    enableReinitialize: true,
     onSubmit: async (values, { resetForm, setSubmitting }) => {
-      const subtotal = values.items.reduce(
+      const subtotal = values?.items?.reduce(
         (sum, item) =>
           sum + Number(item.quantity || 0) * Number(item.unitPrice || 0),
         0,
       );
 
-      const vatAmount = values.items.reduce(
+      const vatAmount = values?.items?.reduce(
         (sum, item) =>
           sum +
           Number(item.quantity || 0) *
@@ -198,7 +203,12 @@ export default function Estimates() {
         0,
       );
 
-      const total = subtotal + vatAmount;
+      // const total = subtotal + vatAmount;
+      const total =
+        subtotal +
+        vatAmount +
+        Number(values?.labourRate || 0) -
+        (Number(values.defaultDiscount) || 0);
 
       const payload = {
         ...values,
@@ -214,10 +224,6 @@ export default function Estimates() {
       try {
         setSubmitting(true);
         let response;
-
-        console.log(editing, formEdit, "sdlkjflkj");
-
-        // return;
         if (editing && formEdit) {
           response = await updateEstimate(values, formEdit);
           toast.success("Estimate updated successfully");
@@ -336,6 +342,28 @@ export default function Estimates() {
     setShowNew(false);
   };
 
+  const getSettings = async () => {
+    try {
+      const res = await fetchSetting();
+      if (res?.success) {
+        const data = res.data || {};
+        const vals = {
+          defaultDiscount: data?.defaultDiscount || "",
+          labourCharge: data?.labourCharge || "",
+          otherCharge: data?.otherCharge || "",
+          vatPercentage: data?.vatPercentage || "",
+        };
+
+        setSettingData(vals);
+      }
+    } catch (err) {
+      toast.error("Failed to load settings");
+    }
+  };
+
+  useEffect(() => {
+    getSettings();
+  }, []);
   const generateEstimateNumber = () => {
     // return `EST-${Date.now()}`;
     const newEstNum = `EST-${Date.now()}`;
@@ -357,38 +385,6 @@ export default function Estimates() {
         }
       />
 
-      {/* <div className="grid grid-cols-4 gap-4">
-        {[
-          {
-            label: "Total",
-            value: sampleEstimates.length,
-            color: "text-slate-800",
-          },
-          {
-            label: "Draft",
-            value: sampleEstimates.filter((e) => e.status === "Draft").length,
-            color: "text-slate-600",
-          },
-          {
-            label: "Approved",
-            value: sampleEstimates.filter((e) => e.status === "Approved")
-              .length,
-            color: "text-green-600",
-          },
-          {
-            label: "Pipeline",
-            value: `£${sampleEstimates.reduce((s, e) => s + tot(e), 0)?.toFixed(0)}`,
-            color: "text-blue-600",
-          },
-        ].map((s) => (
-          <Card key={s.label} className="p-4 text-center">
-            <div className="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-1">
-              {s.label}
-            </div>
-            <div className={`text-2xl font-bold ${s.color}`}>{s.value}</div>
-          </Card>
-        ))}
-      </div> */}
       <Card>
         <div className="p-4 border-b border-slate-100">
           <input
@@ -558,15 +554,23 @@ export default function Estimates() {
                   name="vatPercentage"
                   type="number"
                   placeholder="EG. 10%"
+                  disabled
                 />
-
                 <CustomInput
+                  formik={formik}
+                  label="Default Discount"
+                  name="defaultDiscount"
+                  type="number"
+                  placeholder="Eg. 20"
+                  disabled
+                />
+                {/* <CustomInput
                   formik={formik}
                   label="Discount"
                   name="discount"
                   type="number"
                   placeholder="EG. 23"
-                />
+                /> */}
                 <CustomInput
                   formik={formik}
                   label="Valid Until"
@@ -597,6 +601,7 @@ export default function Estimates() {
                   name="labourRate"
                   type="number"
                   placeholder="Eg. 1200"
+                  disabled
                 />
 
                 <CustomInput
@@ -613,13 +618,7 @@ export default function Estimates() {
                   type="text"
                   placeholder="Eg. john"
                 />
-                <CustomInput
-                  formik={formik}
-                  label="Default Discount"
-                  name="defaultDiscount"
-                  type="number"
-                  placeholder="Eg. 20"
-                />
+
                 <CustomInput
                   formik={formik}
                   label="Vehicle Mileage"
@@ -649,13 +648,20 @@ export default function Estimates() {
                 setFieldValue={formik.setFieldValue}
                 fieldName="items"
                 formik={formik}
+                vatPercentage={Number(formik.values.vatPercentage || 0)}
               />
               <div className="flex justify-end">
                 <TotalsBox
                   subtotal={calcSubtotal(formik.values.items)}
                   vat={calcVat(formik.values.items)}
-                  discount={formik.values.discount || 0}
-                  total={calcTotal(formik.values.items, formik.values.discount)}
+                  discount={Number(formik.values.defaultDiscount) || 0}
+                  total={calcTotal(
+                    formik.values.items,
+                    Number(formik.values.defaultDiscount),
+                    Number(formik.values.labourRate || 0),
+                  )}
+                  LabourCharge={Number(formik.values.labourRate || 0)}
+                  vatPercentage={Number(formik.values.vatPercentage || 0)}
                 />
               </div>
             </div>

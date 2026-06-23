@@ -117,15 +117,6 @@ function Header() {
               : "bg-white/85 backdrop-blur-md border-b-2 border-slate-200"
           }`}
       >
-        {/* top progress line — animates on scroll */}
-        <motion.div
-          className="absolute top-0 left-0 h-[2px] bg-red-600 origin-left pointer-events-none"
-          style={{ width: "100%" }}
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: scrolled ? 1 : 0 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        />
-
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-between h-16">
             {/* ── LOGO ── */}
@@ -183,7 +174,7 @@ function Header() {
                     onHoverEnd={() => setHoveredIdx(null)}
                     whileTap={{ scale: 0.95 }}
                     className={`relative px-7 py-2.5 text-sm font-semibold capitalize transition-colors rounded-3xl z-10 select-none
-                      ${isActive || hoveredIdx === i ? "text-white" : "text-slate-500 hover:text-slate-800"}`}
+                      ${isActive || hoveredIdx === i ? "" : "text-slate-500 hover:text-slate-800"}`}
                   >
                     {item.label}
 
