@@ -60,12 +60,12 @@ export const Badge = ({ status, size = "sm", ...props }) => {
 
 // ─── BUTTONS ─────────────────────────────────────────────────────────────────
 const base =
-  "inline-flex items-center gap-2 rounded-lg font-semibold transition-all duration-150 cursor-pointer disabled:opacity-50";
+  "inline-flex items-center justify-center gap-2 rounded-xl font-extrabold transition-all duration-300 cursor-pointer disabled:opacity-50 disabled:pointer-events-none";
 
 export const BtnBlue = ({ children, className = "", ...p }) => (
   <button
     {...p}
-    className={`${base} bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm shadow-sm ${className}`}
+    className={`${base} gold-button text-[#0f172a] px-4 py-2.5 text-sm hover:-translate-y-0.5 ${className}`} 
   >
     {children}
   </button>
@@ -81,7 +81,7 @@ export const BtnGreen = ({ children, className = "", ...p }) => (
 export const BtnGhost = ({ children, className = "", ...p }) => (
   <button
     {...p}
-    className={`${base} bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 px-4 py-2 text-sm ${className}`}
+    className={`${base} bg-[#ffffff] hover:bg-[#f8fafc] text-[#334155] border border-[#e2e8f0] px-4 py-2.5 text-sm hover:-translate-y-0.5 hover:border-[#e11d48] hover:shadow-sm ${className}`}
   >
     {children}
   </button>
@@ -89,7 +89,7 @@ export const BtnGhost = ({ children, className = "", ...p }) => (
 export const BtnRed = ({ children, className = "", ...p }) => (
   <button
     {...p}
-    className={`${base} bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-4 py-2 text-sm ${className}`}
+    className={`${base} bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 px-4 py-2.5 text-sm hover:-translate-y-0.5 ${className}`}
   >
     {children}
   </button>
@@ -118,8 +118,8 @@ export const Input = ({ label, className = "", ...p }) => (
     )}
     <input
       {...p}
-      className={`border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none
-      focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all bg-white ${className}`}
+      className={`border border-[#e2e8f0] rounded-xl px-3.5 py-3 text-sm outline-none
+      focus:border-[#e11d48] focus:ring-4 focus:ring-[#e11d48]/10 transition-all bg-[#ffffff] text-[#1e293b] ${className}`}
     />
   </div>
 );
@@ -140,9 +140,9 @@ export const Select = ({
     )}
     <select
       {...p}
-      className={`border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none
-  focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all
-  bg-white disabled:bg-slate-100 disabled:text-slate-500 disabled:border-gray-300 disabled:cursor-not-allowed
+      className={`border border-[#e2e8f0] rounded-xl px-3.5 py-3 text-sm outline-none
+  focus:border-[#e11d48] focus:ring-4 focus:ring-[#e11d48]/10 transition-all
+  bg-[#ffffff] text-[#1e293b] disabled:bg-slate-100 disabled:text-slate-500 disabled:border-gray-300 disabled:cursor-not-allowed
   ${className}`}
     >
       {children}
@@ -162,8 +162,8 @@ export const Textarea = ({ label, className = "", ...p }) => (
     )}
     <textarea
       {...p}
-      className={`border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none
-      focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all bg-white resize-y min-h-[80px] ${className}`}
+      className={`border border-[#e2e8f0] rounded-xl px-3.5 py-3 text-sm outline-none
+      focus:border-[#e11d48] focus:ring-4 focus:ring-[#e11d48]/10 transition-all bg-[#ffffff] text-[#1e293b] resize-y min-h-[90px] ${className}`}
     />
   </div>
 );
@@ -178,22 +178,22 @@ export const Modal = ({
   size = "max-w-2xl",
 }) => (
   <div
-    className="fixed inset-0  backdrop-blur-sm !z-50 flex items-center justify-center p-4 fade-up"
+    className="fixed inset-0 bg-[#030912]/70 backdrop-blur-xl !z-50 flex items-center justify-center p-4 fade-up"
     onClick={onClose}
   >
     <div
-      className={`bg-white rounded-2xl shadow-2xl w-full ${size} max-h-[90vh] flex flex-col`}
+      className={`bg-[#ffffff] rounded-[26px] border border-[#e2e8f0] shadow-[0_35px_100px_rgba(7,17,31,.3)] w-full overflow-hidden ${size} max-h-[90vh] flex flex-col`}
       onClick={(e) => e.stopPropagation()}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 shrink-0">
+      <div className="flex items-center justify-between px-6 py-5 border-b border-[#e2e8f0] shrink-0 bg-gradient-to-r from-[#ffffff] to-[#fff1f2]">
         <div>
-          <div className="font-bold text-slate-800 text-base">{title}</div>
-          {sub && <div className="text-xs text-slate-400 mt-0.5">{sub}</div>}
+          <div className="font-[Sora] font-extrabold text-[#0f172a] text-base tracking-[-0.025em]">{title}</div>
+          {sub && <div className="text-xs text-[#818995] mt-1">{sub}</div>}
         </div>
         <button
           onClick={onClose}
-          className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-red-50 hover:text-red-500 transition-colors text-lg"
+          className="w-9 h-9 rounded-xl flex items-center justify-center text-[#8e96a0] hover:bg-[#fff1f2] hover:text-[#be123c] transition-colors text-xl"
         >
           ×
         </button>
@@ -202,7 +202,7 @@ export const Modal = ({
       <div className="overflow-y-auto px-6 py-5 flex-1">{children}</div>
       {/* Footer */}
       {footer && (
-        <div className="flex justify-end gap-2 px-6 py-4 border-t border-slate-100 bg-slate-50 rounded-b-2xl shrink-0">
+        <div className="flex justify-end gap-2 px-6 py-4 border-t border-[#e2e8f0] bg-[#f8fafc] shrink-0">
           {footer}
         </div>
       )}
@@ -212,7 +212,7 @@ export const Modal = ({
 
 // ─── CARD ─────────────────────────────────────────────────────────────────────
 export const Card = ({ children, className = "" }) => (
-  <div className={` rounded-xl border border-slate-200 shadow-sm ${className}`}>
+  <div className={` premium-card rounded-2xl border border-[#e2e8f0] bg-[#ffffff] shadow-sm ${className}`}>
     {children}
   </div>
 );
@@ -226,12 +226,12 @@ export const StatCard = ({
   changeLabel,
   iconBg,
 }) => (
-  <Card className="p-5 flex items-start justify-between fade-up">
-    <div>
-      <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
+  <Card className="group p-5 flex items-start justify-between fade-up overflow-hidden relative">
+    <div className="relative z-10">
+      <div className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-[0.14em] mb-1.5">
         {label}
       </div>
-      <div className="text-2xl font-bold text-slate-800">{value}</div>
+      <div className="font-[Sora] text-2xl font-extrabold tracking-[-0.04em] text-[#0f172a]">{value}</div>
       {change && (
         <div
           className={`text-xs mt-1 font-medium ${change.startsWith("+") ? "text-green-600" : "text-red-500"}`}
@@ -242,7 +242,7 @@ export const StatCard = ({
       )}
     </div>
     <div
-      className={`w-11 h-11 rounded-xl flex items-center justify-center text-xl ${iconBg || "bg-blue-50"}`}
+      className={`relative z-10 w-11 h-11 rounded-xl flex items-center justify-center text-xl transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 ${iconBg || "bg-[#fff1f2] text-[#be123c]"}`}
     >
       {icon}
     </div>
@@ -251,27 +251,27 @@ export const StatCard = ({
 
 // ─── PAGE HEADER ─────────────────────────────────────────────────────────────
 export const PageHeader = ({ title, sub, action }) => (
-  <div className="flex items-start justify-between mb-6 fade-up">
-    <div>
-      <h1 className="text-xl font-bold text-slate-800">{title}</h1>
-      {sub && <p className="text-sm text-slate-400 mt-0.5">{sub}</p>}
+  <div className="relative overflow-hidden flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-7 rounded-2xl border border-[#e2e8f0] bg-[#ffffff]/90 p-5 sm:p-6 shadow-[0_12px_34px_rgba(7,17,31,.055)] fade-up">
+    <div className="relative z-10">
+      <div className="mb-2 flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-[#e11d48] shadow-[0_0_0_5px_rgba(244,63,94,0.14)]" /><span className="text-[9px] font-extrabold uppercase tracking-[0.24em] text-[#be123c]">Workshop workspace</span></div><h1 className="font-[Sora] text-2xl font-extrabold tracking-[-0.045em] text-[#0f172a] sm:text-3xl">{title}</h1>
+      {sub && <p className="text-sm text-[#7c8592] mt-1">{sub}</p>}
     </div>
-    {action}
+    <div className="shrink-0">{action}</div>
   </div>
 );
 
 // ─── TABLE WRAPPER ────────────────────────────────────────────────────────────
 export const Table = ({ headers, children, empty, className }) => (
   <div
-    className={`overflow-x-auto  border-t border-slate-200 bg-white shadow-sm ${className}`}
+    className={`overflow-x-auto rounded-2xl border border-[#e2e8f0] bg-[#ffffff] shadow-[0_12px_34px_rgba(7,17,31,.055)] ${className}`}
   >
     <table className="w-full text-sm">
       <thead>
-        <tr className="border-b border-slate-100">
+        <tr className="border-b border-[#e2e8f0] bg-[#f8fafc]">
           {headers.map((h) => (
             <th
               key={h}
-              className="px-4 py-3 text-left text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
+              className="px-4 py-3 text-left text-[10px] font-extrabold text-[#64748b] uppercase tracking-[0.14em] whitespace-nowrap"
             >
               {h}
             </th>
@@ -307,7 +307,7 @@ export const EmptyState = ({ icon = "📋", title, sub }) => (
 
 // ─── SECTION TITLE ───────────────────────────────────────────────────────────
 export const SectionTitle = ({ children }) => (
-  <div className="flex items-center gap-3 text-xs font-bold text-blue-600 uppercase tracking-widest mb-3">
+  <div className="flex items-center gap-3 text-[10px] font-extrabold text-[#be123c] uppercase tracking-[0.16em] mb-3">
     {children}
     <span className="flex-1 h-px bg-slate-100" />
   </div>
@@ -363,10 +363,10 @@ export const LineItemsTable = ({
 
   return (
     <div>
-      <div className="overflow-x-auto rounded-xl border border-slate-200">
+      <div className="overflow-x-auto rounded-2xl border border-[#e2e8f0] bg-[#ffffff] shadow-sm">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-slate-50 border-b border-slate-200">
+            <tr className="bg-[#f8fafc] border-b border-[#e2e8f0]">
               {[
                 "#",
                 "Description",
@@ -379,7 +379,7 @@ export const LineItemsTable = ({
               ].map((h) => (
                 <th
                   key={h}
-                  className="px-3 py-2.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider"
+                  className="px-3 py-2.5 text-left text-[10px] font-bold text-[#64748b] uppercase tracking-[0.14em]"
                 >
                   {h}
                 </th>
@@ -389,7 +389,7 @@ export const LineItemsTable = ({
 
           <tbody>
             {items?.map((item, index) => (
-              <tr key={index} className="border-b border-slate-100">
+              <tr key={index} className="border-b border-[#e2e8f0] hover:bg-[#fff1f2]/70 transition-colors">
                 <td className="px-3 py-2">{index + 1}</td>
 
                 <td className="px-2 py-1">
@@ -398,7 +398,7 @@ export const LineItemsTable = ({
                     onChange={(e) =>
                       handleChange(index, "description", e.target.value)
                     }
-                    className="w-full border rounded-lg px-2 py-1"
+                    className="w-full border border-[#e2e8f0] bg-[#ffffff] rounded-lg px-2 py-2 outline-none focus:border-[#e11d48] focus:ring-4 focus:ring-[#e11d48]/10"
                   />
                   {formik.touched.items?.[index]?.description &&
                     formik.errors.items?.[index]?.description && (
@@ -414,7 +414,7 @@ export const LineItemsTable = ({
                     onChange={(e) =>
                       handleChange(index, "itemType", e.target.value)
                     }
-                    className="border rounded-lg px-2 py-1"
+                    className="border border-[#e2e8f0] bg-[#ffffff] rounded-lg px-2 py-2 outline-none focus:border-[#e11d48] focus:ring-4 focus:ring-[#e11d48]/10"
                   >
                     <option value="Part">Part</option>
 
@@ -431,7 +431,7 @@ export const LineItemsTable = ({
                     onChange={(e) =>
                       handleChange(index, "quantity", Number(e.target.value))
                     }
-                    className="w-16 border rounded-lg px-2 py-1"
+                    className="w-16 border border-[#e2e8f0] bg-[#ffffff] rounded-lg px-2 py-2 outline-none focus:border-[#e11d48] focus:ring-4 focus:ring-[#e11d48]/10"
                   />
                 </td>
 
@@ -442,7 +442,7 @@ export const LineItemsTable = ({
                     onChange={(e) =>
                       handleChange(index, "unitPrice", Number(e.target.value))
                     }
-                    className="w-20 border rounded-lg px-2 py-1"
+                    className="w-20 border border-[#e2e8f0] bg-[#ffffff] rounded-lg px-2 py-2 outline-none focus:border-[#e11d48] focus:ring-4 focus:ring-[#e11d48]/10"
                   />
                 </td>
 
@@ -457,7 +457,7 @@ export const LineItemsTable = ({
                     <button
                       type="button"
                       onClick={() => removeItem(index)}
-                      className="text-red-500"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-rose-50 text-rose-500 transition-colors hover:bg-rose-100"
                     >
                       ×
                     </button>
@@ -469,7 +469,7 @@ export const LineItemsTable = ({
         </table>
       </div>
 
-      <button type="button" onClick={addItem} className="mt-2 text-blue-600">
+      <button type="button" onClick={addItem} className="mt-3 inline-flex items-center rounded-lg bg-[#fff1f2] px-3 py-2 text-[#be123c] font-extrabold hover:bg-[#fecdd3] transition-colors">
         + Add Item
       </button>
     </div>
@@ -486,7 +486,7 @@ export const TotalsBox = ({
   LabourCharge = 0,
   vatPercentage = 0,
 }) => (
-  <div className="ml-auto w-64 bg-slate-50 rounded-xl border border-slate-200 p-4 mt-4 space-y-2 text-sm">
+  <div className="ml-auto w-full sm:w-80 bg-gradient-to-br from-[#f8fafc] to-[#ffffff] rounded-2xl border border-[#e2e8f0] p-5 mt-4 space-y-2.5 text-sm shadow-sm">
     <div className="flex justify-between">
       <span className="text-slate-500">Subtotal (GBP)</span>
       <span className="font-mono">{subtotal}</span>
@@ -504,7 +504,7 @@ export const TotalsBox = ({
       <span className="font-mono">{LabourCharge}</span>
     </div>
 
-    <div className="flex justify-between font-bold text-base border-t border-slate-200 pt-2">
+    <div className="flex justify-between font-bold text-base border-t border-[#e2e8f0] pt-2">
       <span>Total (GBP)</span>
       <span className="font-mono">£{total}</span>
     </div>
@@ -515,7 +515,7 @@ export const TotalsBox = ({
       </div>
     )}
     {balance !== null && (
-      <div className="flex justify-between font-bold border-t border-slate-200 pt-2">
+      <div className="flex justify-between font-bold border-t border-[#e2e8f0] pt-2">
         <span>Balance (GBP)</span>
         <span className="font-mono">£{balance}</span>
       </div>

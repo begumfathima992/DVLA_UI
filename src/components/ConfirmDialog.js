@@ -9,8 +9,8 @@ import {
   Box,
   CircularProgress,
 } from "@mui/material";
-import { DeleteIcon } from "lucide-react";
-import { FcDeleteDatabase } from "react-icons/fc";
+import { RiDeleteBin6Line } from "react-icons/ri";
+
 const ConfirmDialog = ({
   open,
   title = "Delete Customer",
@@ -21,132 +21,106 @@ const ConfirmDialog = ({
   loading = false,
   onConfirm,
   onClose,
-}) => {
-  return (
-    <Dialog
-      open={open}
-      onClose={loading ? undefined : onClose}
-      maxWidth="xs"
-      fullWidth
-      PaperProps={{
-        sx: {
-          borderRadius: 3,
-          p: 1,
-        },
-      }}
-    >
-      <DialogTitle sx={{ pb: 1 }}>
+}) => (
+  <Dialog
+    open={open}
+    onClose={loading ? undefined : onClose}
+    maxWidth="xs"
+    fullWidth
+    PaperProps={{
+      sx: {
+        overflow: "hidden",
+        border: "1px solid #e2e8f0",
+        borderRadius: "26px",
+        background: "#ffffff",
+        boxShadow: "0 40px 120px rgba(3,9,18,.42)",
+      },
+    }}
+    sx={{
+      "& .MuiBackdrop-root": {
+        backgroundColor: "rgba(3,9,18,.72)",
+        backdropFilter: "blur(10px)",
+      },
+    }}
+  >
+    <div className="h-1.5 bg-gradient-to-r from-rose-700 via-rose-500 to-orange-400" />
+    <DialogTitle sx={{ pt: 4, pb: 1 }}>
+      <Box display="flex" flexDirection="column" alignItems="center" textAlign="center">
         <Box
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          textAlign="center"
+          sx={{
+            width: 72,
+            height: 72,
+            bgcolor: "#fff1f2",
+            border: "1px solid #fecdd3",
+            borderRadius: "20px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0 14px 30px rgba(225,29,72,.12)",
+          }}
         >
-          <Box
-            sx={{
-              width: 72,
-              height: 72,
-              bgcolor: "#FEE2E2",
-              borderRadius: "50%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              alignSelf: "center",
-              mb: 10,
-              margin: "0 auto",
-            }}
-          >
-            <FcDeleteDatabase
-              sx={{
-                fontSize: 40,
-                // color: "#DC2626",
-              }}
-            />
-          </Box>
-
-          <Typography
-            variant="h5"
-            className="text-center !mt-5 !my-2"
-            fontWeight={700}
-          >
-            {title}
-          </Typography>
+          <RiDeleteBin6Line size={32} color="#e11d48" />
         </Box>
-      </DialogTitle>
-
-      <DialogContent>
-        <Typography align="center" color="text.secondary" sx={{ mb: 2 }}>
-          {message}
+        <Typography
+          variant="h5"
+          sx={{ mt: 2.5, fontFamily: "Sora, sans-serif", fontWeight: 800, color: "#0f172a", letterSpacing: "-.035em" }}
+        >
+          {title}
         </Typography>
+      </Box>
+    </DialogTitle>
 
-        {itemName && (
-          <Box
-            sx={{
-              bgcolor: "#F9FAFB",
-              border: "1px solid #E5E7EB",
-              borderRadius: 2,
-              px: 2,
-              py: 1.5,
-            }}
-          >
-            <Typography variant="body2" color="text.secondary">
-              Selected Item
-            </Typography>
+    <DialogContent sx={{ px: 3.5, pb: 1 }}>
+      <Typography align="center" sx={{ mb: 2, lineHeight: 1.75, color: "#727b88", fontSize: 14 }}>
+        {message}
+      </Typography>
+      {itemName && (
+        <Box sx={{ bgcolor: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 3, px: 2, py: 1.5 }}>
+          <Typography variant="caption" sx={{ color: "#8a919c", fontWeight: 800, textTransform: "uppercase", letterSpacing: ".14em", fontSize: 9 }}>
+            Selected item
+          </Typography>
+          <Typography fontWeight={800} sx={{ mt: 0.5, color: "#1e293b" }}>{itemName}</Typography>
+        </Box>
+      )}
+    </DialogContent>
 
-            <Typography fontWeight={600} sx={{ mt: 0.5 }}>
-              {itemName}
-            </Typography>
-          </Box>
-        )}
-      </DialogContent>
-
-      <DialogActions
+    <DialogActions sx={{ justifyContent: "center", gap: 1.5, px: 3.5, pb: 3.5, pt: 2 }}>
+      <Button
+        variant="outlined"
+        fullWidth
+        disabled={loading}
+        onClick={onClose}
         sx={{
-          justifyContent: "center",
-          gap: 2,
-          px: 3,
-          pb: 3,
+          textTransform: "none",
+          borderRadius: 3,
+          py: 1.25,
+          fontWeight: 800,
+          color: "#334155",
+          borderColor: "#e2e8f0",
+          "&:hover": { borderColor: "#e11d48", bgcolor: "#fff1f2" },
         }}
       >
-        <Button
-          variant="outlined"
-          color="inherit"
-          fullWidth
-          disabled={loading}
-          onClick={onClose}
-          sx={{
-            textTransform: "none",
-            borderRadius: 2,
-            py: 1.2,
-          }}
-        >
-          {cancelText}
-        </Button>
-
-        <Button
-          variant="contained"
-          color="error"
-          fullWidth
-          disabled={loading}
-          onClick={onConfirm}
-          sx={{
-            textTransform: "none",
-            borderRadius: 2,
-            py: 1.2,
-          }}
-        >
-          {loading ? (
-            <>
-              <CircularProgress size={18} color="inherit" sx={{ mr: 1 }} />
-              Deleting...
-            </>
-          ) : (
-            confirmText
-          )}
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-};
+        {cancelText}
+      </Button>
+      <Button
+        variant="contained"
+        fullWidth
+        disabled={loading}
+        onClick={onConfirm}
+        sx={{
+          textTransform: "none",
+          borderRadius: 3,
+          py: 1.25,
+          fontWeight: 800,
+          bgcolor: "#e11d48",
+          boxShadow: "0 12px 26px rgba(225,29,72,.22)",
+          "&:hover": { bgcolor: "#be123c" },
+        }}
+      >
+        {loading ? <><CircularProgress size={18} color="inherit" sx={{ mr: 1 }} />Deleting...</> : confirmText}
+      </Button>
+    </DialogActions>
+  </Dialog>
+);
 
 export default ConfirmDialog;

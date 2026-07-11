@@ -44,7 +44,6 @@ export default function PriorityStatusUpdate({ title, jobSheetsList, id }) {
 
   const handleUpdate = async () => {
     try {
-      console.log(selectedPriority, id, "selectedPriority");
 
       const response = await updatePriorityStatusJobSheets(id, {
         priority: selectedPriority,

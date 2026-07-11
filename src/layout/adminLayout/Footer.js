@@ -1,45 +1,21 @@
 import { fmt } from "../../utils/contents";
 
-// ─── FOOTER COMPONENT ────────────────────────────────────────────────────────
 const Footer = ({ totalReceived, openJobs, unpaidCount }) => (
-  <footer className="ml-60 border-t border-cyan-500/15 bg-[#0b1628]/60 backdrop-blur-sm">
-    <div className="px-8 py-3 flex items-center justify-between">
-      {/* Left: Branding */}
-      <div className="flex items-center gap-2 text-xs text-slate-500">
-        <span className="text-base">🚗</span>
-        <span className="font-mono">Prestige Cars Workshop Manager</span>
-        <span className="text-cyan-500/40">•</span>
+  <footer className="border-t-2 border-slate-200 bg-white/85 backdrop-blur-xl">
+    <div className="mx-auto flex max-w-[1680px] flex-col gap-3 px-6 py-4 text-xs text-slate-500 lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex items-center gap-2">
+        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-red-100">🚗</span>
+        <span className="font-bold text-slate-700">AutoForge Workshop Manager</span>
+        <span className="text-red-300">•</span>
         <span>v1.0.0</span>
       </div>
-
-      {/* Center: Live summary */}
-      <div className="flex items-center gap-6 text-xs">
-        <div className="flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
-          <span className="text-slate-400">Open Jobs:</span>
-          <span className="font-mono font-bold text-violet-400">
-            {openJobs}
-          </span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-          <span className="text-slate-400">Unpaid Invoices:</span>
-          <span className="font-mono font-bold text-amber-400">
-            {unpaidCount}
-          </span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-          <span className="text-slate-400">Total Received:</span>
-          <span className="font-mono font-bold text-emerald-400">
-            {fmt(totalReceived)}
-          </span>
-        </div>
+      <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+        <span><b className="text-violet-600">{openJobs}</b> open jobs</span>
+        <span><b className="text-amber-600">{unpaidCount}</b> unpaid invoices</span>
+        <span><b className="text-emerald-600">{fmt(totalReceived)}</b> received</span>
       </div>
-
-      {/* Right: Status */}
-      <div className="flex items-center gap-1.5 text-xs text-slate-500">
-        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
+      <div className="flex items-center gap-2 font-semibold text-emerald-600">
+        <span className="h-2 w-2 rounded-full bg-emerald-500 soft-pulse" />
         All systems operational
       </div>
     </div>

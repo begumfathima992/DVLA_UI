@@ -43,7 +43,6 @@ export default function StatusUpdate({ title, jobSheetsList, id }) {
 
   const handleUpdate = async () => {
     try {
-      console.log(selectedStatus, id, "selectedStatus");
 
       const response = await updateStatusJobSheets(id, {
         status: selectedStatus,

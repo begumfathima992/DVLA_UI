@@ -59,7 +59,7 @@ const Invoice = ({ invoices, setInvoices, onRecordPayment }) => {
     .reduce((s, i) => s + i.total, 0);
 
   const stats = [
-    { label: "Total Invoices", value: invoices.length, color: "text-cyan-400" },
+    { label: "Total Invoices", value: invoices.length, color: "text-[#be123c]" },
     {
       label: "Unpaid",
       value: invoices.filter((i) => i.status === "Unpaid").length,
@@ -74,7 +74,7 @@ const Invoice = ({ invoices, setInvoices, onRecordPayment }) => {
       label: "Outstanding",
       value: fmt(outstanding),
       sub: "Total owed",
-      color: "text-red-400",
+      color: "text-[#c99738]",
     },
   ];
 
@@ -104,7 +104,7 @@ const Invoice = ({ invoices, setInvoices, onRecordPayment }) => {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#0b1628]/60">
+                <tr className="bg-slate-50/80">
                   {[
                     "Invoice #",
                     "Customer",
@@ -128,10 +128,10 @@ const Invoice = ({ invoices, setInvoices, onRecordPayment }) => {
                 {invoices.map((inv) => (
                   <tr
                     key={inv.id}
-                    className="border-t border-cyan-500/10 hover:bg-cyan-500/5 cursor-pointer transition-colors"
+                    className="border-t border-slate-100 hover:bg-[#fff1f2] cursor-pointer transition-colors"
                     onClick={() => setViewing(inv)}
                   >
-                    <td className="px-4 py-3 font-mono text-cyan-400 font-bold text-sm">
+                    <td className="px-4 py-3 font-mono text-[#be123c] font-extrabold text-sm">
                       {inv.id}
                     </td>
                     <td className="px-4 py-3 font-semibold">{inv.customer}</td>
@@ -144,7 +144,7 @@ const Invoice = ({ invoices, setInvoices, onRecordPayment }) => {
                     <td className="px-4 py-3 font-mono text-xs text-slate-400">
                       {inv.date}
                     </td>
-                    <td className="px-4 py-3 font-mono font-bold text-cyan-400">
+                    <td className="px-4 py-3 font-mono font-bold text-red-600">
                       {fmt(inv.total)}
                     </td>
                     <td className="px-4 py-3">
@@ -313,7 +313,7 @@ const Invoice = ({ invoices, setInvoices, onRecordPayment }) => {
         >
           <div className="flex justify-between items-center mb-5">
             <Badge status={viewing.status} />
-            <span className="font-mono font-bold text-2xl text-cyan-400">
+            <span className="font-mono font-bold text-2xl text-red-600">
               {fmt(viewing.total)}
             </span>
           </div>

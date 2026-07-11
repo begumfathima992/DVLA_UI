@@ -16,6 +16,7 @@ import {
   FiChevronLeft,
   FiChevronRight,
 } from "react-icons/fi";
+import { PageHeader, BtnBlue } from "../../../components/ui/UI";
 
 // ─── DATA ─────────────────────────────────────────────────────────────────────
 const INVOICES = [
@@ -396,11 +397,11 @@ const initials = (name) =>
     .slice(0, 2);
 
 const AVATAR_COLORS = [
-  "from-blue-400 to-blue-600",
+  "from-red-400 to-red-600",
   "from-violet-400 to-violet-600",
   "from-emerald-400 to-emerald-600",
   "from-orange-400 to-orange-600",
-  "from-cyan-400 to-cyan-600",
+  "from-red-500 to-red-600",
   "from-rose-400 to-rose-600",
 ];
 const avatarColor = (name) =>
@@ -465,13 +466,13 @@ const StatCard = ({
   sub,
   subColor,
 }) => (
-  <div className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
+  <div className="premium-card rounded-2xl border border-[#e2e8f0] bg-[#ffffff] p-5 transition-all duration-300">
     <div className="flex items-start justify-between gap-3">
       <div className="min-w-0">
-        <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-1">
+        <p className="text-[9px] font-extrabold text-[#64748b] uppercase tracking-[0.16em] mb-1.5">
           {label}
         </p>
-        <p className="text-2xl font-bold text-gray-900 font-mono leading-none">
+        <p className="font-[Sora] text-2xl font-extrabold tracking-[-0.04em] text-[#0f172a] leading-none">
           {value}
         </p>
         {sub && (
@@ -494,7 +495,7 @@ const StatCard = ({
 // ─── TYPE BADGE ───────────────────────────────────────────────────────────────
 const TypeBadge = ({ type }) =>
   type === "Parts" ? (
-    <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-100">
+    <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-100">
       Parts
     </span>
   ) : (
@@ -510,15 +511,15 @@ const InvoiceModal = ({ invoice, onClose, onMarkPaid }) => {
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-start justify-center p-4 pt-10 overflow-y-auto"
+      className="fixed inset-0 z-50 bg-[#030912]/72 backdrop-blur-xl flex items-start justify-center p-4 pt-10 overflow-y-auto"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl w-full max-w-4xl shadow-2xl mb-10"
+        className="bg-[#ffffff] rounded-[26px] border border-[#e2e8f0] w-full max-w-4xl shadow-[0_38px_110px_rgba(3,9,18,.42)] mb-10 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* ── Modal Header ── */}
-        <div className="sticky top-0 bg-white z-10 px-6 py-4 border-b border-gray-100 rounded-t-2xl flex items-center justify-between">
+        <div className="sticky top-0 bg-gradient-to-r from-[#ffffff] to-[#fff1f2] z-10 px-6 py-5 border-b border-[#e2e8f0] flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
               onClick={onClose}
@@ -556,7 +557,7 @@ const InvoiceModal = ({ invoice, onClose, onMarkPaid }) => {
                 <FiCheckCircle size={13} /> Mark as Paid
               </button>
             )}
-            <button className="flex items-center gap-1.5 text-xs font-semibold bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+            <button className="gold-button flex items-center gap-1.5 text-xs font-extrabold px-3 py-2 rounded-lg transition-all">
               <FiSend size={13} /> Send Invoice
             </button>
             <button
@@ -571,7 +572,7 @@ const InvoiceModal = ({ invoice, onClose, onMarkPaid }) => {
         {/* ── Modal Body ── */}
         <div className="p-6">
           {/* 3-col info grid */}
-          <div className="grid grid-cols-3 gap-6 mb-6 pb-6 border-b border-gray-100">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 pb-6 border-b border-gray-100">
             {/* Customer */}
             <div>
               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
@@ -717,7 +718,7 @@ const InvoiceModal = ({ invoice, onClose, onMarkPaid }) => {
           </div>
 
           {/* Bottom: Payment Info + Totals */}
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Payment Info */}
             <div>
               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
@@ -968,30 +969,24 @@ export default function Invoice() {
 
   // ── Render ──
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* ── Page header ── */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between sticky top-0 z-20">
-        <div>
-          <h1 className="text-xl font-bold text-gray-900">Invoices</h1>
-          <p className="text-xs text-gray-400 mt-0.5">
-            Manage billing, VAT invoices and outstanding payments
-          </p>
-        </div>
-        <button
-          onClick={() => setShowNew(true)}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors shadow-sm shadow-blue-200"
-        >
-          <FiPlus size={16} /> New Invoice
-        </button>
-      </div>
+    <div className="min-h-screen">
+      <PageHeader
+        title="Invoices"
+        sub="Manage billing, VAT invoices and outstanding payments."
+        action={
+          <BtnBlue onClick={() => setShowNew(true)}>
+            <FiPlus size={16} /> New Invoice
+          </BtnBlue>
+        }
+      />
 
-      <div className="p-6 space-y-5">
+      <div className="space-y-5">
         {/* ── Stats strip ── */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
           <StatCard
             icon={FiFileText}
-            iconBg="bg-blue-50"
-            iconColor="text-blue-500"
+            iconBg="bg-[#fff1f2]"
+            iconColor="text-[#be123c]"
             label="Total Invoices"
             value={totalCount}
             sub="+8% this month"
@@ -999,8 +994,8 @@ export default function Invoice() {
           />
           <StatCard
             icon={FiClock}
-            iconBg="bg-red-50"
-            iconColor="text-red-500"
+            iconBg="bg-[#fff1f2]"
+            iconColor="text-[#be123c]"
             label="Unpaid"
             value={unpaidCount}
             sub={`${fmt(unpaidVal)} outstanding`}
@@ -1030,7 +1025,7 @@ export default function Invoice() {
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-3 flex-wrap flex-1">
             {/* Search */}
-            <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-3 py-2.5 flex-1 min-w-[200px] max-w-xs hover:border-blue-300 transition-colors focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-50">
+            <div className="flex items-center gap-2 bg-[#ffffff] border border-[#e2e8f0] rounded-xl px-3 py-2.5 flex-1 min-w-[200px] max-w-xs hover:border-[#e11d48] transition-colors focus-within:border-[#e11d48] focus-within:ring-4 focus-within:ring-[#e11d48]/10">
               <FiSearch size={15} className="text-gray-400 flex-shrink-0" />
               <input
                 className="bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none w-full"
@@ -1043,7 +1038,7 @@ export default function Invoice() {
             {/* Status filter */}
             <div className="relative">
               <select
-                className="appearance-none bg-white border border-gray-200 rounded-xl px-3 py-2.5 pr-8 text-sm text-gray-700 outline-none cursor-pointer hover:border-blue-300 transition-colors"
+                className="appearance-none bg-[#ffffff] border border-[#e2e8f0] rounded-xl px-3 py-2.5 pr-8 text-sm text-[#334155] outline-none cursor-pointer hover:border-[#e11d48] transition-colors"
                 value={statusF}
                 onChange={(e) => setStatusF(e.target.value)}
               >
@@ -1072,7 +1067,7 @@ export default function Invoice() {
         </div>
 
         {/* ── Table ── */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="premium-card rounded-2xl border border-[#e2e8f0] bg-[#ffffff] shadow-[0_14px_38px_rgba(7,17,31,.06)] overflow-hidden">
           {/* Table header */}
           <div
             className="grid bg-gray-50 border-b border-gray-100"
@@ -1118,7 +1113,7 @@ export default function Invoice() {
               return (
                 <div
                   key={inv.id}
-                  className="grid border-b border-gray-50 last:border-0 hover:bg-blue-50/30 cursor-pointer transition-colors group"
+                  className="grid border-b border-gray-50 last:border-0 hover:bg-red-50/30 cursor-pointer transition-colors group"
                   style={{
                     gridTemplateColumns:
                       "120px 1fr 95px 95px 90px 90px 90px 100px 110px",
@@ -1127,7 +1122,7 @@ export default function Invoice() {
                 >
                   {/* Invoice # */}
                   <div className="px-4 py-3.5 flex items-center">
-                    <span className="font-mono text-sm font-bold text-blue-600">
+                    <span className="font-mono text-sm font-bold text-red-600">
                       {inv.id}
                     </span>
                   </div>
@@ -1200,7 +1195,7 @@ export default function Invoice() {
                   >
                     <button
                       onClick={() => setSelected(inv)}
-                      className="flex items-center gap-1 text-xs font-medium text-gray-500 border border-gray-200 px-2 py-1.5 rounded-lg hover:border-blue-300 hover:text-blue-600 transition-colors"
+                      className="flex items-center gap-1 text-xs font-medium text-gray-500 border border-gray-200 px-2 py-1.5 rounded-lg hover:border-red-300 hover:text-red-600 transition-colors"
                     >
                       <FiEye size={11} /> View
                     </button>
@@ -1239,7 +1234,7 @@ export default function Invoice() {
                   className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-medium transition-colors
                     ${
                       item === "1"
-                        ? "bg-blue-600 text-white"
+                        ? "bg-[#e11d48] text-white"
                         : "border border-gray-200 text-gray-500 hover:bg-gray-50"
                     }`}
                 >
@@ -1265,15 +1260,15 @@ export default function Invoice() {
       {/* ── New Invoice Modal ── */}
       {showNew && (
         <div
-          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-start justify-center p-4 pt-10 overflow-y-auto"
+          className="fixed inset-0 z-50 bg-[#030912]/72 backdrop-blur-xl flex items-start justify-center p-4 pt-10 overflow-y-auto"
           onClick={() => setShowNew(false)}
         >
           <div
-            className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl mb-10"
+            className="bg-[#ffffff] rounded-[26px] border border-[#e2e8f0] w-full max-w-2xl shadow-[0_38px_110px_rgba(3,9,18,.42)] mb-10 overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="sticky top-0 bg-white z-10 px-6 py-4 border-b border-gray-100 rounded-t-2xl flex items-center justify-between">
+            <div className="sticky top-0 bg-gradient-to-r from-[#ffffff] to-[#fff1f2] z-10 px-6 py-5 border-b border-[#e2e8f0] flex items-center justify-between">
               <div>
                 <h3 className="font-bold text-gray-900">New Invoice</h3>
                 <p className="text-xs text-gray-400 mt-0.5">
@@ -1290,7 +1285,7 @@ export default function Invoice() {
 
             <div className="px-6 py-5 space-y-5">
               {/* Customer + Vehicle */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[
                   ["Customer", "customer", "John Smith"],
                   ["Vehicle", "vehicle", "AB12 CDE – BMW 320d"],
@@ -1303,7 +1298,7 @@ export default function Invoice() {
                     </label>
                     <input
                       type={key.includes("ate") ? "date" : "text"}
-                      className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-800 focus:border-blue-400 focus:ring-2 focus:ring-blue-50 outline-none transition-all"
+                      className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-800 focus:border-[#e11d48] focus:ring-4 focus:ring-[#e11d48]/10 outline-none transition-all"
                       placeholder={ph}
                       value={newForm[key]}
                       onChange={(e) =>
@@ -1345,7 +1340,7 @@ export default function Invoice() {
                         <tr key={i} className="border-t border-gray-50">
                           <td className="px-2 py-2">
                             <input
-                              className="w-full border border-gray-200 rounded-lg px-2.5 py-1.5 text-sm outline-none focus:border-blue-400"
+                              className="w-full border border-gray-200 rounded-lg px-2.5 py-1.5 text-sm outline-none focus:border-[#e11d48]"
                               value={it.desc}
                               onChange={(e) =>
                                 setNewItem(i, "desc", e.target.value)
@@ -1355,7 +1350,7 @@ export default function Invoice() {
                           </td>
                           <td className="px-2 py-2">
                             <select
-                              className="border border-gray-200 rounded-lg px-2.5 py-1.5 text-sm outline-none focus:border-blue-400 bg-white"
+                              className="border border-gray-200 rounded-lg px-2.5 py-1.5 text-sm outline-none focus:border-[#e11d48] bg-white"
                               value={it.type}
                               onChange={(e) =>
                                 setNewItem(i, "type", e.target.value)
@@ -1368,7 +1363,7 @@ export default function Invoice() {
                           <td className="px-2 py-2">
                             <input
                               type="number"
-                              className="w-14 border border-gray-200 rounded-lg px-2.5 py-1.5 text-sm outline-none focus:border-blue-400 text-right"
+                              className="w-14 border border-gray-200 rounded-lg px-2.5 py-1.5 text-sm outline-none focus:border-[#e11d48] text-right"
                               value={it.qty}
                               onChange={(e) =>
                                 setNewItem(i, "qty", Number(e.target.value))
@@ -1378,7 +1373,7 @@ export default function Invoice() {
                           <td className="px-2 py-2">
                             <input
                               type="number"
-                              className="w-20 border border-gray-200 rounded-lg px-2.5 py-1.5 text-sm outline-none focus:border-blue-400 text-right"
+                              className="w-20 border border-gray-200 rounded-lg px-2.5 py-1.5 text-sm outline-none focus:border-[#e11d48] text-right"
                               value={it.rate}
                               onChange={(e) =>
                                 setNewItem(i, "rate", Number(e.target.value))
@@ -1406,7 +1401,7 @@ export default function Invoice() {
                   <div className="px-3 py-2 border-t border-gray-50">
                     <button
                       onClick={addNewItem}
-                      className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                      className="inline-flex items-center gap-1 rounded-lg bg-[#fff1f2] px-3 py-2 text-xs font-extrabold text-[#be123c] transition-colors hover:bg-[#fecdd3]"
                     >
                       <FiPlus size={12} /> Add line item
                     </button>
@@ -1414,7 +1409,7 @@ export default function Invoice() {
                 </div>
 
                 {/* Mini totals */}
-                <div className="mt-3 p-3 bg-gray-50 rounded-xl border border-gray-100 space-y-1.5 text-sm">
+                <div className="mt-3 p-4 bg-gradient-to-br from-[#f8fafc] to-[#ffffff] rounded-xl border border-[#e2e8f0] space-y-1.5 text-sm">
                   {[
                     ["Subtotal", fmt(newSub)],
                     ["VAT (20%)", fmt(newVat)],
@@ -1439,7 +1434,7 @@ export default function Invoice() {
                   Notes
                 </label>
                 <textarea
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-50 resize-y min-h-[72px] transition-all"
+                  className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-[#e11d48] focus:ring-4 focus:ring-[#e11d48]/10 resize-y min-h-[72px] transition-all"
                   placeholder="Payment terms, notes for customer..."
                   value={newForm.notes}
                   onChange={(e) =>
@@ -1458,7 +1453,7 @@ export default function Invoice() {
               </button>
               <button
                 onClick={saveNew}
-                className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-colors shadow-sm shadow-blue-200"
+                className="gold-button flex items-center gap-2 px-5 py-2.5 text-sm font-extrabold rounded-xl transition-all"
               >
                 <FiFileText size={14} /> Create Invoice
               </button>

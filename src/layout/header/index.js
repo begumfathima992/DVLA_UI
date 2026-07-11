@@ -1,338 +1,186 @@
-import { useEffect, useState, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
-import {
-  motion,
-  AnimatePresence,
-  useScroll,
-  useTransform,
-} from "framer-motion";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { ArrowRight, Menu, ShieldCheck, UserRound, X, Zap } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import Login from "../../page/auth/Login";
 
-function Header() {
-  const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+const navItems = [
+  { label: "Home", path: "/" },
+  { label: "Vehicle Search", path: "/find-vehicle" },
+  { label: "Services", path: "/services" },
+  { label: "Contact", path: "/contact" },
+];
+
+export default function Header() {
+  const [loginOpen, setLoginOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [hoveredIdx, setHoveredIdx] = useState(null);
+  const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const navRef = useRef(null);
+  const isLoggedIn = Boolean(localStorage.getItem("token"));
 
-  /* scroll detection */
   useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", fn);
-    return () => window.removeEventListener("scroll", fn);
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  /* close mobile on route change */
-  useEffect(() => {
+  useEffect(() => setMobileOpen(false), [location.pathname]);
+
+  const goTo = (path) => {
     setMobileOpen(false);
-  }, [location.pathname]);
-
-  const navItems = [
-    { label: "Home", path: "/" },
-    { label: "Vehicle Search", path: "/find-vehicle" },
-    { label: "Services", path: "/services" },
-    { label: "Contact", path: "/contact" },
-  ];
-
-  const activeIdx = navItems.findIndex((i) => i.path === location.pathname);
-  const pillIdx = hoveredIdx !== null ? hoveredIdx : activeIdx;
-
-  const handleNav = (path) => {
     navigate(path);
-    setMobileOpen(false);
+  };
+
+  const handleAccount = () => {
+    if (isLoggedIn) {
+      navigate("/dashboard");
+      return;
+    }
+    setLoginOpen(true);
   };
 
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
-
-        /* pill shimmer */
-        @keyframes shimmer {
-          0%   { background-position: -200% center; }
-          100% { background-position:  200% center; }
-        }
-        .pill-shimmer {
-          background: linear-gradient(
-            105deg,
-            #dc2626 0%,
-            #ef4444 40%,
-            #fca5a5 50%,
-            #ef4444 60%,
-            #dc2626 100%
-          );
-          background-size: 200% auto;
-          animation: shimmer 2.8s linear infinite;
-        }
-
-        /* nav glow on scroll */
-        .nav-scrolled {
-          box-shadow:
-            0 1px 0 rgba(220,38,38,0.08),
-            0 4px 24px rgba(0,0,0,0.06);
-        }
-
-        /* logo icon spin */
-        .logo-icon { transition: transform 0.4s cubic-bezier(0.22,1,0.36,1); }
-        .logo-wrap:hover .logo-icon { transform: rotate(15deg) scale(1.08); }
-
-        /* login btn */
-        .login-btn {
-          position: relative; overflow: hidden;
-          transition: color 0.2s, border-color 0.2s;
-        }
-        .login-btn::before {
-          content: '';
-          position: absolute; inset: 0;
-          background: #dc2626;
-          transform: translateY(101%);
-          transition: transform 0.28s cubic-bezier(0.22,1,0.36,1);
-          z-index: 0;
-        }
-        .login-btn:hover::before { transform: translateY(0); }
-        .login-btn:hover { color: #fff; border-color: #dc2626; }
-        .login-btn span { position: relative; z-index: 1; }
-
-        /* mobile item */
-        .mobile-item { transition: background 0.18s, color 0.18s, transform 0.18s; }
-        .mobile-item:active { transform: scale(0.97); }
-
-        /* active border glow */
-        .nav-active-glow {
-          box-shadow: 0 0 0 1px rgba(220,38,38,0.18), 0 4px 16px rgba(220,38,38,0.15);
-        }
-      `}</style>
-
-      <motion.nav
-        initial={{ y: -72, opacity: 0 }}
+      <motion.header
+        initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300
-          ${
-            scrolled
-              ? "bg-white/96 backdrop-blur-xl border-b-2 border-slate-300 nav-scrolled"
-              : "bg-white/85 backdrop-blur-md border-b-2 border-slate-200"
-          }`}
+        transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+        className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${scrolled ? "py-2" : "py-3.5"}`}
       >
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center justify-between h-16">
-            {/* ── LOGO ── */}
-            <motion.div
-              onClick={() => handleNav("/")}
-              className="logo-wrap flex items-center gap-2.5 cursor-pointer select-none"
-              whileTap={{ scale: 0.96 }}
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div
+            className={`flex h-[68px] items-center justify-between rounded-[20px] border px-3.5 transition-all duration-300 sm:px-4 ${
+              scrolled
+                ? "border-slate-200/90 bg-white/92 shadow-[0_16px_50px_rgba(15,23,42,.1)] backdrop-blur-2xl"
+                : "border-white/80 bg-white/78 shadow-[0_10px_35px_rgba(15,23,42,.07)] backdrop-blur-xl"
+            }`}
+          >
+            <motion.button
+              type="button"
+              whileTap={{ scale: 0.97 }}
+              onClick={() => goTo("/")}
+              className="group flex items-center gap-3 rounded-xl text-left"
+              aria-label="Go to home"
             >
-              <div className="logo-icon w-9 h-9 bg-red-600 rounded-xl flex items-center justify-center shadow-md shadow-red-200 border border-red-700">
-                <svg
-                  className="w-5 h-5 text-white"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2.5}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
-              </div>
-              <span
-                className="font-black text-2xl text-slate-900 tracking-wide"
-                style={{ fontFamily: "'Bebas Neue', cursive" }}
-              >
-                AUTO<span className="text-red-600">FORGE</span>
+              <span className="relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-rose-500 to-rose-700 text-white shadow-[0_10px_25px_rgba(225,29,72,.24)]">
+                <span className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,.45),transparent_48%)]" />
+                <Zap size={20} className="relative transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" />
               </span>
-            </motion.div>
+              <span>
+                <span className="block font-[Sora] text-[19px] font-extrabold tracking-[-0.045em] text-slate-950 sm:text-xl">
+                  Auto<span className="text-rose-600">Forge</span>
+                </span>
+                <span className="hidden text-[8px] font-extrabold uppercase tracking-[0.2em] text-slate-400 sm:block">Garage management</span>
+              </span>
+            </motion.button>
 
-            {/* ── DESKTOP NAV PILL ── */}
-            <div
-              ref={navRef}
-              className="hidden md:flex items-center relative bg-slate-100 rounded-3xl p-1 border-2 border-slate-300"
-            >
-              {/* sliding pill */}
-              <motion.div
-                className="pill-shimmer absolute top-1 bottom-1 rounded-3xl nav-active-glow"
-                animate={{
-                  left: `calc(${pillIdx * 25}% + 0px)`,
-                  width: "25%",
-                  opacity: pillIdx >= 0 ? 1 : 0,
-                }}
-                transition={{ type: "spring", stiffness: 340, damping: 28 }}
-              />
-
-              {navItems.map((item, i) => {
-                const isActive = location.pathname === item.path;
+            <nav className="relative hidden items-center rounded-2xl border border-slate-200 bg-slate-50/90 p-1 md:flex">
+              {navItems.map((item) => {
+                const active = location.pathname === item.path;
                 return (
-                  <motion.button
+                  <button
                     key={item.path}
-                    onClick={() => handleNav(item.path)}
-                    onHoverStart={() => setHoveredIdx(i)}
-                    onHoverEnd={() => setHoveredIdx(null)}
-                    whileTap={{ scale: 0.95 }}
-                    className={`relative px-7 py-2.5 text-sm font-semibold capitalize transition-colors rounded-3xl z-10 select-none
-                      ${isActive || hoveredIdx === i ? "" : "text-slate-500 hover:text-slate-800"}`}
+                    type="button"
+                    onClick={() => goTo(item.path)}
+                    className={`relative rounded-xl px-4 py-2.5 text-[12px] font-extrabold transition-colors lg:px-5 ${active ? "text-white" : "text-slate-500 hover:text-slate-900"}`}
                   >
-                    {item.label}
-
-                    {/* active dot */}
-                    {isActive && (
+                    {active && (
                       <motion.span
-                        layoutId="nav-dot"
-                        className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 bg-white/70 rounded-full"
+                        layoutId="light-public-nav"
+                        className="absolute inset-0 rounded-xl bg-gradient-to-r from-rose-500 to-rose-600 shadow-[0_8px_20px_rgba(225,29,72,.2)]"
+                        transition={{ type: "spring", stiffness: 360, damping: 30 }}
                       />
                     )}
-                  </motion.button>
+                    <span className="relative z-10">{item.label}</span>
+                  </button>
                 );
               })}
-            </div>
+            </nav>
 
-            {/* ── LOGIN BUTTON ── */}
-            <div className="hidden md:block">
+            <div className="hidden items-center gap-3 md:flex">
+              <span className="hidden items-center gap-2 text-[10px] font-bold text-slate-400 xl:flex">
+                <ShieldCheck size={15} className="text-emerald-500" /> Secure portal
+              </span>
               <motion.button
-                onClick={() => setOpen(true)}
-                whileTap={{ scale: 0.96 }}
-                className="login-btn text-red-600 border-2 border-red-300 bg-red-50 px-6 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2"
+                type="button"
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={handleAccount}
+                className="primary-action inline-flex items-center gap-2 rounded-xl px-5 py-3 text-[12px] font-extrabold text-white"
               >
-                <span className="flex items-center gap-2">
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0zM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632z"
-                    />
-                  </svg>
-                  Login / Sign up
-                </span>
+                <UserRound size={16} />
+                {isLoggedIn ? "Dashboard" : "Login / Sign up"}
               </motion.button>
             </div>
 
-            {/* ── HAMBURGER ── */}
             <motion.button
-              onClick={() => setMobileOpen((p) => !p)}
-              whileTap={{ scale: 0.9, rotate: 10 }}
-              className="md:hidden text-slate-700 p-2 rounded-xl border-2 border-slate-300 bg-white hover:border-red-300 hover:text-red-600 transition-all"
-              aria-label="Toggle menu"
+              type="button"
+              whileTap={{ scale: 0.92 }}
+              onClick={() => setMobileOpen((value) => !value)}
+              className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm md:hidden"
+              aria-label="Toggle navigation"
             >
               <AnimatePresence mode="wait" initial={false}>
                 {mobileOpen ? (
-                  <motion.span
-                    key="x"
-                    initial={{ rotate: -90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: 90, opacity: 0 }}
-                    transition={{ duration: 0.18 }}
-                  >
-                    <X size={22} />
+                  <motion.span key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }}>
+                    <X size={21} />
                   </motion.span>
                 ) : (
-                  <motion.span
-                    key="men"
-                    initial={{ rotate: 90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: -90, opacity: 0 }}
-                    transition={{ duration: 0.18 }}
-                  >
-                    <Menu size={22} />
+                  <motion.span key="menu" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }}>
+                    <Menu size={21} />
                   </motion.span>
                 )}
               </AnimatePresence>
             </motion.button>
           </div>
 
-          {/* ── MOBILE MENU ── */}
           <AnimatePresence>
             {mobileOpen && (
               <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                className="md:hidden border-t-2 border-slate-300 py-4 px-2 overflow-hidden bg-white"
+                initial={{ opacity: 0, y: -10, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.98 }}
+                transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                className="mt-2 overflow-hidden rounded-[20px] border border-slate-200 bg-white/96 p-3 shadow-[0_24px_65px_rgba(15,23,42,.14)] backdrop-blur-2xl md:hidden"
               >
-                <div className="flex flex-col gap-1.5">
-                  {navItems.map((item, i) => {
-                    const isActive = location.pathname === item.path;
+                <div className="space-y-1">
+                  {navItems.map((item, index) => {
+                    const active = location.pathname === item.path;
                     return (
                       <motion.button
                         key={item.path}
-                        onClick={() => handleNav(item.path)}
-                        initial={{ opacity: 0, x: -16 }}
+                        type="button"
+                        initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{
-                          delay: i * 0.055,
-                          duration: 0.3,
-                          ease: [0.22, 1, 0.36, 1],
-                        }}
-                        className={`mobile-item text-left px-5 py-3.5 rounded-xl text-base font-semibold
-                          ${
-                            isActive
-                              ? "bg-red-600 text-white shadow-md shadow-red-200 border border-red-700"
-                              : "text-slate-600 hover:bg-slate-100 border border-transparent"
-                          }`}
+                        transition={{ delay: index * 0.04 }}
+                        onClick={() => goTo(item.path)}
+                        className={`flex w-full items-center justify-between rounded-xl px-4 py-3.5 text-left text-sm font-extrabold ${active ? "bg-rose-50 text-rose-600" : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"}`}
                       >
-                        <span className="flex items-center gap-3">
-                          {isActive && (
-                            <motion.span
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
-                              className="w-1.5 h-1.5 bg-white rounded-full"
-                            />
-                          )}
-                          {item.label}
-                        </span>
+                        {item.label}
+                        <ArrowRight size={16} />
                       </motion.button>
                     );
                   })}
-
-                  <motion.button
-                    onClick={() => {
-                      setOpen(true);
-                      setMobileOpen(false);
-                    }}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      delay: navItems.length * 0.055,
-                      duration: 0.3,
-                    }}
-                    whileTap={{ scale: 0.97 }}
-                    className="mt-2 bg-red-600 hover:bg-red-700 text-white py-3.5 rounded-xl font-semibold text-base transition-all border-2 border-red-700 shadow-md shadow-red-100 flex items-center justify-center gap-2"
-                  >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0zM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632z"
-                      />
-                    </svg>
-                    Login / Sign Up
-                  </motion.button>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileOpen(false);
+                    handleAccount();
+                  }}
+                  className="primary-action mt-3 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-extrabold text-white"
+                >
+                  <UserRound size={16} /> {isLoggedIn ? "Open dashboard" : "Login / Sign up"}
+                </button>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
+      </motion.header>
 
-        <Login open={open} setOpen={setOpen} />
-      </motion.nav>
+      <Login open={loginOpen} setOpen={setLoginOpen} />
     </>
   );
 }
-
-export default Header;

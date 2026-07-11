@@ -95,8 +95,8 @@ export default function Contact() {
         animate={{
           boxShadow:
             focusedField === fieldKey
-              ? "0 0 0 3px rgba(220,38,38,0.1)"
-              : "0 0 0 0px rgba(220,38,38,0)",
+              ? "0 0 0 3px rgba(244,63,94,0.13)"
+              : "0 0 0 0px rgba(244,63,94,0)",
         }}
         transition={{ duration: 0.2 }}
         style={{ borderRadius: 12 }}
@@ -106,53 +106,46 @@ export default function Contact() {
           placeholder={ph}
           onFocus={() => setFocusedField(fieldKey)}
           onBlur={() => setFocusedField(null)}
-          className="w-full bg-slate-50 border-2 border-slate-300 focus:border-red-500 focus:bg-white rounded-xl px-4 py-3 text-sm text-slate-800 outline-none transition-colors placeholder-slate-300"
+          className="w-full bg-[#f8fafc] border border-[#e2e8f0] focus:border-[#e11d48] focus:bg-[#ffffff] focus:ring-4 focus:ring-[#e11d48]/10 rounded-xl px-4 py-3 text-sm text-[#1e293b] outline-none transition-all placeholder:text-[#94a3b8]"
         />
       </motion.div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 overflow-x-hidden">
+    <div className="public-page contact-page min-h-screen overflow-x-hidden">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+        
 
         @media (prefers-reduced-motion: reduce) {
           *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
         }
       `}</style>
 
-      <motion.nav
-        initial={{ y: -64, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed top-0 left-0 right-0 z-50"
-      >
-        <Header />
-      </motion.nav>
+      <Header />
 
       {/* ── HERO ── */}
-      <section className="relative bg-white border-b-2 border-slate-300 pt-32 pb-14 overflow-hidden">
+      <section className="public-inner-hero relative border-b border-slate-200 bg-gradient-to-b from-white to-slate-50 pt-36 pb-20 overflow-hidden">
         <div
           className="absolute inset-0 opacity-[0.035] pointer-events-none"
           style={{
             backgroundImage:
-              "linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)",
+              "linear-gradient(rgba(15,23,42,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,.05) 1px, transparent 1px)",
             backgroundSize: "52px 52px",
           }}
         />
-        <div className="absolute top-0 right-0 w-[480px] h-[480px] bg-red-50 rounded-full blur-3xl opacity-60 pointer-events-none" />
+        <div className="absolute top-0 right-0 w-[480px] h-[480px] bg-[#e11d48]/15 rounded-full blur-3xl opacity-70 pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: -14 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 bg-red-50 border-2 border-red-300 rounded-full px-5 py-1.5 text-xs font-semibold tracking-widest text-red-600 mb-5"
+            className="inline-flex items-center gap-2 rounded-full border border-[#e11d48]/30 bg-[#e11d48]/10 px-5 py-2 text-[10px] font-extrabold tracking-[0.2em] text-[#fb7185] mb-5"
           >
             <motion.span
               animate={{ opacity: [1, 0.3, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
-              className="w-1.5 h-1.5 bg-red-500 rounded-full"
+              className="w-1.5 h-1.5 bg-[#fb7185] rounded-full shadow-[0_0_0_5px_rgba(244,63,94,.12)]"
             />
             WE'D LOVE TO HEAR FROM YOU
           </motion.div>
@@ -165,17 +158,17 @@ export default function Contact() {
               duration: 0.6,
               ease: [0.22, 1, 0.36, 1],
             }}
-            className="text-6xl md:text-7xl font-black tracking-wide text-slate-900 mb-3"
-            style={{ fontFamily: "'Bebas Neue', cursive" }}
+            className="font-[Sora] text-5xl md:text-7xl font-extrabold tracking-[-0.055em] text-slate-950 mb-4"
+            style={{ fontFamily: "'Sora', sans-serif" }}
           >
-            GET IN <span className="text-red-600">TOUCH</span>
+            GET IN <span className="gold-text">TOUCH</span>
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.18, duration: 0.5 }}
-            className="text-slate-500 text-lg"
+            className="text-slate-500 text-base md:text-lg"
           >
             We're here to help keep your car in perfect condition.
           </motion.p>
@@ -201,12 +194,12 @@ export default function Contact() {
                   transition: { type: "spring", stiffness: 300, damping: 20 },
                 }}
                 data-hover
-                className="flex gap-4 bg-white border-2 border-slate-300 rounded-2xl p-5 hover:border-red-400 hover:shadow-lg hover:shadow-red-50 transition-all"
+                className="premium-card flex gap-4 rounded-2xl border border-[#e2e8f0] bg-[#ffffff] p-5 transition-all"
               >
                 <motion.div
                   whileHover={{ scale: 1.1, rotate: 6 }}
                   transition={{ type: "spring", stiffness: 300 }}
-                  className="w-11 h-11 bg-red-50 border-2 border-red-300 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+                  className="w-11 h-11 bg-[#fff1f2] border border-[#fb7185] rounded-xl flex items-center justify-center text-xl flex-shrink-0"
                 >
                   {item.icon}
                 </motion.div>
@@ -245,11 +238,11 @@ export default function Contact() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             whileHover={{ boxShadow: "0 18px 48px rgba(0,0,0,0.07)" }}
-            className="bg-white border-2 border-slate-300 rounded-2xl p-8 shadow-md transition-shadow"
+            className="premium-card rounded-[26px] border border-[#e2e8f0] bg-[#ffffff] p-8 transition-shadow"
           >
             <h2
-              className="text-3xl font-black text-slate-900 mb-1"
-              style={{ fontFamily: "'Bebas Neue', cursive" }}
+              className="font-[Sora] text-3xl font-extrabold tracking-[-0.04em] text-[#0f172a] mb-1"
+              style={{ fontFamily: "'Sora', sans-serif" }}
             >
               Send Us a Message
             </h2>
@@ -301,8 +294,8 @@ export default function Contact() {
                       animate={{
                         boxShadow:
                           focusedField === "message"
-                            ? "0 0 0 3px rgba(220,38,38,0.1)"
-                            : "0 0 0 0px rgba(220,38,38,0)",
+                            ? "0 0 0 3px rgba(244,63,94,0.13)"
+                            : "0 0 0 0px rgba(244,63,94,0)",
                       }}
                       transition={{ duration: 0.2 }}
                       style={{ borderRadius: 12 }}
@@ -312,7 +305,7 @@ export default function Contact() {
                         rows={5}
                         onFocus={() => setFocusedField("message")}
                         onBlur={() => setFocusedField(null)}
-                        className="w-full bg-slate-50 border-2 border-slate-300 focus:border-red-500 focus:bg-white rounded-xl px-4 py-3 text-sm text-slate-800 outline-none transition-colors resize-none placeholder-slate-300"
+                        className="w-full resize-none rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-4 py-3 text-sm text-[#1e293b] outline-none transition-all placeholder:text-[#94a3b8] focus:border-[#e11d48] focus:bg-[#ffffff] focus:ring-4 focus:ring-[#e11d48]/10"
                       />
                     </motion.div>
                   </div>
@@ -321,10 +314,10 @@ export default function Contact() {
                     type="submit"
                     whileHover={{
                       scale: 1.02,
-                      boxShadow: "0 10px 32px rgba(220,38,38,0.25)",
+                      boxShadow: "0 12px 34px rgba(244,63,94,0.28)",
                     }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-xl text-base transition-colors shadow-md shadow-red-100 mt-1 border-2 border-red-700 flex items-center justify-center gap-2"
+                    className="gold-button w-full py-4 rounded-xl text-base font-extrabold transition-all mt-1 flex items-center justify-center gap-2"
                   >
                     <AnimatePresence mode="wait" initial={false}>
                       {formStatus === "idle" && (
@@ -395,7 +388,7 @@ export default function Contact() {
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.96 }}
                     onClick={() => setFormStatus("idle")}
-                    className="text-red-600 font-semibold text-sm border-2 border-red-300 bg-red-50 hover:bg-red-100 px-5 py-2.5 rounded-xl transition-colors"
+                    className="text-[#be123c] font-extrabold text-sm border border-[#e2c37a] bg-[#fff1f2] hover:bg-[#fecdd3] px-5 py-2.5 rounded-xl transition-colors"
                   >
                     Send Another Message
                   </motion.button>
@@ -413,8 +406,8 @@ export default function Contact() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          whileHover={{ borderColor: "#fca5a5" }}
-          className="relative bg-white border-2 border-slate-300 rounded-2xl overflow-hidden h-64 flex items-center justify-center transition-colors"
+          whileHover={{ borderColor: "#e11d48" }}
+          className="premium-card relative bg-[#ffffff] border border-[#e2e8f0] rounded-[26px] overflow-hidden h-64 flex items-center justify-center transition-colors"
         >
           <div
             className="absolute inset-0 opacity-[0.04] pointer-events-none"
@@ -444,7 +437,7 @@ export default function Contact() {
               target="_blank"
               rel="noopener noreferrer"
               data-hover
-              className="text-red-600 text-sm font-semibold hover:underline mt-1 block"
+              className="text-[#be123c] text-sm font-extrabold hover:underline mt-1 block"
             >
               Open in Google Maps →
             </a>
@@ -453,12 +446,12 @@ export default function Contact() {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer className="border-t-2 border-slate-300 bg-white py-10 text-center">
+      <footer className="border-t border-slate-200 bg-white py-12 text-center">
         <div
-          className="text-slate-900 font-black text-2xl mb-1"
-          style={{ fontFamily: "'Bebas Neue', cursive" }}
+          className="font-[Sora] text-slate-950 font-extrabold text-2xl mb-1 tracking-[-0.04em]"
+          style={{ fontFamily: "'Sora', sans-serif" }}
         >
-          AUTO<span className="text-red-600">FORGE</span> GARAGE
+          AUTO<span className="gold-text">FORGE</span> GARAGE
         </div>
         <p className="text-slate-400 text-xs">
           14-B Industrial Estate, Lucknow UP 226001 · +91 522 400 1234 · Mon–Sat

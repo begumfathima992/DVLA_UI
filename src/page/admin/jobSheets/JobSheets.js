@@ -203,7 +203,6 @@ export default function JobSheets() {
     },
   });
 
-  console.log(formik.errors, "payload");
   const customerList = async () => {
     try {
       const response = await fetchCustomers();
@@ -254,7 +253,6 @@ export default function JobSheets() {
 
   const handleEditFun = (row) => {
     const estimate = row;
-    console.log(estimate, "estimate");
 
     setFormEdit(row || null);
     formik.setValues({
@@ -300,7 +298,6 @@ export default function JobSheets() {
     setShowNew(false);
   };
 
-  console.log(formEdit, "formEdit");
 
   return (
     <div className="fade-up space-y-5">
@@ -310,12 +307,12 @@ export default function JobSheets() {
       />
 
       <Card>
-        <div className="p-4 border-b border-slate-100">
+        <div className="border-b border-[#e2e8f0] bg-[#f8fafc]/70 p-4">
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search estimates..."
-            className="border border-slate-200 rounded-xl px-3 py-2 text-sm w-72 outline-none focus:border-blue-400"
+            className="w-full rounded-xl border border-[#e2e8f0] bg-[#ffffff] px-3.5 py-2.5 text-sm text-[#334155] outline-none transition focus:border-[#e11d48] focus:ring-4 focus:ring-[#e11d48]/10 sm:w-80"
           />
         </div>
         <Table
@@ -340,7 +337,7 @@ export default function JobSheets() {
                 className="border-b border-slate-50 hover:bg-slate-50 transition-colors cursor-pointer"
                 // onClick={() => setViewing(est)}
               >
-                <td className="px-4 py-3 font-mono text-blue-600 font-semibold text-sm">
+                <td className="px-4 py-3 font-mono text-[#be123c] font-extrabold text-sm">
                   {est?.jobNumber}
                 </td>
                 <td className="px-4 py-3 font-medium text-slate-800">
@@ -383,13 +380,13 @@ export default function JobSheets() {
                   <div className="flex gap-1.5">
                     <button
                       onClick={() => setViewing(est)}
-                      className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-blue-50 hover:text-blue-600 flex items-center justify-center text-slate-500"
+                      className="w-8 h-8 rounded-lg bg-[#f8fafc] hover:bg-[#fff1f2] hover:text-[#be123c] border border-[#e2e8f0] flex items-center justify-center text-[#6f7783] transition-all hover:-translate-y-0.5"
                     >
                       <RiEyeLine />
                     </button>
                     <button
                       onClick={() => handleEditFun(est)}
-                      className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-blue-50 hover:text-blue-600 flex items-center justify-center text-slate-500 transition-colors"
+                      className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#e2e8f0] bg-[#f8fafc] text-[#64748b] transition hover:border-[#e11d48] hover:bg-[#fff1f2] hover:text-[#be123c]"
                     >
                       <RiEditLine />
                     </button>
@@ -421,7 +418,7 @@ export default function JobSheets() {
           <div className="space-y-5">
             <div>
               <SectionTitle>👤 Customer & Vehicle</SectionTitle>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Select
                   label="Customer *"
                   value={formik.values?.customerId || ""}
@@ -485,7 +482,7 @@ export default function JobSheets() {
                   type="number"
                   placeholder="Eg. 1200"
                 />
-                <div className="col-span-3 font-medium text-blue-600">
+                <div className="md:col-span-3 font-medium text-red-600">
                   Other Details
                 </div>
                 <CustomInput

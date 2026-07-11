@@ -1,52 +1,27 @@
 const CustomModal = ({ title, sub, onClose, children, footer }) => (
   <div
-    className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+    className="fixed inset-0 z-50 flex items-center justify-center bg-[#030912]/72 p-4 backdrop-blur-xl"
     onClick={onClose}
   >
-    <style>{`
-      @keyframes slideUp {
-        from { opacity: 0; transform: translateY(16px); }
-        to   { opacity: 1; transform: translateY(0); }
-      }
-      .modal-enter { animation: slideUp 0.25s ease; }
-    `}</style>
-
     <div
-      className="modal-enter bg-[#112240] border border-cyan-500/20 rounded-2xl
-        w-full max-w-3xl max-h-[88vh] overflow-y-auto
-        shadow-[0_32px_80px_rgba(0,0,0,0.5)]
-        scrollbar-thin scrollbar-thumb-[#1a3157] scrollbar-track-transparent"
+      className="fade-up max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-[26px] border border-[#e2e8f0] bg-[#ffffff] shadow-[0_36px_110px_rgba(3,9,18,.42)]"
       onClick={(e) => e.stopPropagation()}
     >
-      {/* Header */}
-      <div
-        className="sticky top-0 bg-[#112240] z-10 px-7 pt-6 pb-4
-        border-b border-cyan-500/20 flex items-start justify-between rounded-t-2xl"
-      >
+      <div className="sticky top-0 z-10 flex items-start justify-between border-b border-[#e2e8f0] bg-gradient-to-r from-[#ffffff] to-[#fff1f2] px-7 py-5">
         <div>
-          <div className="text-lg font-bold text-white">{title}</div>
-          {sub && <div className="text-xs text-slate-400 mt-0.5">{sub}</div>}
+          <div className="font-[Sora] text-lg font-extrabold tracking-[-0.03em] text-[#0f172a]">{title}</div>
+          {sub && <div className="mt-1 text-xs text-[#64748b]">{sub}</div>}
         </div>
         <button
           onClick={onClose}
-          className="w-8 h-8 rounded-lg bg-slate-500/10 hover:bg-red-500/15
-            hover:text-red-400 text-slate-400 flex items-center justify-center transition-all"
+          className="flex h-9 w-9 items-center justify-center rounded-xl text-[#64748b] transition hover:bg-[#fff1f2] hover:text-[#be123c]"
         >
           ✕
         </button>
       </div>
-
-      {/* Body */}
       <div className="px-7 py-6">{children}</div>
-
-      {/* Footer */}
       {footer && (
-        <div
-          className="px-7 py-4 border-t border-cyan-500/20 flex justify-end gap-2.5
-          bg-[#0b1628]/40 rounded-b-2xl"
-        >
-          {footer}
-        </div>
+        <div className="flex justify-end gap-2.5 border-t border-[#e2e8f0] bg-[#f8fafc] px-7 py-4">{footer}</div>
       )}
     </div>
   </div>

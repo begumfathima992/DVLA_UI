@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Header from "../../layout/header";
 import { motion, useInView } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 /* ─── MAGNETIC BUTTON ──────────────────────────────────────────────────── */
 function MagneticBtn({ children, className = "", onClick, style }) {
@@ -48,8 +49,8 @@ const services = [
     title: "Routine Maintenance",
     desc: "Oil changes, filter replacements, tire rotation & full servicing",
     icon: "🔧",
-    accent: "bg-red-50 border-red-200",
-    iconBg: "bg-red-100 border-red-300",
+    accent: "bg-[#fff1f2] border-[#fecdd3]",
+    iconBg: "bg-[#fff1f2] border-[#fb7185]",
   },
   {
     title: "Engine Repair",
@@ -101,7 +102,7 @@ function ServiceCard({ service, index }) {
         transition: { type: "spring", stiffness: 280, damping: 18 },
       }}
       data-hover
-      className="group relative bg-white border-2 border-slate-300 hover:border-red-400 rounded-2xl p-8 cursor-pointer overflow-hidden transition-colors duration-300 hover:shadow-xl hover:shadow-red-100"
+      className="premium-card group relative rounded-2xl border border-[#e2e8f0] bg-[#ffffff] p-8 cursor-pointer overflow-hidden transition-all duration-300"
     >
       {/* top accent line sweep */}
       {/* <motion.div
@@ -111,11 +112,11 @@ function ServiceCard({ service, index }) {
       /> */}
       {/* subtle bg wash */}
       <motion.div
-        className="absolute inset-0 bg-gradient-to-br from-red-50/0 to-transparent pointer-events-none rounded-2xl"
+        className="absolute inset-0 bg-gradient-to-br from-[#fff1f2]/0 to-transparent pointer-events-none rounded-2xl"
         animate={{
           opacity: hovered ? 1 : 0,
           background: hovered
-            ? "linear-gradient(135deg, rgba(220,38,38,0.04), transparent 70%)"
+            ? "linear-gradient(135deg, rgba(244,63,94,0.10), transparent 70%)"
             : "transparent",
         }}
         transition={{ duration: 0.3 }}
@@ -135,7 +136,7 @@ function ServiceCard({ service, index }) {
         {service.desc}
       </p>
       <motion.button
-        className="relative z-10 mt-6 text-red-600 hover:text-red-700 font-semibold text-sm flex items-center gap-1.5"
+        className="relative z-10 mt-6 text-[#be123c] hover:text-[#9f1239] font-extrabold text-sm flex items-center gap-1.5"
         animate={{ gap: hovered ? 12 : 6 }}
         transition={{ duration: 0.25 }}
       >
@@ -152,52 +153,46 @@ function ServiceCard({ service, index }) {
 }
 
 export default function Service() {
+  const navigate = useNavigate();
   return (
     <div
-      className="min-h-screen bg-slate-50 text-slate-900 overflow-x-hidden"
+      className="public-page service-page min-h-screen overflow-x-hidden"
       // style={{ cursor: "none" }}
     >
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+        
        
         @media (prefers-reduced-motion: reduce) {
           *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
         }
       `}</style>
 
-      <motion.nav
-        initial={{ y: -64, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed top-0 left-0 right-0 z-50"
-      >
-        <Header />
-      </motion.nav>
+      <Header />
 
       {/* ── HERO ── */}
-      <section className="relative bg-white border-b-2 border-slate-300 pt-32 pb-16 overflow-hidden">
+      <section className="public-inner-hero relative border-b border-slate-200 bg-gradient-to-b from-white to-slate-50 pt-36 pb-20 overflow-hidden">
         {/* grid bg */}
         <div
           className="absolute inset-0 opacity-[0.035] pointer-events-none"
           style={{
             backgroundImage:
-              "linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)",
+              "linear-gradient(rgba(15,23,42,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,.05) 1px, transparent 1px)",
             backgroundSize: "52px 52px",
           }}
         />
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-50 rounded-full blur-3xl opacity-60 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[360px] h-[360px] bg-red-50 rounded-full blur-3xl opacity-40 pointer-events-none" />
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#e11d48]/15 rounded-full blur-3xl opacity-70 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[360px] h-[360px] bg-blue-500/10 rounded-full blur-3xl opacity-50 pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-6 text-center">
           <motion.div
             initial={{ opacity: 0, y: -16 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 bg-red-50 border-2 border-red-300 rounded-full px-5 py-1.5 text-xs font-semibold tracking-widest text-red-600 mb-6"
+            className="inline-flex items-center gap-2 rounded-full border border-[#e11d48]/30 bg-[#e11d48]/10 px-5 py-2 text-[10px] font-extrabold tracking-[0.2em] text-[#fb7185] mb-6"
           >
             <motion.span
               animate={{ opacity: [1, 0.3, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
-              className="w-1.5 h-1.5 bg-red-500 rounded-full"
+              className="w-1.5 h-1.5 bg-[#fb7185] rounded-full shadow-[0_0_0_5px_rgba(244,63,94,.12)]"
             />
             WHAT WE OFFER
           </motion.div>
@@ -210,10 +205,10 @@ export default function Service() {
               duration: 0.6,
               ease: [0.22, 1, 0.36, 1],
             }}
-            className="text-6xl md:text-7xl font-black tracking- text-slate-900 mb-4"
-            style={{ fontFamily: "'Bebas Neue', cursive" }}
+            className="font-[Sora] text-5xl md:text-7xl font-extrabold tracking-[-0.055em] text-slate-950 mb-5"
+            style={{ fontFamily: "'Sora', sans-serif" }}
           >
-            OUR <span className="text-red-600">SERVICES</span>
+            OUR <span className="gold-text">SERVICES</span>
           </motion.h1>
 
           <motion.p
@@ -224,7 +219,7 @@ export default function Service() {
               duration: 0.6,
               ease: [0.22, 1, 0.36, 1],
             }}
-            className="text-slate-500 text-lg max-w-xl mx-auto"
+            className="text-slate-500 text-base md:text-lg max-w-xl mx-auto leading-relaxed"
           >
             Professional automotive care with certified standards and honest
             pricing.
@@ -248,7 +243,7 @@ export default function Service() {
       </section>
 
       {/* ── WHY CHOOSE US ── */}
-      <section className="bg-white border-y-2 border-slate-300 py-20">
+      <section className="border-y border-[#e2e8f0] bg-[#ffffff] py-24">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -259,12 +254,11 @@ export default function Service() {
           >
             {/* Left */}
             <div>
-              <div className="text-red-600 text-xs font-semibold tracking-widest uppercase mb-3">
+              <div className="text-[#be123c] text-[10px] font-extrabold tracking-[0.18em] uppercase mb-3">
                 Why Choose Us
               </div>
               <h2
-                className="text-5xl font-black text-slate-900 mb-8 leading-tight"
-                style={{ fontFamily: "'Bebas Neue', cursive" }}
+                className="font-[Sora] text-4xl md:text-5xl font-extrabold tracking-[-0.045em] text-[#0f172a] mb-8 leading-tight"
               >
                 Why Drivers Trust AutoForge
               </h2>
@@ -298,7 +292,7 @@ export default function Service() {
                         stiffness: 380,
                         damping: 18,
                       }}
-                      className="w-5 h-5 rounded-full bg-red-100 border-2 border-red-300 text-red-600 flex items-center justify-center text-xs font-bold flex-shrink-0"
+                      className="w-6 h-6 rounded-lg bg-[#fff1f2] border border-[#fb7185] text-[#be123c] flex items-center justify-center text-xs font-black flex-shrink-0"
                     >
                       ✓
                     </motion.span>
@@ -319,11 +313,11 @@ export default function Service() {
                 ease: [0.22, 1, 0.36, 1],
               }}
               whileHover={{ y: -4, boxShadow: "0 18px 48px rgba(0,0,0,0.08)" }}
-              className="bg-slate-50 border-2 border-slate-300 rounded-2xl p-10 relative overflow-hidden transition-shadow"
+              className="premium-card bg-gradient-to-br from-[#ffffff] to-[#f8fafc] border border-[#e2e8f0] rounded-[26px] p-10 relative overflow-hidden transition-shadow"
             >
               <div
-                className="absolute -top-4 -left-2 text-9xl font-black text-red-100 select-none leading-none"
-                style={{ fontFamily: "'Bebas Neue', cursive" }}
+                className="absolute -top-4 -left-2 text-9xl font-black text-[#fecdd3] select-none leading-none"
+                style={{ fontFamily: "'Sora', sans-serif" }}
               >
                 "
               </div>
@@ -332,7 +326,7 @@ export default function Service() {
                 trusted partner for over 8 years.
               </p>
               <div className="mt-8 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-red-100 border-2 border-red-300 flex items-center justify-center text-xs font-bold text-red-600">
+                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#fb7185] to-[#be123c] border border-[#fb7185] flex items-center justify-center text-xs font-black text-white">
                   RS
                 </div>
                 <div>
@@ -348,15 +342,15 @@ export default function Service() {
       </section>
 
       {/* ── CTA ── */}
-      <section className="py-20 text-center">
+      <section className="service-cta relative py-24 text-center">
         <div className="max-w-xl mx-auto px-6">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-            className="text-5xl font-black text-slate-900 mb-4"
-            style={{ fontFamily: "'Bebas Neue', cursive" }}
+            className="font-[Sora] text-4xl md:text-5xl font-extrabold tracking-[-0.045em] text-slate-950 mb-4"
+            style={{ fontFamily: "'Sora', sans-serif" }}
           >
             Ready to Book?
           </motion.h2>
@@ -383,7 +377,7 @@ export default function Service() {
               ease: [0.22, 1, 0.36, 1],
             }}
           >
-            <MagneticBtn className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold px-10 py-4 rounded-2xl text-base transition-colors shadow-lg shadow-red-200 border-2 border-red-700">
+            <MagneticBtn onClick={() => navigate("/contact")} className="gold-button inline-flex items-center gap-2 px-10 py-4 rounded-2xl text-base font-extrabold transition-all">
               📅 Book a Service
             </MagneticBtn>
           </motion.div>
@@ -391,12 +385,12 @@ export default function Service() {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer className="border-t-2 border-slate-300 bg-white py-10 text-center">
+      <footer className="border-t border-slate-200 bg-white py-12 text-center">
         <div
-          className="text-slate-900 font-black text-2xl mb-1"
-          style={{ fontFamily: "'Bebas Neue', cursive" }}
+          className="font-[Sora] text-slate-950 font-extrabold text-2xl mb-1 tracking-[-0.04em]"
+          style={{ fontFamily: "'Sora', sans-serif" }}
         >
-          AUTO<span className="text-red-600">FORGE</span> GARAGE
+          AUTO<span className="gold-text">FORGE</span> GARAGE
         </div>
         <p className="text-slate-400 text-xs">
           14-B Industrial Estate, Lucknow UP 226001 · +91 522 400 1234 · Mon–Sat

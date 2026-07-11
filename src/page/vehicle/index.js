@@ -161,7 +161,7 @@ function SearchPage() {
       </div>
       {editMode ? (
         <input
-          className="w-full bg-slate-50 border-2 border-slate-300 focus:border-red-500 focus:bg-white focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] rounded-lg px-3 py-2 text-sm text-slate-800 outline-none transition-all"
+          className="w-full bg-[#f8fafc] border border-[#e2e8f0] focus:border-[#e11d48] focus:bg-[#ffffff] focus:ring-4 focus:ring-[#e11d48]/10 rounded-xl px-3.5 py-2.5 text-sm text-[#1e293b] outline-none transition-all"
           value={editData[field] || ""}
           onChange={(e) =>
             setEditData({ ...editData, [field]: e.target.value })
@@ -183,29 +183,29 @@ function SearchPage() {
 
   return (
     <div
-      className="min-h-screen bg-slate-50 text-slate-900 pt-20"
+      className="public-page vehicle-page min-h-screen pt-24"
       // style={{ cursor: "none" }}
     >
       {/* ── SEARCH HEADER ── */}
-      <div className="bg-white border-b-2 border-slate-300 py-12 relative overflow-hidden">
+      <div className="public-inner-hero relative overflow-hidden border-b border-slate-200 bg-gradient-to-b from-white to-slate-50 py-20">
         {/* faint grid bg */}
         <div
           className="absolute inset-0 opacity-[0.035] pointer-events-none"
           style={{
             backgroundImage:
-              "linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)",
+              "linear-gradient(rgba(15,23,42,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,.05) 1px, transparent 1px)",
             backgroundSize: "48px 48px",
           }}
         />
-        <div className="absolute top-0 right-0 w-96 h-96 bg-red-50 rounded-full blur-3xl opacity-60 pointer-events-none" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#e11d48]/15 rounded-full blur-3xl opacity-70 pointer-events-none" />
 
         <div className="relative max-w-3xl mx-auto px-6 text-center">
           <FadeUp>
-            <div className="inline-flex items-center gap-2 bg-red-50 border-2 border-red-300 rounded-full px-5 py-1.5 text-xs font-semibold tracking-widest text-red-600 mb-5">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#e11d48]/30 bg-[#e11d48]/10 px-5 py-2 text-[10px] font-extrabold tracking-[0.2em] text-[#fb7185] mb-5">
               <motion.span
                 animate={{ opacity: [1, 0.3, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="w-1.5 h-1.5 bg-red-500 rounded-full"
+                className="w-1.5 h-1.5 bg-[#fb7185] rounded-full shadow-[0_0_0_5px_rgba(244,63,94,.12)]"
               />
               DVLA VEHICLE LOOKUP
             </div>
@@ -213,15 +213,15 @@ function SearchPage() {
 
           <FadeUp delay={0.08}>
             <h1
-              className="text-5xl font-black mb-2 text-slate-900"
-              style={{ fontFamily: "'Bebas Neue', cursive" }}
+              className="font-[Sora] text-5xl md:text-6xl font-extrabold tracking-[-0.055em] mb-3 text-slate-950"
+              style={{ fontFamily: "'Sora', sans-serif" }}
             >
               Vehicle Enquiry
             </h1>
           </FadeUp>
 
           <FadeUp delay={0.14}>
-            <p className="text-slate-400 text-sm mb-8">
+            <p className="text-slate-500 text-sm mb-8">
               Enter a UK registration number to retrieve DVLA records
             </p>
           </FadeUp>
@@ -232,14 +232,14 @@ function SearchPage() {
                 className="flex-1 relative"
                 animate={{
                   boxShadow: focused
-                    ? "0 0 0 4px rgba(220,38,38,0.12)"
+                    ? "0 0 0 4px rgba(244,63,94,0.16)"
                     : "0 1px 2px rgba(0,0,0,0.04)",
                 }}
                 transition={{ duration: 0.25 }}
                 style={{ borderRadius: 12 }}
               >
                 <input
-                  className="w-full bg-slate-100 border-2 border-slate-300 focus:border-red-500 focus:bg-white rounded-xl px-5 py-4 text-slate-900 text-lg font-mono uppercase outline-none transition-all placeholder-slate-300"
+                  className="w-full rounded-xl border border-slate-200 bg-white px-5 py-4 font-mono text-lg uppercase text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-rose-300 focus:ring-4 focus:ring-rose-100/70"
                   placeholder="e.g. YY59 UAD"
                   value={query}
                   onChange={(e) => setQuery(e.target.value.toUpperCase())}
@@ -250,7 +250,7 @@ function SearchPage() {
               </motion.div>
               <MagneticBtn
                 onClick={doSearch}
-                className="bg-red-600 hover:bg-red-700 text-white px-8 rounded-xl font-bold transition-colors shadow-md shadow-red-200 border-2 border-red-700 flex items-center gap-2"
+                className="gold-button px-8 rounded-xl font-extrabold transition-all flex items-center gap-2"
               >
                 <svg
                   className="w-5 h-5"
@@ -286,7 +286,7 @@ function SearchPage() {
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 0.9, repeat: Infinity, ease: "linear" }}
-                className="w-10 h-10 border-[3px] border-red-500 border-t-transparent rounded-full"
+                className="w-10 h-10 border-[3px] border-[#e11d48] border-t-transparent rounded-full"
               />
               <motion.p
                 animate={{ opacity: [0.4, 1, 0.4] }}
@@ -306,7 +306,7 @@ function SearchPage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="text-center py-20 bg-white border-2 border-slate-300 rounded-2xl"
+              className="premium-card text-center py-20 bg-[#ffffff] border border-[#e2e8f0] rounded-2xl"
             >
               <motion.div
                 animate={{ rotate: [0, -10, 10, -6, 6, 0] }}
@@ -332,7 +332,7 @@ function SearchPage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="text-center py-20 bg-white border-2 border-red-200 rounded-2xl"
+              className="text-center py-20 bg-[#ffffff] border border-rose-200 rounded-2xl shadow-[0_14px_38px_rgba(7,17,31,.06)]"
             >
               <motion.div
                 animate={{ scale: [1, 1.15, 1] }}
@@ -364,7 +364,7 @@ function SearchPage() {
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                className="bg-white border-2 border-slate-300 rounded-2xl p-6 mb-5 flex items-center justify-between shadow-md flex-wrap gap-4"
+                className="premium-card bg-[#ffffff] border border-[#e2e8f0] rounded-2xl p-6 mb-5 flex items-center justify-between flex-wrap gap-4"
               >
                 <div className="flex items-center gap-5">
                   {/* UK Plate Mockup */}
@@ -386,7 +386,7 @@ function SearchPage() {
                   <div>
                     <h2
                       className="text-2xl font-black text-slate-900"
-                      style={{ fontFamily: "'Bebas Neue', cursive" }}
+                      style={{ fontFamily: "'Sora', sans-serif" }}
                     >
                       {result.make}
                     </h2>
@@ -403,7 +403,7 @@ function SearchPage() {
                     ${
                       editMode
                         ? "bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100"
-                        : "bg-slate-50 text-slate-600 border-slate-300 hover:bg-slate-100 hover:border-red-300"
+                        : "bg-slate-50 text-slate-600 border-slate-300 hover:bg-slate-100 hover:border-[#e11d48]"
                     }`}
                 >
                   <AnimatePresence mode="wait" initial={false}>
@@ -434,10 +434,10 @@ function SearchPage() {
                     y: -3,
                     boxShadow: "0 12px 36px rgba(0,0,0,0.07)",
                   }}
-                  className="bg-white p-6 rounded-2xl border-2 border-slate-300 shadow-sm transition-shadow"
+                  className="premium-card bg-[#ffffff] p-6 rounded-2xl border border-[#e2e8f0] transition-shadow"
                 >
                   <div className="flex items-center gap-2 mb-5">
-                    <div className="w-1.5 h-5 bg-red-500 rounded-full" />
+                    <div className="w-1.5 h-5 bg-[#e11d48] rounded-full" />
                     <h3 className="text-slate-900 text-xs font-bold uppercase tracking-widest">
                       Compliance Status
                     </h3>
@@ -479,7 +479,7 @@ function SearchPage() {
                     y: -3,
                     boxShadow: "0 12px 36px rgba(0,0,0,0.07)",
                   }}
-                  className="bg-white p-6 rounded-2xl border-2 border-slate-300 shadow-sm transition-shadow"
+                  className="premium-card bg-[#ffffff] p-6 rounded-2xl border border-[#e2e8f0] transition-shadow"
                 >
                   <div className="flex items-center gap-2 mb-5">
                     <div className="w-1.5 h-5 bg-slate-400 rounded-full" />

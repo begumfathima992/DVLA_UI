@@ -124,7 +124,6 @@ export default function Customers() {
           customerList();
         } else {
           toast.error(response?.message);
-          console.log(response, "response");
         }
       } catch (error) {
         toast.error(error.message);
@@ -155,8 +154,6 @@ export default function Customers() {
     }
   };
 
-  console.log(formik.errors, formik.values, "sdfl;ksjdfl;");
-
   return (
     <div className="fade-up space-y-5">
       <PageHeader
@@ -169,12 +166,12 @@ export default function Customers() {
         }
       />
       <Card>
-        <div className="p-4 border-b border-slate-100">
+        <div className="border-b border-[#e2e8f0] bg-[#f8fafc]/70 p-4">
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search customers..."
-            className="border border-slate-200 rounded-xl px-3 py-2 text-sm w-72 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+            className="w-full rounded-xl border border-[#e2e8f0] bg-[#ffffff] px-3.5 py-2.5 text-sm text-[#334155] outline-none transition focus:border-[#e11d48] focus:ring-4 focus:ring-[#e11d48]/10 sm:w-80"
           />
         </div>
         <Table
@@ -222,7 +219,7 @@ export default function Customers() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => openEditFun(c)}
-                    className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-blue-50 hover:text-blue-600 flex items-center justify-center text-slate-500 transition-colors"
+                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#e2e8f0] bg-[#f8fafc] text-[#64748b] transition hover:border-[#e11d48] hover:bg-[#fff1f2] hover:text-[#be123c]"
                   >
                     <RiEditLine />
                   </button>
@@ -232,7 +229,7 @@ export default function Customers() {
                       setOpen(true);
                       setCustomerId(c.id);
                     }}
-                    className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-red-50 hover:text-red-500 flex items-center justify-center text-slate-500 transition-colors"
+                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-rose-100 bg-rose-50 text-rose-500 transition hover:border-rose-200 hover:bg-rose-100 hover:text-rose-600"
                   >
                     <RiDeleteBinLine />
                   </button>
@@ -269,7 +266,7 @@ export default function Customers() {
         open={showModal}
       >
         <form onSubmit={formik.handleSubmit}>
-          <div className=" gap-3 grid grid-cols-2">
+          <div className=" gap-3 grid grid-cols-1 sm:grid-cols-2">
             <CustomInput
               formik={formik}
               label="Full Name *"

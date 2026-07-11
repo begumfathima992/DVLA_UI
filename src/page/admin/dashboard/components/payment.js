@@ -78,13 +78,13 @@ const Payment = ({
     .reduce((s, p) => s + Number(p.amount || 0), 0);
 
   const stats = [
-    { label: "Transactions", value: payments.length, color: "text-cyan-400" },
+    { label: "Transactions", value: payments.length, color: "text-[#be123c]" },
     {
       label: "Total Received",
       value: fmt(totalReceived),
       color: "text-emerald-400",
     },
-    { label: "This Month", value: fmt(thisMonth), color: "text-cyan-400" },
+    { label: "This Month", value: fmt(thisMonth), color: "text-[#be123c]" },
     {
       label: "Card / Cash",
       value: `${payments.filter((p) => p.method === "Card").length} / ${payments.filter((p) => p.method === "Cash").length}`,
@@ -118,7 +118,7 @@ const Payment = ({
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#0b1628]/60">
+                <tr className="bg-slate-50/80">
                   {[
                     "Payment #",
                     "Invoice #",
@@ -142,9 +142,9 @@ const Payment = ({
                 {payments.map((pay) => (
                   <tr
                     key={pay.id}
-                    className="border-t border-cyan-500/10 hover:bg-cyan-500/5 transition-colors"
+                    className="border-t border-slate-100 hover:bg-[#fff1f2] transition-colors"
                   >
-                    <td className="px-4 py-3 font-mono text-cyan-400 font-bold text-sm">
+                    <td className="px-4 py-3 font-mono text-[#be123c] font-extrabold text-sm">
                       {pay.id}
                     </td>
                     <td className="px-4 py-3 font-mono text-slate-400 text-sm">
@@ -263,8 +263,8 @@ const Payment = ({
                   onClick={() => setPayMethod(m.name)}
                   className={`p-4 rounded-xl border-2 cursor-pointer text-center transition-all ${
                     payMethod === m.name
-                      ? "border-cyan-400 bg-cyan-500/10"
-                      : "border-cyan-500/20 hover:border-cyan-500/50"
+                      ? "border-red-500 bg-red-50"
+                      : "border-slate-200 hover:border-red-300"
                   }`}
                 >
                   <div className="text-2xl mb-1.5">{m.icon}</div>

@@ -1,28 +1,19 @@
-// ─── FORM PRIMITIVES ─────────────────────────────────────────────────────────
-
 export const Label = ({ children }) => (
-  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">
+  <label className="mb-1.5 block text-[9px] font-extrabold uppercase tracking-[0.16em] text-[#64748b]">
     {children}
   </label>
 );
 
+const fieldBase = `w-full rounded-xl border border-[#e2e8f0] bg-[#ffffff] px-3.5 py-3
+  text-sm text-[#1e293b] placeholder:text-[#a1a7b0] outline-none
+  transition-all focus:border-[#e11d48] focus:ring-4 focus:ring-[#e11d48]/10`;
+
 export const Input = ({ className = "", ...props }) => (
-  <input
-    {...props}
-    className={`w-full bg-[#0b1628]/80 border border-cyan-500/20 rounded-lg px-3 py-2.5
-      text-white text-sm placeholder-slate-600
-      focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/15 outline-none
-      transition-all font-[inherit] ${className}`}
-  />
+  <input {...props} className={`${fieldBase} ${className}`} />
 );
 
 export const Select = ({ children, className = "", ...props }) => (
-  <select
-    {...props}
-    className={`w-full bg-[#0b1628]/80 border border-cyan-500/20 rounded-lg px-3 py-2.5
-      text-white text-sm focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/15
-      outline-none transition-all font-[inherit] ${className}`}
-  >
+  <select {...props} className={`${fieldBase} ${className}`}>
     {children}
   </select>
 );
@@ -30,24 +21,20 @@ export const Select = ({ children, className = "", ...props }) => (
 export const Textarea = ({ className = "", ...props }) => (
   <textarea
     {...props}
-    className={`w-full bg-[#0b1628]/80 border border-cyan-500/20 rounded-lg px-3 py-2.5
-      text-white text-sm placeholder-slate-600
-      focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/15 outline-none
-      transition-all resize-y min-h-[72px] font-[inherit] ${className}`}
+    className={`${fieldBase} min-h-[90px] resize-y ${className}`}
   />
 );
 
-// ─── FORM LAYOUT HELPERS ─────────────────────────────────────────────────────
 export const FormSection = ({ children }) => (
-  <div className="mb-6 pb-6 border-b border-cyan-500/15 last:border-0 last:mb-0 last:pb-0">
+  <div className="mb-6 border-b border-[#e2e8f0] pb-6 last:mb-0 last:border-0 last:pb-0">
     {children}
   </div>
 );
 
 export const SectionTitle = ({ children }) => (
-  <div className="flex items-center gap-3 text-xs font-bold text-cyan-400 uppercase tracking-widest mb-4">
+  <div className="mb-4 flex items-center gap-3 text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#be123c]">
     <span className="flex items-center gap-1.5">{children}</span>
-    <span className="flex-1 h-px bg-cyan-500/20" />
+    <span className="h-px flex-1 bg-gradient-to-r from-[#e11d48]/45 to-transparent" />
   </div>
 );
 

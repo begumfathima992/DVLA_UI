@@ -252,12 +252,12 @@ export default function Vehicles() {
       />
 
       <Card>
-        <div className="p-4 border-b border-slate-100">
+        <div className="border-b border-[#e2e8f0] bg-[#f8fafc]/70 p-4">
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by reg, make, model..."
-            className="border border-slate-200 rounded-xl px-3 py-2 text-sm w-72 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+            className="w-full rounded-xl border border-[#e2e8f0] bg-[#ffffff] px-3.5 py-2.5 text-sm text-[#334155] outline-none transition focus:border-[#e11d48] focus:ring-4 focus:ring-[#e11d48]/10 sm:w-80"
           />
         </div>
 
@@ -295,14 +295,14 @@ export default function Vehicles() {
                 {v.vinNumber}
               </td>
               <td className="px-4 py-3 text-sm text-slate-600">{v.mileage}</td>
-              <td className="px-4 py-3 text-sm font-medium text-blue-600">
+              <td className="px-4 py-3 text-sm font-extrabold text-[#be123c]">
                 {v.customer?.name || "—"}
               </td>
               <td className="px-4 py-3">
                 <div className="flex gap-2">
                   <button
                     onClick={() => open(v)}
-                    className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-blue-50 hover:text-blue-600 flex items-center justify-center text-slate-500 transition-colors"
+                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#e2e8f0] bg-[#f8fafc] text-[#64748b] transition hover:border-[#e11d48] hover:bg-[#fff1f2] hover:text-[#be123c]"
                   >
                     <RiEditLine />
                   </button>
@@ -310,7 +310,7 @@ export default function Vehicles() {
                     onClick={() => {
                       deleteVehicleFun(v.id);
                     }}
-                    className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-red-50 hover:text-red-500 flex items-center justify-center text-slate-500 transition-colors"
+                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-rose-100 bg-rose-50 text-rose-500 transition hover:border-rose-200 hover:bg-rose-100 hover:text-rose-600"
                   >
                     <RiDeleteBinLine />
                   </button>
@@ -327,10 +327,10 @@ export default function Vehicles() {
         onClose={modalClose}
         open={showModal}
       >
-        <form onSubmit={formik.handleSubmit} className="grid grid-cols-2 gap-4">
+        <form onSubmit={formik.handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* REGISTRATION INPUT WITH LOOKUP BUTTON ATTACHED */}
-          <div className="col-span-2 grid grid-cols-3 gap-2 items-end">
-            <div className="col-span-2">
+          <div className="sm:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-2 items-end">
+            <div className="md:col-span-2">
               <CustomInput
                 formik={formik}
                 label="Registration *"
@@ -344,7 +344,7 @@ export default function Vehicles() {
                 type="button"
                 onClick={handleDVLALookup}
                 disabled={isSearchingDVLA}
-                className="h-[42px] px-4 rounded-xl bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-50 text-sm shadow-sm"
+                className="gold-button h-[42px] px-4 rounded-xl text-[#0f172a] font-extrabold flex items-center justify-center gap-2 transition-all hover:-translate-y-0.5 disabled:opacity-50 text-sm"
               >
                 <RiSearchLine />{" "}
                 {isSearchingDVLA ? "Searching..." : "Lookup DVLA"}
@@ -447,7 +447,7 @@ export default function Vehicles() {
             type="date"
           />
 
-          <div className="col-span-2">
+          <div className="sm:col-span-2">
             <Select
               label="Owner (Customer)"
               value={formik.values?.customerId || ""}
@@ -464,7 +464,7 @@ export default function Vehicles() {
             </Select>
           </div>
 
-          <div className="col-span-2 flex justify-end gap-3 pt-4">
+          <div className="sm:col-span-2 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4">
             <BtnGhost onClick={modalClose}>Cancel</BtnGhost>
             <BtnBlue type="submit" disabled={formik.isSubmitting}>
               {formik.isSubmitting

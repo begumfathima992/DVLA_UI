@@ -60,7 +60,7 @@ function StatusBadge({ status }) {
   const map = {
     Open: "bg-emerald-50 text-emerald-700",
     Closed: "bg-slate-100 text-slate-500",
-    "In Progress": "bg-blue-50 text-blue-700",
+    "In Progress": "bg-red-50 text-red-700",
     Completed: "bg-teal-50 text-teal-700",
   };
   return (
@@ -161,7 +161,7 @@ export default function JobSheetsDetailModal({ setViewing, viewing }) {
         </div>
 
         {/* Three info cards */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Customer */}
           <InfoCard title="Customer">
             <InfoRow label="Name" value={customer?.name} />
@@ -278,7 +278,7 @@ export default function JobSheetsDetailModal({ setViewing, viewing }) {
                         className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
                           item.itemType === "Labour"
                             ? "bg-amber-50 text-amber-700"
-                            : "bg-blue-50 text-blue-700"
+                            : "bg-red-50 text-red-700"
                         }`}
                       >
                         {item.itemType}
@@ -328,8 +328,8 @@ export default function JobSheetsDetailModal({ setViewing, viewing }) {
 
         {/* Notes */}
         {viewing.notes && (
-          <div className="bg-blue-50 rounded-xl p-4 text-xs text-slate-700">
-            <span className="font-semibold text-blue-700">Notes: </span>
+          <div className="bg-red-50 rounded-xl p-4 text-xs text-slate-700">
+            <span className="font-semibold text-red-700">Notes: </span>
             {viewing.notes}
           </div>
         )}

@@ -67,7 +67,7 @@ const JobSheetModule = ({ jobSheets, setJobSheets, onConvertToInvoice }) => {
   const complete = jobSheets.filter((j) => j.status === "Complete").length;
 
   const stats = [
-    { label: "Total Jobs", value: jobSheets.length, color: "text-cyan-400" },
+    { label: "Total Jobs", value: jobSheets.length, color: "text-[#be123c]" },
     {
       label: "Active / Open",
       value: active,
@@ -116,7 +116,7 @@ const JobSheetModule = ({ jobSheets, setJobSheets, onConvertToInvoice }) => {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#0b1628]/60">
+                <tr className="bg-slate-50/80">
                   {[
                     "Job #",
                     "Customer",
@@ -140,10 +140,10 @@ const JobSheetModule = ({ jobSheets, setJobSheets, onConvertToInvoice }) => {
                 {jobSheets.map((job) => (
                   <tr
                     key={job.id}
-                    className="border-t border-cyan-500/10 hover:bg-cyan-500/5 cursor-pointer transition-colors"
+                    className="border-t border-slate-100 hover:bg-[#fff1f2] cursor-pointer transition-colors"
                     onClick={() => setViewing(job)}
                   >
-                    <td className="px-4 py-3 font-mono text-cyan-400 font-bold text-sm">
+                    <td className="px-4 py-3 font-mono text-[#be123c] font-extrabold text-sm">
                       {job.id}
                     </td>
                     <td className="px-4 py-3 font-semibold">{job.customer}</td>

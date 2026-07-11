@@ -1,83 +1,272 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-  margin: 0;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
-    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family:
-    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+:root {
+  --af-ink: #0f172a;
+  --af-ink-soft: #334155;
+  --af-muted: #64748b;
+  --af-red: #e11d48;
+  --af-red-dark: #be123c;
+  --af-red-soft: #fff1f2;
+  --af-page: #f8fafc;
+  --af-paper: #ffffff;
+  --af-line: #e2e8f0;
+  --af-success: #10b981;
+  --af-danger: #e11d48;
+  --af-shadow: 0 24px 70px rgba(15, 23, 42, 0.1);
+  --af-shadow-soft: 0 10px 32px rgba(15, 23, 42, 0.065);
 }
 
 @layer base {
-  *,
-  *::before,
-  *::after {
-    box-sizing: border-box;
-  }
+  *, *::before, *::after { box-sizing: border-box; }
+
   html {
-    font-family: "Plus Jakarta Sans", sans-serif;
-  }
-  body {
-    @apply bg-slate-50 text-slate-800;
+    scroll-behavior: smooth;
+    font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--af-page);
   }
 
-  ::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
+  body {
+    margin: 0;
+    min-width: 320px;
+    color: var(--af-ink);
+    background: var(--af-page);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-  ::-webkit-scrollbar-track {
-    @apply bg-slate-100;
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Sora", "Manrope", sans-serif;
+    letter-spacing: -0.025em;
   }
-  ::-webkit-scrollbar-thumb {
-    @apply bg-slate-300 rounded-full;
+
+  button, a, input, select, textarea { font: inherit; }
+  button, a { -webkit-tap-highlight-color: transparent; }
+  button:not(:disabled), [role="button"]:not([aria-disabled="true"]) { cursor: pointer; }
+
+  ::selection { color: white; background: var(--af-red); }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: #f1f5f9; }
+  ::-webkit-scrollbar-thumb { border: 2px solid #f1f5f9; border-radius: 999px; background: #cbd5e1; }
+  ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+}
+
+@layer components {
+  .display-font {
+    font-family: "Sora", "Manrope", sans-serif;
+    letter-spacing: -0.05em;
   }
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-slate-400;
+
+  .premium-surface {
+    border: 1px solid rgba(226, 232, 240, 0.95);
+    background: rgba(255, 255, 255, 0.93);
+    box-shadow: var(--af-shadow-soft);
+    backdrop-filter: blur(18px);
   }
+
+  .gold-text {
+    color: transparent;
+    background: linear-gradient(135deg, #fb7185 0%, #e11d48 52%, #be123c 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  .gold-button {
+    position: relative;
+    overflow: hidden;
+    color: white !important;
+    border: 1px solid rgba(190, 18, 60, 0.28);
+    background: linear-gradient(135deg, #fb7185 0%, #e11d48 55%, #be123c 100%);
+    box-shadow: 0 14px 32px rgba(225, 29, 72, 0.22), inset 0 1px 0 rgba(255,255,255,.35);
+  }
+
+  .gold-button::after {
+    position: absolute;
+    top: -70%;
+    bottom: -70%;
+    left: -45%;
+    width: 30%;
+    content: "";
+    pointer-events: none;
+    opacity: .72;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.75), transparent);
+    transform: rotate(18deg);
+    transition: left 650ms cubic-bezier(.22,1,.36,1);
+  }
+
+  .gold-button:hover::after { left: 125%; }
+
+  .admin-shell {
+    position: relative;
+    isolation: isolate;
+    background:
+      radial-gradient(circle at 94% -6%, rgba(244, 63, 94, 0.085), transparent 28rem),
+      radial-gradient(circle at 2% 52%, rgba(99, 102, 241, 0.045), transparent 24rem),
+      linear-gradient(180deg, #f8fafc 0%, #f5f7fb 100%);
+  }
+
+  .admin-shell::before {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    content: "";
+    pointer-events: none;
+    opacity: .35;
+    background-image:
+      linear-gradient(rgba(15, 23, 42, .025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(15, 23, 42, .025) 1px, transparent 1px);
+    background-size: 62px 62px;
+    mask-image: linear-gradient(to bottom, black, transparent 86%);
+  }
+
+  .premium-card {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-color: var(--af-line) !important;
+    background: rgba(255, 255, 255, .96) !important;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, .055);
+    transition: transform 300ms cubic-bezier(.22,1,.36,1), border-color 260ms ease, box-shadow 300ms ease;
+  }
+
+  .premium-card::before {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    height: 2px;
+    content: "";
+    opacity: 0;
+    background: linear-gradient(90deg, transparent, var(--af-red), transparent);
+    transition: opacity 260ms ease;
+  }
+
+  .premium-card::after {
+    position: absolute;
+    right: -72px;
+    bottom: -96px;
+    z-index: -1;
+    width: 180px;
+    height: 180px;
+    border-radius: 999px;
+    content: "";
+    opacity: 0;
+    background: radial-gradient(circle, rgba(244, 63, 94, .11), transparent 68%);
+    transition: opacity 260ms ease;
+  }
+
+  .premium-card:hover {
+    z-index: 2;
+    border-color: rgba(244, 63, 94, .32) !important;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, .105);
+    transform: translateY(-4px);
+  }
+
+  .premium-card:hover::before,
+  .premium-card:hover::after { opacity: 1; }
+
+  .admin-shell .bg-white { background-color: #fff !important; }
+  .admin-shell .bg-gray-50,
+  .admin-shell .bg-slate-50 { background-color: #f8fafc !important; }
+  .admin-shell .border-gray-50,
+  .admin-shell .border-gray-100,
+  .admin-shell .border-slate-100 { border-color: #f1f5f9 !important; }
+  .admin-shell .border-gray-200,
+  .admin-shell .border-slate-200 { border-color: #e2e8f0 !important; }
+  .admin-shell .hover\:bg-gray-50:hover,
+  .admin-shell .hover\:bg-slate-50:hover { background-color: #fff1f2 !important; }
+
+  .admin-shell table { color: #334155; }
+  .admin-shell table thead { background: #f8fafc; }
+  .admin-shell table thead th { color: #64748b; }
+  .admin-shell table tbody tr { transition: background-color 180ms ease, transform 180ms ease; }
+  .admin-shell table tbody tr:hover { background-color: rgba(255, 241, 242, .72); }
+
+  .admin-shell input,
+  .admin-shell select,
+  .admin-shell textarea {
+    color: #1e293b;
+    transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease, transform 180ms ease;
+  }
+
+  .admin-shell input::placeholder,
+  .admin-shell textarea::placeholder { color: #94a3b8; }
+
+  .admin-shell input:focus,
+  .admin-shell select:focus,
+  .admin-shell textarea:focus {
+    outline: none;
+    border-color: rgba(244, 63, 94, .62) !important;
+    box-shadow: 0 0 0 4px rgba(244, 63, 94, .1) !important;
+    background: #fff !important;
+  }
+
+  .admin-shell button:focus-visible,
+  .admin-shell a:focus-visible,
+  .public-page button:focus-visible,
+  .public-page a:focus-visible {
+    outline: 3px solid rgba(244, 63, 94, .2);
+    outline-offset: 3px;
+  }
+
+  .admin-shell .MuiDialog-paper {
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    border-radius: 26px !important;
+    background: #fff !important;
+    box-shadow: 0 38px 110px rgba(15, 23, 42, .22) !important;
+  }
+
+  .admin-shell .MuiBackdrop-root,
+  .MuiModal-root .MuiBackdrop-root {
+    background-color: rgba(15, 23, 42, .42) !important;
+    backdrop-filter: blur(9px);
+  }
+
+  .public-page {
+    overflow-x: hidden;
+    color: var(--af-ink);
+    background: #fff;
+  }
+
+  .public-inner-hero {
+    color: #0f172a !important;
+    border-color: #e2e8f0 !important;
+    background:
+      radial-gradient(circle at 84% 10%, rgba(244,63,94,.1), transparent 24rem),
+      radial-gradient(circle at 4% 90%, rgba(99,102,241,.055), transparent 22rem),
+      linear-gradient(180deg, #fff 0%, #f8fafc 100%) !important;
+  }
+
+  .public-inner-hero h1,
+  .public-inner-hero h2,
+  .public-inner-hero h3 { color: #0f172a !important; }
+  .public-inner-hero p { color: #64748b !important; }
+  .public-inner-hero [class*="text-white/"] { color: #64748b !important; }
 }
 
 @layer utilities {
-  .fade-up {
-    animation: fadeUp 0.35s ease forwards;
-  }
-  .slide-in {
-    animation: slideIn 0.25s ease forwards;
-  }
+  .fade-up { animation: fadeUp .58s cubic-bezier(.22,1,.36,1) both; }
+  .slide-in { animation: slideIn .42s cubic-bezier(.22,1,.36,1) both; }
+  .soft-pulse { animation: softPulse 2.8s ease-in-out infinite; }
+  .animate-float { animation: float 5s ease-in-out infinite; }
+  .animate-spin-slow { animation: spin-slow 3s linear infinite; }
 
-  @keyframes fadeUp {
-    from {
-      opacity: 0;
-      transform: translateY(14px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes softPulse { 0%,100% { opacity: .65; transform: scale(1); } 50% { opacity: 1; transform: scale(1.055); } }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  @keyframes spin-slow { to { transform: rotate(360deg); } }
+}
+
+@media (max-width: 768px) {
+  .admin-shell .MuiDialog-paper {
+    margin: 12px !important;
+    max-height: calc(100vh - 24px) !important;
+    border-radius: 22px !important;
   }
-  @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateX(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-  @keyframes spin-slow {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  .animate-spin-slow {
-    animation: spin-slow 3s linear infinite;
-  }
+  .admin-shell table th,
+  .admin-shell table td { white-space: nowrap; }
 }

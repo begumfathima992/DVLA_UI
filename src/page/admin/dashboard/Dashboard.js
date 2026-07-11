@@ -1,6 +1,6 @@
 // import { useApp } from "../context/AppContext";
 import { activities, revenueData, jobStatusData } from "../../../utils/data";
-import { Card, StatCard } from "../../../components/ui/UI";
+import { Card, StatCard, PageHeader } from "../../../components/ui/UI";
 
 import {
   PieChart,
@@ -23,7 +23,17 @@ export default function Dashboard() {
   const nav = useNavigate();
   return (
     <div className="space-y-6 fade-up">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <PageHeader
+        title="Workshop Overview"
+        sub="Track customers, vehicles, jobs and revenue from one premium workspace."
+        action={
+          <div className="flex items-center gap-2 rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-3 py-2 text-xs font-bold text-[#6f7783]">
+            <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
+            Live data synced
+          </div>
+        }
+      />
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <StatCard
           icon="👥"
           label="Total Customers"
@@ -31,7 +41,7 @@ export default function Dashboard() {
           value={543}
           change="+12%"
           changeLabel="from last month"
-          iconBg="!bg-blue-100"
+          iconBg="!bg-[#fff1f2] !text-[#be123c]"
         />
         <StatCard
           icon="🚗"
@@ -61,7 +71,7 @@ export default function Dashboard() {
           iconBg="bg-emerald-100"
         />
       </div>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <StatCard
           icon="📋"
           label="Pending Estimates"
@@ -75,37 +85,37 @@ export default function Dashboard() {
           iconBg="bg-violet-100"
         />
         <Card className="p-5">
-          <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
+          <div className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-[0.14em] mb-1.5">
             Unpaid Invoices
           </div>
-          {/* <div className="text-2xl font-bold text-slate-800">{unpaidInv}</div> */}
-          <div className="text-2xl font-bold text-slate-800">453</div>
+          {/* <div className="font-[Sora] text-2xl font-extrabold tracking-[-0.04em] text-[#0f172a]">{unpaidInv}</div> */}
+          <div className="font-[Sora] text-2xl font-extrabold tracking-[-0.04em] text-[#0f172a]">453</div>
           <div className="text-xs text-red-500 font-medium mt-1">
             £7,650.00{" "}
             <span className="text-slate-400 font-normal">outstanding</span>
           </div>
           <button
             onClick={() => nav("/invoices")}
-            className="mt-2 text-xs text-blue-600 font-semibold hover:underline"
+            className="mt-3 text-xs text-[#be123c] font-extrabold hover:underline"
           >
             View all
           </button>
         </Card>
         <Card className="p-5">
-          <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
+          <div className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-[0.14em] mb-1.5">
             Today's Revenue
           </div>
-          <div className="text-2xl font-bold text-slate-800">£2,850.00</div>
+          <div className="font-[Sora] text-2xl font-extrabold tracking-[-0.04em] text-[#0f172a]">£2,850.00</div>
           <div className="text-xs text-green-600 font-medium mt-1">
             +18%{" "}
             <span className="text-slate-400 font-normal">from yesterday</span>
           </div>
         </Card>
         <Card className="p-5">
-          <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
+          <div className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-[0.14em] mb-1.5">
             This Month Revenue
           </div>
-          <div className="text-2xl font-bold text-slate-800">£28,650.00</div>
+          <div className="font-[Sora] text-2xl font-extrabold tracking-[-0.04em] text-[#0f172a]">£28,650.00</div>
           <div className="text-xs text-green-600 font-medium mt-1">
             +25%{" "}
             <span className="text-slate-400 font-normal">from last month</span>
@@ -113,19 +123,19 @@ export default function Dashboard() {
         </Card>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="col-span-2 p-5">
-          <div className="font-bold text-slate-800 mb-4">Monthly Revenue</div>
+        <Card className="lg:col-span-2 p-5">
+          <div className="font-[Sora] font-extrabold tracking-[-0.03em] text-[#0f172a] mb-4">Monthly Revenue</div>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={revenueData} barSize={32}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis
                 dataKey="month"
-                tick={{ fontSize: 11, fill: "#94a3b8" }}
+                tick={{ fontSize: 11, fill: "#64748b" }}
                 axisLine={false}
                 tickLine={false}
               />
               <YAxis
-                tick={{ fontSize: 11, fill: "#94a3b8" }}
+                tick={{ fontSize: 11, fill: "#64748b" }}
                 axisLine={false}
                 tickLine={false}
                 tickFormatter={(v) => `£${(v / 1000).toFixed(0)}k`}
@@ -133,17 +143,17 @@ export default function Dashboard() {
               <Tooltip
                 formatter={(v) => [`£${v.toLocaleString()}`, "Revenue"]}
                 contentStyle={{
-                  borderRadius: 10,
-                  border: "none",
-                  boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                  borderRadius: 14,
+                  border: "1px solid #e2e8f0",
+                  boxShadow: "0 18px 45px rgba(7,17,31,0.14)",
                 }}
               />
-              <Bar dataKey="revenue" fill="#3b82f6" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="revenue" fill="#e11d48" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </Card>
         <Card className="p-5">
-          <div className="font-bold text-slate-800 mb-4">
+          <div className="font-[Sora] font-extrabold tracking-[-0.03em] text-[#0f172a] mb-4">
             Job Status Overview
           </div>
           <ResponsiveContainer width="100%" height={160}>
@@ -163,9 +173,9 @@ export default function Dashboard() {
               </Pie>
               <Tooltip
                 contentStyle={{
-                  borderRadius: 10,
-                  border: "none",
-                  boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                  borderRadius: 14,
+                  border: "1px solid #e2e8f0",
+                  boxShadow: "0 18px 45px rgba(7,17,31,0.14)",
                 }}
               />
             </PieChart>
@@ -192,10 +202,10 @@ export default function Dashboard() {
         </Card>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="col-span-2 p-5">
+        <Card className="lg:col-span-2 p-5">
           <div className="flex items-center justify-between mb-4">
             <div className="font-bold text-slate-800">Recent Activities</div>
-            <button className="text-xs text-blue-600 font-semibold hover:underline flex items-center gap-1">
+            <button className="text-xs text-[#be123c] font-extrabold hover:underline flex items-center gap-1">
               View all <RiArrowRightLine />
             </button>
           </div>
@@ -215,14 +225,14 @@ export default function Dashboard() {
           </div>
         </Card>
         <Card className="p-5">
-          <div className="font-bold text-slate-800 mb-4">Quick Actions</div>
+          <div className="font-[Sora] font-extrabold tracking-[-0.03em] text-[#0f172a] mb-4">Quick Actions</div>
           <div className="space-y-2">
             {[
               {
                 label: "New Customer",
                 icon: "👤",
                 to: "/customers",
-                color: "bg-blue-50 text-blue-700 hover:bg-blue-100",
+                color: "bg-[#fff1f2] text-[#8c601b] hover:bg-[#fecdd3] border border-[#fecdd3]",
               },
               {
                 label: "New Estimate",
@@ -246,7 +256,7 @@ export default function Dashboard() {
               <button
                 key={label}
                 onClick={() => nav(to)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${color}`}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-extrabold transition-all hover:-translate-y-0.5 ${color}`}
               >
                 <span>{icon}</span>
                 {label}
@@ -269,7 +279,7 @@ export default function Dashboard() {
               ].map((s, i) => (
                 <div key={s.label} className="flex items-center gap-1">
                   <div className="flex flex-col items-center gap-1">
-                    <div className="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center text-xs">
+                    <div className="w-7 h-7 rounded-lg bg-[#fff1f2] flex items-center justify-center text-xs">
                       {s.icon}
                     </div>
                     <div className="text-[9px] text-slate-400 font-medium text-center leading-tight">

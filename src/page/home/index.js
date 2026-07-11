@@ -1,873 +1,595 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
+  AnimatePresence,
   motion,
   useInView,
   useScroll,
   useTransform,
-  AnimatePresence,
 } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import {
+  ArrowRight,
+  CalendarDays,
+  CarFront,
+  CheckCircle2,
+  ChevronRight,
+  Clock3,
+  Gauge,
+  Mail,
+  MapPin,
+  Phone,
+  Search,
+  ShieldCheck,
+  Sparkles,
+  Star,
+  Wrench,
+  Zap,
+} from "lucide-react";
 import Header from "../../layout/header";
 import "./homeStyle.css";
 
-/* ─── ANIMATED COUNTER ─────────────────────────────────────────────────── */
-function Counter({ target, suffix = "" }) {
-  const [count, setCount] = useState(0);
+const easing = [0.22, 1, 0.36, 1];
+
+function Reveal({ children, delay = 0, className = "" }) {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true });
+  const visible = useInView(ref, { once: true, margin: "-70px" });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 28 }}
+      animate={visible ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.72, delay, ease: easing }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function Counter({ value, suffix = "" }) {
+  const ref = useRef(null);
+  const visible = useInView(ref, { once: true });
+  const [count, setCount] = useState(0);
+
   useEffect(() => {
-    if (!inView) return;
-    let start = 0;
-    const step = target / 80;
-    const timer = setInterval(() => {
-      start += step;
-      if (start >= target) {
-        setCount(target);
-        clearInterval(timer);
-      } else setCount(Math.floor(start));
-    }, 16);
-    return () => clearInterval(timer);
-  }, [inView, target]);
+    if (!visible) return undefined;
+
+    let frame;
+    const startedAt = performance.now();
+    const duration = 1450;
+
+    const update = (time) => {
+      const progress = Math.min((time - startedAt) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.round(value * eased));
+      if (progress < 1) frame = requestAnimationFrame(update);
+    };
+
+    frame = requestAnimationFrame(update);
+    return () => cancelAnimationFrame(frame);
+  }, [value, visible]);
+
   return (
     <span ref={ref}>
-      {count.toLocaleString()}
+      {count.toLocaleString("en-IN")}
       {suffix}
     </span>
   );
 }
 
-/* ─── FADE UP ──────────────────────────────────────────────────────────── */
-function FadeUp({ children, delay = 0, className = "" }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-60px" });
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 40 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.65, delay, ease: [0.22, 1, 0.36, 1] }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-/* ─── STAGGER CHILDREN ─────────────────────────────────────────────────── */
-const staggerContainer = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.08 } },
-};
-const staggerItem = {
-  hidden: { opacity: 0, y: 32 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+const services = [
+  {
+    icon: Gauge,
+    title: "Engine Diagnostics",
+    description: "Advanced fault scanning, health checks and a clear repair report.",
+    price: "₹799",
+    tag: "Most booked",
   },
-};
+  {
+    icon: Zap,
+    title: "Electrical & Battery",
+    description: "Battery, wiring, alternator and complete electrical inspection.",
+    price: "₹899",
+    tag: "Quick service",
+  },
+  {
+    icon: Wrench,
+    title: "Brake & Mechanical",
+    description: "Brake pads, suspension, steering and safety-focused repairs.",
+    price: "₹1,299",
+    tag: "Safety first",
+  },
+  {
+    icon: CarFront,
+    title: "Body & Detailing",
+    description: "Dent repair, paint correction and premium exterior detailing.",
+    price: "₹1,999",
+    tag: "Premium care",
+  },
+];
 
-/* ─── WORD REVEAL ──────────────────────────────────────────────────────── */
-function WordReveal({ text, delay = 0, className = "" }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true });
-  return (
-    <span ref={ref} className={`inline-block overflow-hidden ${className}`}>
-      {text.split(" ").map((word, i) => (
-        <motion.span
-          key={i}
-          initial={{ y: "110%", opacity: 0 }}
-          animate={inView ? { y: 0, opacity: 1 } : {}}
-          transition={{
-            duration: 0.65,
-            delay: delay + i * 0.05,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-          className="inline-block mr-[0.22em]"
-        >
-          {word}
-        </motion.span>
-      ))}
-    </span>
-  );
-}
+const steps = [
+  {
+    number: "01",
+    title: "Search your vehicle",
+    description: "Enter the registration number and fetch the vehicle profile.",
+    icon: Search,
+  },
+  {
+    number: "02",
+    title: "Choose a service",
+    description: "Select the required work, preferred date and service time.",
+    icon: CalendarDays,
+  },
+  {
+    number: "03",
+    title: "Track every update",
+    description: "Receive clear progress updates from inspection to delivery.",
+    icon: CheckCircle2,
+  },
+];
 
-/* ─── MAGNETIC BUTTON ──────────────────────────────────────────────────── */
-function MagneticBtn({ children, className = "", onClick, style }) {
-  const ref = useRef(null);
-  const [xy, setXY] = useState({ x: 0, y: 0 });
-  const onMove = (e) => {
-    const r = ref.current.getBoundingClientRect();
-    setXY({
-      x: (e.clientX - r.left - r.width / 2) * 0.22,
-      y: (e.clientY - r.top - r.height / 2) * 0.22,
-    });
-  };
-  return (
-    <motion.button
-      ref={ref}
-      className={className}
-      style={style}
-      animate={{ x: xy.x, y: xy.y }}
-      transition={{ type: "spring", stiffness: 180, damping: 14 }}
-      onMouseMove={onMove}
-      onMouseLeave={() => setXY({ x: 0, y: 0 })}
-      whileTap={{ scale: 0.95 }}
-      onClick={onClick}
-    >
-      {children}
-    </motion.button>
-  );
-}
+const reviews = [
+  {
+    text: "The booking experience was extremely simple and the team explained every repair before starting the work.",
+    name: "Amit Kumar",
+    car: "Maruti Swift · 2021",
+    initials: "AK",
+  },
+  {
+    text: "The live updates made the entire service transparent. The car was delivered exactly at the promised time.",
+    name: "Priya Singh",
+    car: "Hyundai Creta · 2022",
+    initials: "PS",
+  },
+  {
+    text: "Premium service without confusing pricing. The dashboard and job updates are genuinely useful.",
+    name: "Rohit Verma",
+    car: "Toyota Fortuner · 2020",
+    initials: "RV",
+  },
+];
 
-/* ─── SERVICE CARD ─────────────────────────────────────────────────────── */
-function ServiceCard({ icon, title, desc, price, index }) {
-  const [hovered, setHovered] = useState(false);
-  return (
-    <motion.div
-      variants={staggerItem}
-      whileHover={{
-        y: -7,
-        transition: { type: "spring", stiffness: 280, damping: 18 },
-      }}
-      onHoverStart={() => setHovered(true)}
-      onHoverEnd={() => setHovered(false)}
-      data-hover
-      className="group relative bg-white border-2 border-slate-300 hover:border-red-500 rounded-2xl p-6 cursor-pointer overflow-hidden transition-shadow duration-300 hover:shadow-xl hover:shadow-red-100"
-    >
-      {/* shimmer bg */}
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-br from-red-50 to-transparent rounded-2xl pointer-events-none"
-        animate={{ opacity: hovered ? 1 : 0 }}
-        transition={{ duration: 0.3 }}
-      />
-
-      <motion.div
-        animate={{ scale: hovered ? 1.15 : 1, rotate: hovered ? 10 : 0 }}
-        transition={{ type: "spring", stiffness: 280, damping: 18 }}
-        className="text-4xl mb-4 inline-block relative z-10"
-      >
-        {icon}
-      </motion.div>
-
-      <h3 className="relative z-10 font-bold text-slate-900 mb-2 text-base">
-        {title}
-      </h3>
-      <p className="relative z-10 text-slate-500 text-sm leading-relaxed mb-5">
-        {desc}
-      </p>
-
-      <div className="relative z-10 flex items-center justify-between mt-auto">
-        <span className="text-red-600 text-sm font-semibold">From {price}</span>
-        <motion.span
-          animate={{ x: hovered ? 5 : 0 }}
-          transition={{ type: "spring", stiffness: 400, damping: 20 }}
-          className="text-slate-400 group-hover:text-red-500 text-lg transition-colors"
-        >
-          →
-        </motion.span>
-      </div>
-    </motion.div>
-  );
-}
-
-/* ─── TESTI CARD ───────────────────────────────────────────────────────── */
-function TestiCard({ stars, text, name, initials, car, delay }) {
-  return (
-    <FadeUp delay={delay}>
-      <motion.div
-        whileHover={{
-          y: -5,
-          transition: { type: "spring", stiffness: 260, damping: 18 },
-        }}
-        className="bg-white border-2 border-slate-300 hover:border-slate-400 hover:shadow-lg rounded-2xl p-6 h-full transition-all"
-        data-hover
-      >
-        <div className="flex gap-0.5 mb-4">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <motion.span
-              key={i}
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{
-                delay: delay + i * 0.06,
-                type: "spring",
-                stiffness: 360,
-              }}
-              className={`text-sm ${i < stars ? "text-amber-400" : "text-slate-200"}`}
-            >
-              ★
-            </motion.span>
-          ))}
-        </div>
-        <p className="text-slate-500 text-sm leading-relaxed mb-5 italic">
-          "{text}"
-        </p>
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-red-100 border-2 border-red-300 flex items-center justify-center text-xs font-bold text-red-600 flex-shrink-0">
-            {initials}
-          </div>
-          <div>
-            <div className="text-slate-800 text-sm font-semibold">{name}</div>
-            <div className="text-slate-400 text-xs">{car}</div>
-          </div>
-        </div>
-      </motion.div>
-    </FadeUp>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════════════════
-   MAIN PAGE
-   ═══════════════════════════════════════════════════════════════════════ */
-export default function HomePage({ setPage }) {
+export default function HomePage() {
+  const navigate = useNavigate();
   const heroRef = useRef(null);
-  const { scrollYProgress: heroScroll } = useScroll({
+  const [bookingStatus, setBookingStatus] = useState("idle");
+  const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"],
   });
-  const heroY = useTransform(heroScroll, [0, 1], [0, 100]);
-  const heroOpacity = useTransform(heroScroll, [0, 0.75], [1, 0]);
+  const imageY = useTransform(scrollYProgress, [0, 1], [0, 85]);
+  const contentY = useTransform(scrollYProgress, [0, 1], [0, 42]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0.45]);
 
-  const [formStatus, setFormStatus] = useState("idle");
-
-  const handleBook = (e) => {
-    e.preventDefault();
-    setFormStatus("loading");
-    setTimeout(() => setFormStatus("done"), 1800);
+  const submitBooking = (event) => {
+    event.preventDefault();
+    setBookingStatus("loading");
+    window.setTimeout(() => setBookingStatus("done"), 1300);
   };
 
-  const services = [
-    {
-      icon: "⚙️",
-      title: "Engine Diagnostics",
-      desc: "Full OBD scan & fault code analysis with detailed report.",
-      price: "₹799",
-    },
-    {
-      icon: "🛢️",
-      title: "Oil & Filter Change",
-      desc: "Synthetic & mineral grade oils for all vehicle types.",
-      price: "₹499",
-    },
-    {
-      icon: "🔧",
-      title: "Brake Service",
-      desc: "Pads, discs & fluid flush with road-safety guarantee.",
-      price: "₹1,299",
-    },
-    {
-      icon: "🔄",
-      title: "Tyre & Alignment",
-      desc: "Balancing, rotation & computerised wheel alignment.",
-      price: "₹399",
-    },
-    {
-      icon: "❄️",
-      title: "AC & Electrical",
-      desc: "HVAC, wiring, battery diagnostics & repairs.",
-      price: "₹899",
-    },
-    {
-      icon: "🎨",
-      title: "Body & Paint",
-      desc: "Dent removal, scratch repair & full panel repainting.",
-      price: "₹1,999",
-    },
-  ];
+  const scrollToBooking = () => {
+    document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" });
+  };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 overflow-x-hidden">
-      <motion.nav
-        initial={{ y: -64, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed top-0 left-0 right-0 z-50"
-      >
-        <Header />
-      </motion.nav>
+    <div className="public-page home-page min-h-screen bg-white text-slate-950">
+      <Header />
 
-      {/* ── HERO ── */}
-      <section
-        ref={heroRef}
-        className="relative min-h-screen flex items-center overflow-hidden bg-white pt-16"
-      >
-        {/* Grid bg */}
-        <div className="absolute inset-0 hero-grid opacity-100" />
-        {/* Red blob */}
-        <div className="absolute top-16 right-0 w-[620px] h-[620px] bg-red-50 rounded-full blur-3xl opacity-70 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-red-50 rounded-full blur-3xl opacity-40 pointer-events-none" />
+      <section ref={heroRef} className="light-hero relative overflow-hidden pb-20 pt-28 sm:pb-24 sm:pt-32 lg:min-h-screen lg:pb-20">
+        <div className="hero-mesh absolute inset-0" />
+        <div className="hero-red-orb absolute -right-36 top-4 h-[440px] w-[440px] rounded-full" />
+        <div className="hero-blue-orb absolute -left-44 bottom-[-120px] h-[420px] w-[420px] rounded-full" />
 
-        <motion.div
-          style={{ y: heroY, opacity: heroOpacity }}
-          className="relative max-w-7xl mx-auto px-6 w-full"
-        >
-          <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[90vh]">
-            {/* Left */}
-            <div className="space-y-8">
-              {/* Eyebrow pill */}
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1, duration: 0.5 }}
-                className="inline-flex items-center gap-2 bg-red-50 border-2 border-red-200 rounded-full px-6 py-2 text-sm font-semibold tracking-widest text-red-600"
-              >
+        <div className="relative mx-auto grid w-full max-w-7xl items-center gap-14 px-5 sm:px-6 lg:min-h-[calc(100vh-120px)] lg:grid-cols-[1.02fr_.98fr] lg:px-8">
+          <motion.div style={{ y: contentY, opacity: heroOpacity }} className="max-w-2xl">
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, ease: easing }}
+              className="mb-7 inline-flex items-center gap-2 rounded-full border border-rose-200 bg-white/85 px-4 py-2 text-[11px] font-extrabold uppercase tracking-[0.18em] text-rose-600 shadow-sm backdrop-blur-xl"
+            >
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-rose-50">
+                <Sparkles size={13} />
+              </span>
+              Modern garage care, made simple
+            </motion.div>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 28 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.78, delay: 0.08, ease: easing }}
+              className="max-w-3xl font-[Sora] text-[3.45rem] font-extrabold leading-[0.98] tracking-[-0.065em] text-slate-950 sm:text-6xl lg:text-[5.35rem]"
+            >
+              Premium care for
+              <span className="relative block text-rose-600">
+                every journey.
                 <motion.span
-                  animate={{ opacity: [1, 0.3, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="w-2 h-2 bg-red-500 rounded-full"
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ delay: 0.72, duration: 0.7, ease: easing }}
+                  className="absolute -bottom-1 left-1 h-2 w-[78%] origin-left rounded-full bg-rose-100"
                 />
-                EST. 2026 · CERTIFIED WORKSHOP · UK
-              </motion.div>
+              </span>
+            </motion.h1>
 
-              {/* H1 — word by word */}
-              <h1
-                className="font-black leading-[0.97] text-7xl lg:text-[5.8rem] text-slate-900"
-                style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+            <motion.p
+              initial={{ opacity: 0, y: 22 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.2, ease: easing }}
+              className="mt-7 max-w-xl text-base leading-8 text-slate-600 sm:text-lg"
+            >
+              Search your vehicle, book trusted services and follow every job update from one beautifully simple experience.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 22 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.32, ease: easing }}
+              className="mt-9 flex flex-col gap-3 sm:flex-row"
+            >
+              <motion.button
+                type="button"
+                whileHover={{ y: -3 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => navigate("/find-vehicle")}
+                className="primary-action group inline-flex items-center justify-center gap-3 rounded-2xl px-7 py-4 text-sm font-extrabold text-white"
               >
-                <WordReveal
-                  text="YOUR CAR."
-                  delay={0.15}
-                  className="text-slate-900 block"
-                />
-                <WordReveal
-                  text="OUR CRAFT."
-                  delay={0.25}
-                  className="text-red-600 block"
-                />
-                <WordReveal
-                  text="ZERO LIMITS."
-                  delay={0.38}
-                  className="text-slate-300 block"
-                />
-              </h1>
-
-              {/* Subtext */}
-              <motion.p
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  delay: 0.6,
-                  duration: 0.6,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                className="text-slate-500 text-lg max-w-lg leading-relaxed"
+                <Search size={18} />
+                Search vehicle
+                <ArrowRight size={17} className="transition-transform group-hover:translate-x-1" />
+              </motion.button>
+              <motion.button
+                type="button"
+                whileHover={{ y: -3 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={scrollToBooking}
+                className="secondary-action inline-flex items-center justify-center gap-3 rounded-2xl px-7 py-4 text-sm font-extrabold text-slate-800"
               >
-                Full-service vehicle maintenance & repair. From routine oil
-                changes to complete engine rebuilds — every machine runs at peak
-                performance.
-              </motion.p>
+                <CalendarDays size={18} className="text-rose-600" />
+                Book a service
+              </motion.button>
+            </motion.div>
 
-              {/* Buttons */}
-              <motion.div
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  delay: 0.72,
-                  duration: 0.6,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                className="flex flex-wrap gap-4 pt-2"
-              >
-                <MagneticBtn
-                  onClick={() => setPage && setPage("search")}
-                  className="flex items-center gap-3 bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-2xl font-bold text-lg transition-all shadow-lg shadow-red-200 border-2 border-red-700"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-5 h-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2.5}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"
-                    />
-                  </svg>
-                  Search Vehicle
-                </MagneticBtn>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.58, duration: 0.7 }}
+              className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 text-xs font-bold text-slate-500"
+            >
+              {["Transparent pricing", "Certified technicians", "Live job updates"].map((item) => (
+                <span key={item} className="flex items-center gap-2">
+                  <CheckCircle2 size={16} className="text-emerald-500" />
+                  {item}
+                </span>
+              ))}
+            </motion.div>
+          </motion.div>
 
-                <MagneticBtn className="flex items-center gap-3 border-2 border-slate-400 hover:border-red-400 bg-white px-8 py-4 rounded-2xl font-bold text-lg text-slate-700 hover:text-red-600 transition-all shadow-sm">
-                  📅 Book Service
-                </MagneticBtn>
-              </motion.div>
+          <motion.div
+            style={{ y: imageY }}
+            initial={{ opacity: 0, x: 60, scale: 0.96 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            transition={{ duration: 0.9, delay: 0.16, ease: easing }}
+            className="relative mx-auto w-full max-w-[590px] lg:mx-0 lg:ml-auto"
+          >
+            <div className="hero-image-shell relative overflow-hidden rounded-[34px] border-[8px] border-white bg-white p-1 shadow-[0_35px_100px_rgba(15,23,42,.16)]">
+              <img
+                src="https://images.unsplash.com/photo-1486006920555-c77dcf18193c?w=1100&q=88"
+                alt="Professional garage technician servicing a car"
+                className="h-[480px] w-full rounded-[25px] object-cover sm:h-[610px]"
+              />
+              <div className="absolute inset-2 rounded-[25px] bg-gradient-to-t from-slate-950/40 via-transparent to-white/5" />
+              <div className="absolute bottom-7 left-7 right-7 rounded-2xl border border-white/30 bg-white/88 p-4 shadow-xl backdrop-blur-xl sm:right-auto sm:w-[285px]">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-slate-400">Workshop status</p>
+                    <p className="mt-1 text-sm font-extrabold text-slate-900">Open and accepting bookings</p>
+                  </div>
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                    <CheckCircle2 size={21} />
+                  </span>
+                </div>
+              </div>
             </div>
 
-            {/* Right — image */}
             <motion.div
-              initial={{ opacity: 0, x: 80 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{
-                duration: 0.9,
-                delay: 0.25,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-              className="relative hidden lg:block"
+              animate={{ y: [0, -9, 0] }}
+              transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut" }}
+              className="floating-card absolute -left-4 top-12 hidden w-52 rounded-2xl border border-slate-200/80 bg-white/92 p-4 shadow-[0_20px_55px_rgba(15,23,42,.12)] backdrop-blur-xl sm:block"
             >
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-slate-300 border-2 border-slate-300">
-                <img
-                  src="https://images.unsplash.com/photo-1609521263047-f8f205293f24?w=900&q=85"
-                  alt="Premium Car Workshop"
-                  className="w-full h-[620px] object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-slate-900/20" />
-                <motion.div
-                  initial={{ opacity: 0, y: -14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1, duration: 0.5 }}
-                  className="absolute top-5 right-5 bg-white/92 backdrop-blur-md px-5 py-2.5 rounded-2xl text-sm font-bold border-2 border-slate-300 text-slate-300 shadow-md flex items-center gap-2"
-                >
-                  <motion.span
-                    animate={{ opacity: [1, 0.3, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="w-2 h-2 bg-green-500 rounded-full inline-block"
-                  />
-                  Professional Service
-                </motion.div>
+              <div className="flex items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-50 text-rose-600">
+                  <Gauge size={20} />
+                </span>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">Vehicle health</p>
+                  <p className="text-sm font-extrabold text-slate-900">All systems checked</p>
+                </div>
               </div>
-              {/* Decorative ring */}
-              <div className="absolute -bottom-4 -right-4 w-32 h-32 rounded-2xl bg-red-100 border-2 border-red-200 -z-10" />
             </motion.div>
-          </div>
-        </motion.div>
 
-        {/* Scroll indicator */}
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2.5, repeat: Infinity }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5"
-        >
-          <span className="text-slate-400 text-xs tracking-[3px] uppercase">
-            Scroll to explore
-          </span>
-          <svg
-            className="w-5 h-5 text-slate-400"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
-        </motion.div>
+            <motion.div
+              animate={{ y: [0, 10, 0] }}
+              transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
+              className="floating-card absolute -right-4 top-32 hidden rounded-2xl border border-slate-200/80 bg-white/92 px-4 py-3 shadow-[0_20px_55px_rgba(15,23,42,.12)] backdrop-blur-xl sm:block"
+            >
+              <div className="flex items-center gap-2 text-xs font-extrabold text-slate-800">
+                <span className="h-2.5 w-2.5 rounded-full bg-rose-500 shadow-[0_0_0_5px_rgba(244,63,94,.12)]" />
+                Live job tracking
+              </div>
+            </motion.div>
+          </motion.div>
+        </div>
       </section>
 
-      {/* ── STATS ── */}
-      <section className="border-y-2 border-slate-300 bg-white">
-        <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4">
+      <section className="relative z-10 -mt-2 px-5 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-7xl grid-cols-2 overflow-hidden rounded-[26px] border border-slate-200 bg-white shadow-[0_22px_70px_rgba(15,23,42,.08)] md:grid-cols-4">
           {[
-            { num: 12000, suffix: "+", label: "Vehicles Serviced" },
-            { num: 98, suffix: "%", label: "Satisfaction Rate" },
-            { num: 16, suffix: "+", label: "Years Active" },
-            { num: 24, suffix: " hrs", label: "Avg Turnaround" },
-          ].map((s, i) => (
-            <FadeUp key={s.label} delay={i * 0.1}>
-              <div className="stat-cell py-10 px-6 text-center border-r-2 border-slate-200 last:border-r-0">
-                <div
-                  className="text-4xl font-black text-red-600 mb-1"
-                  style={{ fontFamily: "'Bebas Neue', cursive" }}
-                >
-                  <Counter target={s.num} suffix={s.suffix} />
+            { value: 12000, suffix: "+", label: "Vehicles serviced" },
+            { value: 98, suffix: "%", label: "Customer satisfaction" },
+            { value: 16, suffix: "+", label: "Years of experience" },
+            { value: 24, suffix: " hrs", label: "Average turnaround" },
+          ].map((stat, index) => (
+            <Reveal key={stat.label} delay={index * 0.08}>
+              <div className="stat-card border-b border-r border-slate-100 px-4 py-7 text-center last:border-r-0 md:py-8">
+                <div className="font-[Sora] text-3xl font-extrabold tracking-[-0.045em] text-slate-950 sm:text-4xl">
+                  <Counter value={stat.value} suffix={stat.suffix} />
                 </div>
-                <div className="text-slate-400 text-xs tracking-widest uppercase">
-                  {s.label}
-                </div>
+                <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400 sm:text-xs">{stat.label}</p>
               </div>
-            </FadeUp>
+            </Reveal>
           ))}
         </div>
       </section>
 
-      {/* ── SERVICES ── */}
-      <section className="py-24 max-w-6xl mx-auto px-6">
-        <FadeUp>
-          <div className="mb-14">
-            <div className="text-red-600 text-xs font-semibold tracking-widest uppercase mb-2">
-              What We Do
-            </div>
-            <h2
-              className="text-6xl font-black text-slate-900"
-              style={{ fontFamily: "'Bebas Neue', cursive" }}
-            >
-              Workshop Services
-            </h2>
-            <motion.div
-              initial={{ width: 0 }}
-              whileInView={{ width: 56 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.55, delay: 0.2 }}
-              className="h-[3px] bg-red-600 mt-3 rounded"
-            />
+      <section className="mx-auto max-w-7xl px-5 py-24 sm:px-6 lg:px-8 lg:py-28">
+        <Reveal className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+          <div className="max-w-2xl">
+            <span className="section-label">Services designed around you</span>
+            <h2 className="section-title mt-4">Everything your vehicle needs, in one trusted workshop.</h2>
           </div>
-        </FadeUp>
+          <button
+            type="button"
+            onClick={() => navigate("/services")}
+            className="group inline-flex items-center gap-2 text-sm font-extrabold text-rose-600"
+          >
+            View all services <ArrowRight size={17} className="transition-transform group-hover:translate-x-1" />
+          </button>
+        </Reveal>
 
-        <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: "-80px" }}
-        >
-          {services.map((s, i) => (
-            <ServiceCard key={s.title} {...s} index={i} />
-          ))}
-        </motion.div>
+        <div className="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+          {services.map((service, index) => {
+            const Icon = service.icon;
+            return (
+              <Reveal key={service.title} delay={index * 0.08}>
+                <motion.article
+                  whileHover={{ y: -8 }}
+                  transition={{ type: "spring", stiffness: 260, damping: 22 }}
+                  className="service-card group h-full rounded-[24px] border border-slate-200 bg-white p-6"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <span className="service-icon flex h-13 w-13 items-center justify-center rounded-2xl bg-rose-50 text-rose-600">
+                      <Icon size={24} />
+                    </span>
+                    <span className="rounded-full bg-slate-50 px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.12em] text-slate-500">
+                      {service.tag}
+                    </span>
+                  </div>
+                  <h3 className="mt-7 font-[Sora] text-lg font-extrabold tracking-[-0.025em] text-slate-950">{service.title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-slate-500">{service.description}</p>
+                  <div className="mt-7 flex items-center justify-between border-t border-slate-100 pt-5">
+                    <div>
+                      <span className="block text-[9px] font-bold uppercase tracking-[0.13em] text-slate-400">Starting from</span>
+                      <span className="mt-1 block font-[Sora] text-xl font-extrabold text-slate-950">{service.price}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={scrollToBooking}
+                      className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition group-hover:border-rose-200 group-hover:bg-rose-600 group-hover:text-white"
+                      aria-label={`Book ${service.title}`}
+                    >
+                      <ChevronRight size={18} />
+                    </button>
+                  </div>
+                </motion.article>
+              </Reveal>
+            );
+          })}
+        </div>
       </section>
 
-      {/* ── BOOKING FORM ── */}
-      <section className="py-20 bg-white border-y-2 border-slate-300">
-        <div className="max-w-3xl mx-auto px-6">
-          <FadeUp>
-            <div className="mb-10">
-              <div className="text-red-600 text-xs font-semibold tracking-widest uppercase mb-2">
-                Quick Booking
-              </div>
-              <h2
-                className="text-5xl font-black text-slate-900"
-                style={{ fontFamily: "'Bebas Neue', cursive" }}
-              >
-                Schedule a Service
-              </h2>
-              <motion.div
-                initial={{ width: 0 }}
-                whileInView={{ width: 56 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.55, delay: 0.2 }}
-                className="h-[3px] bg-red-600 mt-3 rounded"
-              />
-              <p className="text-slate-400 text-sm mt-3">
-                Reserve your bay — our team confirms within 2 hours.
-              </p>
-            </div>
-          </FadeUp>
+      <section className="process-section border-y border-slate-200/80 bg-slate-50/70 py-24 lg:py-28">
+        <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
+          <Reveal className="mx-auto max-w-2xl text-center">
+            <span className="section-label">A better service journey</span>
+            <h2 className="section-title mt-4">From registration to road-ready in three clear steps.</h2>
+            <p className="mt-5 text-base leading-8 text-slate-500">No confusing calls, hidden progress or unnecessary waiting.</p>
+          </Reveal>
 
-          <FadeUp delay={0.1}>
-            <form className="space-y-4" onSubmit={handleBook}>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {[
-                  ["Your Name", "Rajiv Sharma", "text"],
-                  ["Phone", "+91 98765 43210", "tel"],
-                ].map(([label, ph, type]) => (
-                  <div key={label}>
-                    <label className="text-slate-500 text-xs uppercase tracking-widest block mb-1.5">
-                      {label}
-                    </label>
-                    <input
-                      type={type}
-                      placeholder={ph}
-                      className="af-input w-full bg-slate-50 border-2 border-slate-300 focus:border-red-500 focus:bg-white rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-slate-300 transition-all"
-                    />
+          <div className="relative mt-14 grid gap-5 lg:grid-cols-3">
+            <div className="absolute left-[16%] right-[16%] top-14 hidden h-px bg-gradient-to-r from-transparent via-rose-200 to-transparent lg:block" />
+            {steps.map((step, index) => {
+              const Icon = step.icon;
+              return (
+                <Reveal key={step.title} delay={index * 0.12}>
+                  <div className="process-card relative rounded-[24px] border border-slate-200 bg-white p-7 text-center shadow-sm">
+                    <span className="absolute right-5 top-5 font-[Sora] text-4xl font-extrabold text-slate-100">{step.number}</span>
+                    <span className="relative mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-950 text-white shadow-[0_12px_30px_rgba(15,23,42,.18)]">
+                      <Icon size={23} />
+                    </span>
+                    <h3 className="mt-6 font-[Sora] text-lg font-extrabold text-slate-950">{step.title}</h3>
+                    <p className="mx-auto mt-3 max-w-xs text-sm leading-7 text-slate-500">{step.description}</p>
                   </div>
-                ))}
+                </Reveal>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section id="booking" className="mx-auto max-w-7xl scroll-mt-24 px-5 py-24 sm:px-6 lg:px-8 lg:py-28">
+        <div className="booking-panel relative overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-[0_30px_90px_rgba(15,23,42,.1)]">
+          <div className="grid lg:grid-cols-[.84fr_1.16fr]">
+            <div className="booking-intro relative overflow-hidden bg-slate-950 p-8 text-white sm:p-11 lg:p-12">
+              <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-rose-500/20 blur-3xl" />
+              <div className="absolute -bottom-24 -left-16 h-56 w-56 rounded-full bg-indigo-500/15 blur-3xl" />
+              <div className="relative">
+                <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-white/70">
+                  <Clock3 size={14} className="text-rose-400" /> Takes less than 2 minutes
+                </span>
+                <h2 className="mt-7 font-[Sora] text-3xl font-extrabold leading-tight tracking-[-0.045em] sm:text-4xl">Book your next service with confidence.</h2>
+                <p className="mt-5 max-w-md text-sm leading-7 text-white/55">Share a few details and the workshop team will confirm the most suitable slot.</p>
+
+                <div className="mt-9 space-y-4">
+                  {["No payment required now", "Clear estimate before work", "Free booking confirmation"].map((item) => (
+                    <div key={item} className="flex items-center gap-3 text-sm font-semibold text-white/75">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/[0.07] text-rose-400"><CheckCircle2 size={17} /></span>
+                      {item}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <form onSubmit={submitBooking} className="p-7 sm:p-10 lg:p-12">
+              <div className="mb-8">
+                <span className="section-label">Book service</span>
+                <h3 className="mt-3 font-[Sora] text-2xl font-extrabold tracking-[-0.035em] text-slate-950">Tell us about your vehicle</h3>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                  <label className="text-slate-500 text-xs uppercase tracking-widest block mb-1.5">
-                    Vehicle Type
-                  </label>
-                  <select className="af-select w-full bg-slate-50 border-2 border-slate-300 focus:border-red-500 rounded-xl px-4 py-3 text-sm text-slate-700 transition-all appearance-none">
-                    {[
-                      "Sedan",
-                      "SUV / MUV",
-                      "Hatchback",
-                      "Two-Wheeler",
-                      "Commercial",
-                    ].map((o) => (
-                      <option key={o}>{o}</option>
-                    ))}
+              <div className="grid gap-5 sm:grid-cols-2">
+                <label className="form-field sm:col-span-2">
+                  <span>Full name</span>
+                  <input required placeholder="Enter your full name" />
+                </label>
+                <label className="form-field">
+                  <span>Phone number</span>
+                  <input required type="tel" placeholder="+91 98765 43210" />
+                </label>
+                <label className="form-field">
+                  <span>Registration number</span>
+                  <input required placeholder="UP32 AB 1234" className="uppercase" />
+                </label>
+                <label className="form-field">
+                  <span>Required service</span>
+                  <select required defaultValue="">
+                    <option value="" disabled>Select a service</option>
+                    <option>Engine diagnostics</option>
+                    <option>General service</option>
+                    <option>Brake service</option>
+                    <option>Electrical & AC</option>
+                    <option>Body & detailing</option>
                   </select>
-                </div>
-                <div>
-                  <label className="text-slate-500 text-xs uppercase tracking-widest block mb-1.5">
-                    Service Required
-                  </label>
-                  <select className="af-select w-full bg-slate-50 border-2 border-slate-300 focus:border-red-500 rounded-xl px-4 py-3 text-sm text-slate-700 transition-all appearance-none">
-                    {[
-                      "Engine Diagnostics",
-                      "Oil Change",
-                      "Brake Service",
-                      "Tyre Alignment",
-                      "AC Repair",
-                      "Body Work",
-                    ].map((o) => (
-                      <option key={o}>{o}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="text-slate-500 text-xs uppercase tracking-widest block mb-1.5">
-                    Preferred Date
-                  </label>
-                  <input
-                    type="date"
-                    className="af-input w-full bg-slate-50 border-2 border-slate-300 focus:border-red-500 rounded-xl px-4 py-3 text-sm text-slate-700 transition-all"
-                  />
-                </div>
+                </label>
+                <label className="form-field">
+                  <span>Preferred date</span>
+                  <input required type="date" />
+                </label>
               </div>
 
               <motion.button
                 type="submit"
-                whileHover={{
-                  scale: 1.015,
-                  boxShadow: "0 10px 36px rgba(220,38,38,0.22)",
-                }}
-                whileTap={{ scale: 0.97 }}
-                className={`w-full font-bold py-4 rounded-xl text-base mt-2 border-2 transition-all
-                  ${
-                    formStatus === "done"
-                      ? "bg-green-600 border-green-700 text-white"
-                      : "bg-red-600 hover:bg-red-700 border-red-700 text-white shadow-md shadow-red-100"
-                  }`}
-                data-hover
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                disabled={bookingStatus === "loading"}
+                className={`mt-7 flex w-full items-center justify-center gap-2 rounded-2xl py-4 text-sm font-extrabold text-white transition ${bookingStatus === "done" ? "bg-emerald-600 shadow-lg shadow-emerald-100" : "primary-action"}`}
               >
-                <AnimatePresence mode="wait">
-                  {formStatus === "idle" && (
-                    <motion.span
-                      key="idle"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                    >
-                      Confirm Booking →
+                <AnimatePresence mode="wait" initial={false}>
+                  {bookingStatus === "idle" && <motion.span key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>Confirm booking</motion.span>}
+                  {bookingStatus === "loading" && (
+                    <motion.span key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center gap-2">
+                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" /> Confirming...
                     </motion.span>
                   )}
-                  {formStatus === "loading" && (
-                    <motion.span
-                      key="loading"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="flex items-center justify-center gap-2"
-                    >
-                      <motion.span
-                        animate={{ rotate: 360 }}
-                        transition={{
-                          duration: 0.8,
-                          repeat: Infinity,
-                          ease: "linear",
-                        }}
-                        className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full"
-                      />
-                      Booking...
-                    </motion.span>
-                  )}
-                  {formStatus === "done" && (
-                    <motion.span
-                      key="done"
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0 }}
-                    >
-                      ✓ Booking Confirmed!
-                    </motion.span>
-                  )}
+                  {bookingStatus === "done" && <motion.span key="done" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex items-center gap-2"><CheckCircle2 size={17} /> Booking confirmed</motion.span>}
                 </AnimatePresence>
+                {bookingStatus === "idle" && <ArrowRight size={17} />}
               </motion.button>
             </form>
-          </FadeUp>
-        </div>
-      </section>
-
-      {/* ── WHY US ── */}
-      <section className="py-24 max-w-6xl mx-auto px-6">
-        <FadeUp>
-          <div className="mb-14">
-            <div className="text-red-600 text-xs font-semibold tracking-widest uppercase mb-2">
-              Why Choose Us
-            </div>
-            <h2
-              className="text-6xl font-black text-slate-900"
-              style={{ fontFamily: "'Bebas Neue', cursive" }}
-            >
-              The AutoForge Advantage
-            </h2>
-            <motion.div
-              initial={{ width: 0 }}
-              whileInView={{ width: 56 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.55, delay: 0.2 }}
-              className="h-[3px] bg-red-600 mt-3 rounded"
-            />
           </div>
-        </FadeUp>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {[
-            {
-              n: "01",
-              title: "Certified Technicians",
-              desc: "National automotive certifications with 5+ years field experience.",
-            },
-            {
-              n: "02",
-              title: "Transparent Pricing",
-              desc: "Detailed cost estimate before any work begins — zero surprises.",
-            },
-            {
-              n: "03",
-              title: "OEM-Grade Parts",
-              desc: "Only genuine or OEM-equivalent parts with full manufacturer warranty.",
-            },
-            {
-              n: "04",
-              title: "Live Job Tracking",
-              desc: "Real-time SMS updates as your vehicle moves through the service bay.",
-            },
-          ].map((w, i) => (
-            <FadeUp key={w.n} delay={i * 0.1}>
-              <motion.div
-                whileHover={{
-                  y: -5,
-                  transition: { type: "spring", stiffness: 280 },
-                }}
-                className="why-card bg-white border-2 border-slate-300 rounded-2xl p-6 transition-all"
-                data-hover
-              >
-                <div
-                  className="text-5xl font-black text-red-100 mb-4"
-                  style={{ fontFamily: "'Bebas Neue', cursive" }}
-                >
-                  {w.n}
-                </div>
-                <h3 className="font-bold text-slate-800 text-sm mb-2">
-                  {w.title}
-                </h3>
-                <p className="text-slate-400 text-sm leading-relaxed">
-                  {w.desc}
-                </p>
-              </motion.div>
-            </FadeUp>
-          ))}
         </div>
       </section>
 
-      {/* ── TESTIMONIALS ── */}
-      <section className="py-24 bg-slate-50 border-y-2 border-slate-300">
-        <div className="max-w-6xl mx-auto px-6">
-          <FadeUp>
-            <div className="mb-14">
-              <div className="text-red-600 text-xs font-semibold tracking-widest uppercase mb-2">
-                Customer Reviews
+      <section className="border-y border-slate-200 bg-slate-50/70 py-24 lg:py-28">
+        <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
+          <Reveal className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+            <div className="max-w-2xl">
+              <span className="section-label">Customer stories</span>
+              <h2 className="section-title mt-4">Trusted by drivers who expect better.</h2>
+            </div>
+            <div className="flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-extrabold text-amber-700">
+              <Star size={16} fill="currentColor" /> 4.9 average rating
+            </div>
+          </Reveal>
+
+          <div className="mt-12 grid gap-5 lg:grid-cols-3">
+            {reviews.map((review, index) => (
+              <Reveal key={review.name} delay={index * 0.1}>
+                <motion.article whileHover={{ y: -6 }} className="review-card h-full rounded-[24px] border border-slate-200 bg-white p-7">
+                  <div className="flex gap-1 text-amber-400">{Array.from({ length: 5 }).map((_, star) => <Star key={star} size={16} fill="currentColor" />)}</div>
+                  <p className="mt-6 text-[15px] leading-8 text-slate-600">“{review.text}”</p>
+                  <div className="mt-7 flex items-center gap-3 border-t border-slate-100 pt-5">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-rose-50 text-xs font-extrabold text-rose-600">{review.initials}</span>
+                    <div>
+                      <p className="text-sm font-extrabold text-slate-900">{review.name}</p>
+                      <p className="mt-1 text-xs text-slate-400">{review.car}</p>
+                    </div>
+                  </div>
+                </motion.article>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="px-5 py-24 sm:px-6 lg:px-8">
+        <Reveal className="cta-panel relative mx-auto max-w-7xl overflow-hidden rounded-[32px] bg-gradient-to-br from-rose-600 via-rose-600 to-red-700 px-7 py-14 text-center text-white shadow-[0_30px_90px_rgba(225,29,72,.24)] sm:px-12 lg:py-20">
+          <div className="absolute -right-28 -top-28 h-80 w-80 rounded-full border-[48px] border-white/[0.07]" />
+          <div className="absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-white/[0.06]" />
+          <div className="relative mx-auto max-w-3xl">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-white/80"><ShieldCheck size={15} /> Reliable care starts here</span>
+            <h2 className="mt-6 font-[Sora] text-3xl font-extrabold leading-tight tracking-[-0.05em] sm:text-5xl">Ready to give your vehicle the service it deserves?</h2>
+            <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-white/70 sm:text-base">Search your registration or reserve a workshop slot today.</p>
+            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+              <button type="button" onClick={() => navigate("/find-vehicle")} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-7 py-4 text-sm font-extrabold text-rose-600 shadow-xl transition hover:-translate-y-1">Search vehicle <ArrowRight size={17} /></button>
+              <button type="button" onClick={scrollToBooking} className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/25 bg-white/10 px-7 py-4 text-sm font-extrabold text-white backdrop-blur-md transition hover:-translate-y-1 hover:bg-white/15"><CalendarDays size={17} /> Book service</button>
+            </div>
+          </div>
+        </Reveal>
+      </section>
+
+      <footer className="border-t border-slate-200 bg-white">
+        <div className="mx-auto grid max-w-7xl gap-10 px-5 py-12 sm:px-6 md:grid-cols-[1.2fr_.8fr_.8fr] lg:px-8">
+          <div>
+            <div className="flex items-center gap-3">
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-rose-600 text-white shadow-lg shadow-rose-100"><Zap size={20} /></span>
+              <div>
+                <div className="font-[Sora] text-xl font-extrabold tracking-[-0.04em] text-slate-950">Auto<span className="text-rose-600">Forge</span></div>
+                <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-slate-400">Garage management</p>
               </div>
-              <h2
-                className="text-6xl font-black text-slate-900"
-                style={{ fontFamily: "'Bebas Neue', cursive" }}
-              >
-                What Our Customers Say
-              </h2>
-              <motion.div
-                initial={{ width: 0 }}
-                whileInView={{ width: 56 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.55, delay: 0.2 }}
-                className="h-[3px] bg-red-600 mt-3 rounded"
-              />
             </div>
-          </FadeUp>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            <TestiCard
-              stars={5}
-              text="Brought my Swift in for engine noise. They diagnosed and fixed it the same day. Fair price, honest team."
-              name="Amit Kumar"
-              initials="AK"
-              car="Maruti Swift 2021"
-              delay={0}
-            />
-            <TestiCard
-              stars={5}
-              text="Best garage in the city. The SMS tracking feature is brilliant — I knew exactly when my car was ready."
-              name="Priya Singh"
-              initials="PS"
-              car="Hyundai Creta 2022"
-              delay={0.1}
-            />
-            <TestiCard
-              stars={4}
-              text="Very professional staff. My Fortuner's AC was fixed in under 3 hours. Will definitely return."
-              name="Rohit Verma"
-              initials="RV"
-              car="Toyota Fortuner 2020"
-              delay={0.2}
-            />
+            <p className="mt-5 max-w-sm text-sm leading-7 text-slate-500">Premium vehicle care with transparent communication and a smarter service experience.</p>
+          </div>
+          <div>
+            <h3 className="text-sm font-extrabold text-slate-900">Explore</h3>
+            <div className="mt-4 space-y-3 text-sm text-slate-500">
+              <button onClick={() => navigate("/services")} className="block hover:text-rose-600">Services</button>
+              <button onClick={() => navigate("/find-vehicle")} className="block hover:text-rose-600">Vehicle search</button>
+              <button onClick={() => navigate("/contact")} className="block hover:text-rose-600">Contact us</button>
+            </div>
+          </div>
+          <div>
+            <h3 className="text-sm font-extrabold text-slate-900">Contact</h3>
+            <div className="mt-4 space-y-3 text-sm text-slate-500">
+              <p className="flex items-center gap-2"><MapPin size={15} className="text-rose-500" /> Lucknow, Uttar Pradesh</p>
+              <p className="flex items-center gap-2"><Phone size={15} className="text-rose-500" /> +91 522 400 1234</p>
+              <p className="flex items-center gap-2"><Mail size={15} className="text-rose-500" /> support@autoforge.com</p>
+            </div>
           </div>
         </div>
-      </section>
-
-      {/* ── CTA BANNER ── */}
-      <section className="py-24 max-w-4xl mx-auto px-6 text-center">
-        <FadeUp>
-          <h2
-            className="text-6xl font-black mb-4 text-slate-900"
-            style={{ fontFamily: "'Bebas Neue', cursive" }}
-          >
-            Ready to Service Your Vehicle?
-          </h2>
-          <p className="text-slate-500 mb-10 max-w-md mx-auto text-base leading-relaxed">
-            Search by registration number to instantly pull up vehicle records
-            and book a service slot.
-          </p>
-
-          <MagneticBtn
-            onClick={() => setPage && setPage("search")}
-            className="inline-flex items-center gap-3 bg-red-600 hover:bg-red-700 text-white font-black px-12 py-5 rounded-2xl text-xl transition-colors shadow-xl shadow-red-200 border-2 border-red-700"
-            style={{
-              fontFamily: "'Bebas Neue', cursive",
-              letterSpacing: "0.5px",
-            }}
-          >
-            Search Vehicle Now
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2.5}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"
-              />
-            </svg>
-          </MagneticBtn>
-
-          <p className="text-slate-400 text-xs mt-5 font-mono">
-            Try:{" "}
-            <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded">
-              YY59UAD
-            </span>
-            {" · "}
-            <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded">
-              MH12AB1234
-            </span>
-            {" · "}
-            <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded">
-              UP32CD5678
-            </span>
-          </p>
-        </FadeUp>
-      </section>
-
-      {/* ── FOOTER ── */}
-      <footer className="border-t-2 border-slate-300 bg-white py-10 text-center">
-        <div
-          className="text-slate-900 font-black text-2xl mb-2"
-          style={{ fontFamily: "'Bebas Neue', cursive" }}
-        >
-          AUTO<span className="text-red-600">FORGE</span> GARAGE
-        </div>
-        <p className="text-slate-400 text-xs">
-          14-B Industrial Estate, Lucknow UP 226001 · +91 522 400 1234 · Mon–Sat
-          8AM–7PM
-        </p>
+        <div className="border-t border-slate-100 px-5 py-5 text-center text-xs text-slate-400">© 2026 AutoForge Garage. All rights reserved.</div>
       </footer>
     </div>
   );

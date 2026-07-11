@@ -86,7 +86,7 @@ export default function ViewItemDetailsModal({ setViewing, viewing }) {
             </span>
           </div>
 
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Customer Details */}
             <div className="bg-slate-50 rounded-xl p-4 text-sm space-y-2">
               <div className="font-bold text-slate-700 mb-2">
@@ -209,7 +209,7 @@ export default function ViewItemDetailsModal({ setViewing, viewing }) {
                           className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
                             it.type === "Labour"
                               ? "bg-amber-50 text-amber-700"
-                              : "bg-blue-50 text-blue-700"
+                              : "bg-red-50 text-red-700"
                           }`}
                         >
                           {it.itemType || it.type}
@@ -242,7 +242,7 @@ export default function ViewItemDetailsModal({ setViewing, viewing }) {
 
           {/* Notes */}
           {viewing?.notes && (
-            <div className="bg-blue-50 rounded-xl p-4 text-sm text-slate-700">
+            <div className="bg-red-50 rounded-xl p-4 text-sm text-slate-700">
               <span className="font-semibold">Notes: </span>
               {viewing.notes}
             </div>

@@ -74,7 +74,7 @@ const Estimates = ({ estimates, setEstimates, onConvert }) => {
       label: "Total Estimates",
       value: estimates.length,
       sub: "All time",
-      color: "text-cyan-400",
+      color: "text-[#be123c]",
     },
     {
       label: "Pending",
@@ -92,7 +92,7 @@ const Estimates = ({ estimates, setEstimates, onConvert }) => {
       label: "Pipeline Value",
       value: fmt(estimates.reduce((s, e) => s + e.total, 0)),
       sub: "Total quoted",
-      color: "text-cyan-400",
+      color: "text-[#be123c]",
     },
   ];
 
@@ -123,7 +123,7 @@ const Estimates = ({ estimates, setEstimates, onConvert }) => {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#0b1628]/60">
+                <tr className="bg-slate-50/80">
                   {[
                     "Estimate #",
                     "Customer",
@@ -147,10 +147,10 @@ const Estimates = ({ estimates, setEstimates, onConvert }) => {
                 {estimates.map((est) => (
                   <tr
                     key={est.id}
-                    className="border-t border-cyan-500/10 hover:bg-cyan-500/5 cursor-pointer transition-colors"
+                    className="border-t border-slate-100 hover:bg-[#fff1f2] cursor-pointer transition-colors"
                     onClick={() => setViewing(est)}
                   >
-                    <td className="px-4 py-3 font-mono text-cyan-400 font-bold text-sm">
+                    <td className="px-4 py-3 font-mono text-[#be123c] font-extrabold text-sm">
                       {est.id}
                     </td>
                     <td className="px-4 py-3 font-semibold">{est.customer}</td>
@@ -163,7 +163,7 @@ const Estimates = ({ estimates, setEstimates, onConvert }) => {
                     <td className="px-4 py-3 font-mono text-xs text-slate-400">
                       {est.date}
                     </td>
-                    <td className="px-4 py-3 font-mono font-bold text-cyan-400">
+                    <td className="px-4 py-3 font-mono font-bold text-red-600">
                       {fmt(est.total)}
                     </td>
                     <td className="px-4 py-3">
@@ -354,7 +354,7 @@ const Estimates = ({ estimates, setEstimates, onConvert }) => {
         >
           <div className="flex justify-between items-center mb-5">
             <Badge status={viewing.status} />
-            <span className="font-mono font-bold text-2xl text-cyan-400">
+            <span className="font-mono font-bold text-2xl text-red-600">
               {fmt(viewing.total)}
             </span>
           </div>
